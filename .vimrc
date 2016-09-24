@@ -1,9 +1,20 @@
+"-- VIM-PLUG ---
+call plug#begin('~/.vim/plugged')
+Plug 'jnurmine/Zenburn'
+Plug 'flazz/vim-colorschemes'
+call plug#end()
+
+colorscheme molokai
+
 runtime! debian.vim
 set splitbelow "donde aparecen los nuevos splits
 set splitright "donde aparecen los nuevos splits
 
-syntax on
 filetype indent plugin on
+
+" Enable folding
+set foldmethod=indent
+set foldlevel=99
 
 au FileType python setlocal
     \ tabstop=8
@@ -12,14 +23,12 @@ au FileType python setlocal
     \ expandtab
     \ autoindent
     \ fileformat=unix
-    "\ textwidth=100
 
 au BufNewFile,BufRead *.js,*.html,*.css
     \ set tabstop=2 |
     \ set softtabstop=2 |
     \ set shiftwidth=2 |
 
-set background=dark
 "set textwidth=100
 set showmatch
 set number
@@ -34,17 +43,20 @@ set ruler
 " Show filename, always
 set ls=2
 
-"------- HIGHLIGHT CHARS OVER 100 --------
-" sin todo lo de abajo no funcionaba en nuevas tabs/splits
-" http://stackoverflow.com/questions/37771247
-highlight OverLength ctermbg=darkred ctermfg=white guibg=#FFD9D9
-augroup vimrc_autocmds
-    autocmd!
-    autocmd BufEnter,WinEnter * call matchadd('OverLength', '\%>101v.\+', -1)
-augroup END
-"-----------------------------------------
+" Don't redraw while executing macros (good performance config)
+set lazyredraw 
 
-" Git commits:
+""------- HIGHLIGHT CHARS OVER 100 --------
+"" sin todo lo de abajo no funcionaba en nuevas tabs/splits
+"" http://stackoverflow.com/questions/37771247
+"highlight OverLength ctermbg=darkred ctermfg=white guibg=#FFD9D9
+"augroup vimrc_autocmds
+"    autocmd!
+"    autocmd BufEnter,WinEnter * call matchadd('OverLength', '\%>101v.\+', -1)
+"augroup END
+""-----------------------------------------
+
+" Git commits format:
 autocmd Filetype gitcommit setlocal spell textwidth=72
 
 " Remap H and L (top, bottom of screen to left and right end of line)
@@ -56,11 +68,14 @@ vnoremap L g_
 " Quick replay q macro
 nnoremap Q @q
 
-" When jump to next match also center screen
-nnoremap n nzz
-nnoremap N Nzz
-vnoremap n nzz
-vnoremap N Nzz
+" Always show at least X lines above/below cursor
+set scrolloff=2
+
+"" When jump to next match also center screen
+"nnoremap n nzz
+"nnoremap N Nzz
+"vnoremap n nzz
+"vnoremap N Nzz
 
 " Same when moving up and down
 nnoremap <C-u> <C-u>zz
@@ -83,10 +98,10 @@ set ttimeoutlen=100
 set backspace=indent,eol,start
 "set backspace=2 " make backspace work like most other apps
 
-" Tab color Barra de relleno, Tabs no elegidos, Tab elegido
-hi TabLineFill ctermfg=Grey ctermbg=DarkGreen
-hi TabLine ctermfg=231 ctermbg=Grey
-hi TabLineSel ctermfg=231 ctermbg=Black
+"" Tab color Barra de relleno, Tabs no elegidos, Tab elegido
+"hi TabLineFill ctermfg=Grey ctermbg=DarkGreen
+"hi TabLine ctermfg=231 ctermbg=Grey
+"hi TabLineSel ctermfg=231 ctermbg=Black
 
 " Split navigations
 nnoremap <C-J> <C-W><C-J>
@@ -97,30 +112,30 @@ nnoremap <C-H> <C-W><C-H>
 " This enables "visual" wrapping
 set nowrap
 
-"fix vim diff colors
-highlight DiffAdd    cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
-highlight DiffDelete cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
-highlight DiffChange cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
-highlight DiffText   cterm=bold ctermfg=10 ctermbg=88 gui=none guifg=bg guibg=Red
+""fix vim diff colors
+"highlight DiffAdd    cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
+"highlight DiffDelete cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
+"highlight DiffChange cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
+"highlight DiffText   cterm=bold ctermfg=10 ctermbg=88 gui=none guifg=bg guibg=Red
 
 "Uncomment the following to have Vim jump to the last position when reopening a file
 if has("autocmd")
   au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 endif
 
-"-------------------AUTOCOMPLETION--------------------
-" If you prefer the Omni-Completion tip window to close when a selection is
-" made, these lines close it on movement in insert mode or when leaving
-" insert mode
-autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
-autocmd InsertLeave * if pumvisible() == 0|pclose|endif
-"Otro sugirio usar esto para hacer lo mismo:
-"autocmd CompleteDone * pclose
-
-"Colores del autocomplete pop up
-highlight Pmenu ctermfg=White ctermbg=DarkGrey
-highlight PmenuSel ctermfg=White ctermbg=Blue
-"-----------------------------------------------------------------------
+""-------------------AUTOCOMPLETION--------------------
+"" If you prefer the Omni-Completion tip window to close when a selection is
+"" made, these lines close it on movement in insert mode or when leaving
+"" insert mode
+"autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
+"autocmd InsertLeave * if pumvisible() == 0|pclose|endif
+""Otro sugirio usar esto para hacer lo mismo:
+""autocmd CompleteDone * pclose
+"
+""Colores del autocomplete pop up
+"highlight Pmenu ctermfg=White ctermbg=DarkGrey
+"highlight PmenuSel ctermfg=White ctermbg=Blue
+""-----------------------------------------------------------------------
 
 
 " Jump to the next or previous line that has the same level or a lower
