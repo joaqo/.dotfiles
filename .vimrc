@@ -1,10 +1,9 @@
 "-- VIM-PLUG ---
 call plug#begin('~/.vim/plugged')
-Plug 'jnurmine/Zenburn'
-Plug 'flazz/vim-colorschemes'
 call plug#end()
 
-colorscheme molokai
+colorscheme railscasts
+"colorscheme molokai
 
 runtime! debian.vim
 set splitbelow "donde aparecen los nuevos splits
