@@ -1,9 +1,11 @@
 "-- VIM-PLUG ---
-call plug#begin('~/.vim/plugged')
-call plug#end()
+"call plug#begin('~/.vim/plugged')
+"Plug 'https://github.com/morhetz/gruvbox.git'
+"Plug 'https://github.com/junegunn/vim-github-dashboard.git'
+"call plug#end()
 
-colorscheme railscasts
-"colorscheme molokai
+"colorscheme railscasts
+colorscheme molokai
 
 runtime! debian.vim
 set splitbelow "donde aparecen los nuevos splits
@@ -23,12 +25,16 @@ au FileType python setlocal
     \ autoindent
     \ fileformat=unix
 
+au BufNewFile,BufRead *.py
+    \ match ErrorMsg '\%>100v.\+'
+
 au BufNewFile,BufRead *.js,*.html,*.css
     \ set tabstop=2 |
     \ set softtabstop=2 |
     \ set shiftwidth=2 |
 
 "set textwidth=100
+set wildmenu
 set showmatch
 set number
 set relativenumber
