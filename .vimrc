@@ -1,10 +1,25 @@
-"-- VIM-PLUG ---
-"call plug#begin('~/.vim/plugged')
-"Plug 'https://github.com/morhetz/gruvbox.git'
-"Plug 'https://github.com/junegunn/vim-github-dashboard.git'
-"call plug#end()
+"  ========================= VIM-PLUG =============================
+call plug#begin('~/.vim/plugged')
+Plug 'https://github.com/jeetsukumaran/vim-indentwise.git'
+Plug 'https://github.com/tpope/vim-fugitive.git'
+Plug 'https://github.com/w0rp/ale.git'
+Plug 'https://github.com/davidhalter/jedi-vim.git'
+call plug#end()
 
-"colorscheme railscasts
+" Run google/yapf (not really a plugin but whatever)
+autocmd FileType python nnoremap <LocalLeader>= :0,$!yapf<CR>
+
+" Ale only lints on text save, instead of text change
+let g:ale_lint_on_save = 1
+let g:ale_lint_on_text_changed = 0
+" Ale always show left column
+let g:ale_sign_column_always = 1
+" Ale move between errors
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)
+
+" =================================================================
+
 colorscheme molokai
 
 runtime! debian.vim
@@ -16,6 +31,16 @@ filetype indent plugin on
 " Enable folding
 set foldmethod=indent
 set foldlevel=99
+
+
+" Add recursive folders to path (**)
+set path=.,/usr/include,,**
+
+" Enable mouse
+set mouse=a
+set ttymouse=xterm2
+
+syntax on
 
 au FileType python setlocal
     \ tabstop=8
@@ -41,9 +66,16 @@ set relativenumber
 set incsearch
 set tabpagemax=400
 set ignorecase
-set directory=~/.vim/swapfiles//
 map Y y$
 set ruler
+
+"" Backup and swap files
+set backupdir=~/.vim/tmp/backup/    " where to put backup files.
+set directory=~/.vim/tmp/swap/      " where to put swap files.
+
+""" Persistent Undo
+"set undofile
+"set undodir=~/.vim/tmp/undo
 
 " Show filename, always
 set ls=2
@@ -51,15 +83,18 @@ set ls=2
 " Don't redraw while executing macros (good performance config)
 set lazyredraw 
 
-""------- HIGHLIGHT CHARS OVER 100 --------
-"" sin todo lo de abajo no funcionaba en nuevas tabs/splits
-"" http://stackoverflow.com/questions/37771247
-"highlight OverLength ctermbg=darkred ctermfg=white guibg=#FFD9D9
-"augroup vimrc_autocmds
-"    autocmd!
-"    autocmd BufEnter,WinEnter * call matchadd('OverLength', '\%>101v.\+', -1)
-"augroup END
-""-----------------------------------------
+" Remap common typos
+command WQ wq
+command W w
+command Wq wq
+command Q q
+command Wa wa
+
+" Remap vertical find to more logical command: vsf = vert sf
+cnoreabbrev <expr> vsf getcmdtype() == ":" && getcmdline() == 'vsf' ? 'vert sf' : 'vsf'
+
+" Share clipboard with OS, it can destroy your normal yank, wtf!
+set clipboard=unnamed
 
 " Git commits format:
 autocmd Filetype gitcommit setlocal spell textwidth=72
@@ -75,12 +110,6 @@ nnoremap Q @q
 
 " Always show at least X lines above/below cursor
 set scrolloff=2
-
-"" When jump to next match also center screen
-"nnoremap n nzz
-"nnoremap N Nzz
-"vnoremap n nzz
-"vnoremap N Nzz
 
 " Same when moving up and down
 nnoremap <C-u> <C-u>zz
@@ -123,74 +152,15 @@ set nowrap
 "highlight DiffChange cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
 "highlight DiffText   cterm=bold ctermfg=10 ctermbg=88 gui=none guifg=bg guibg=Red
 
-"Uncomment the following to have Vim jump to the last position when reopening a file
+" Uncomment the following to have Vim jump to the last position when reopening a file
 if has("autocmd")
   au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 endif
 
-""-------------------AUTOCOMPLETION--------------------
-"" If you prefer the Omni-Completion tip window to close when a selection is
-"" made, these lines close it on movement in insert mode or when leaving
-"" insert mode
-"autocmd CursorMovedI * if pumvisible() == 0|pclose|endif
-"autocmd InsertLeave * if pumvisible() == 0|pclose|endif
-""Otro sugirio usar esto para hacer lo mismo:
-""autocmd CompleteDone * pclose
-"
-""Colores del autocomplete pop up
-"highlight Pmenu ctermfg=White ctermbg=DarkGrey
-"highlight PmenuSel ctermfg=White ctermbg=Blue
-""-----------------------------------------------------------------------
-
-
-" Jump to the next or previous line that has the same level or a lower
-" level of indentation than the current line.
-"
-" exclusive (bool): true: Motion is exclusive
-" false: Motion is inclusive
-" fwd (bool): true: Go to next line
-" false: Go to previous line
-" lowerlevel (bool): true: Go to line with lower indentation level
-" false: Go to line with the same indentation level
-" skipblanks (bool): true: Skip blank lines
-" false: Don't skip blank lines
-function! NextIndent(exclusive, fwd, lowerlevel, skipblanks)
-  let line = line('.')
-  let column = col('.')
-  let lastline = line('$')
-  let indent = indent(line)
-  let stepvalue = a:fwd ? 1 : -1
-  while (line > 0 && line <= lastline)
-    let line = line + stepvalue
-    if ( ! a:lowerlevel && indent(line) == indent ||
-          \ a:lowerlevel && indent(line) < indent)
-      if (! a:skipblanks || strlen(getline(line)) > 0)
-        if (a:exclusive)
-          let line = line - stepvalue
-        endif
-        exe line
-        exe "normal " column . "|"
-        return
-      endif
-    endif
-  endwhile
-endfunction
-
-" Moving back and forth between lines of same or lower indentation.
-nnoremap <silent> [l :call NextIndent(0, 0, 0, 1)<CR>
-nnoremap <silent> ]l :call NextIndent(0, 1, 0, 1)<CR>
-nnoremap <silent> [L :call NextIndent(0, 0, 1, 1)<CR>
-nnoremap <silent> ]L :call NextIndent(0, 1, 1, 1)<CR>
-vnoremap <silent> [l <Esc>:call NextIndent(0, 0, 0, 1)<CR>m'gv''
-vnoremap <silent> ]l <Esc>:call NextIndent(0, 1, 0, 1)<CR>m'gv''
-vnoremap <silent> [L <Esc>:call NextIndent(0, 0, 1, 1)<CR>m'gv''
-vnoremap <silent> ]L <Esc>:call NextIndent(0, 1, 1, 1)<CR>m'gv''
-onoremap <silent> [l :call NextIndent(0, 0, 0, 1)<CR>
-onoremap <silent> ]l :call NextIndent(0, 1, 0, 1)<CR>
-onoremap <silent> [L :call NextIndent(1, 0, 1, 1)<CR>
-onoremap <silent> ]L :call NextIndent(1, 1, 1, 1)<CR>
-
 " -----------Indent Python in the Google way.---------------------
+"  ( it probably differs with what yapf working in pep8 mode, but I think
+"  there is a google mode too, havent tried it though
+" ----------------------------------------------------------------
 
 setlocal indentexpr=GetGooglePythonIndent(v:lnum)
 
