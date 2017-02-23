@@ -277,7 +277,7 @@ set background=dark
 
 " -- Mis Modificaciones --
 hi Exception       ctermfg=118               cterm=bold
-hi Normal ctermfg=LightGrey
+hi Normal ctermfg=LightGrey ctermbg=Black
 hi Statement       ctermfg=yellow               cterm=bold
 hi String                   guifg=#af875f ctermfg=137
 hi Comment ctermfg=DarkGrey

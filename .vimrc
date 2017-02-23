@@ -2,19 +2,34 @@
 call plug#begin('~/.vim/plugged')
 Plug 'https://github.com/jeetsukumaran/vim-indentwise.git'
 Plug 'https://github.com/tpope/vim-fugitive.git'
+
 Plug 'https://github.com/w0rp/ale.git'
-Plug 'https://github.com/davidhalter/jedi-vim.git'
+set statusline +=\ %{ALEGetStatusLine()}\ \ 
+let g:ale_statusline_format = ['☀️️ %d', '🕯️ %d', '']
+highlight clear ALEErrorSign
+highlight clear ALEWarningSign
+let g:ale_sign_error = '❌'
+let g:ale_sign_warning = '⭕'
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)
+highlight clear SignColumn
+
+Plug 'https://github.com/JamshedVesuna/vim-markdown-preview.git'
+let vim_markdown_preview_github=1
+let vim_markdown_preview_toggle=1
+let vim_markdown_preview_hotkey='<C-m>'
+let vim_markdown_preview_temp_file=1  " <- This may cause crashing on slow browsers
+
+Plug 'https://github.com/ctrlpvim/ctrlp.vim.git'
 call plug#end()
 
 " Run google/yapf (not really a plugin but whatever)
 autocmd FileType python nnoremap <LocalLeader>= :0,$!yapf<CR>
 
-" Ale only lints on text save, instead of text change
-let g:ale_lint_on_save = 1
-let g:ale_lint_on_text_changed = 0
-" Ale always show left column
+" Ale options
+let g:ale_lint_on_save = 0
+let g:ale_lint_on_text_changed = 1
 let g:ale_sign_column_always = 1
-" Ale move between errors
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
@@ -31,6 +46,12 @@ filetype indent plugin on
 " Enable folding
 set foldmethod=indent
 set foldlevel=99
+
+" Modify statusline
+set statusline +=%f\  " relative path
+set statusline +=%m\  " modified flag
+set statusline +=%=%c\  " line length, right aligned
+
 
 
 " Add recursive folders to path (**)
@@ -59,7 +80,7 @@ au BufNewFile,BufRead *.js,*.html,*.css
     \ set shiftwidth=2 |
 
 "set textwidth=100
-set wildmenu
+"set wildmenu
 set showmatch
 set number
 set relativenumber
@@ -69,13 +90,13 @@ set ignorecase
 map Y y$
 set ruler
 
-"" Backup and swap files
-set backupdir=~/.vim/tmp/backup/    " where to put backup files.
-set directory=~/.vim/tmp/swap/      " where to put swap files.
+"" Dont store swap files
+set noswapfile
 
-""" Persistent Undo
-"set undofile
-"set undodir=~/.vim/tmp/undo
+" For ALE linter plugin
+highlight clear ALEErrorSign
+highlight clear ALEWarningSign
+highlight clear SignColumn
 
 " Show filename, always
 set ls=2
@@ -132,11 +153,6 @@ set ttimeoutlen=100
 set backspace=indent,eol,start
 "set backspace=2 " make backspace work like most other apps
 
-"" Tab color Barra de relleno, Tabs no elegidos, Tab elegido
-"hi TabLineFill ctermfg=Grey ctermbg=DarkGreen
-"hi TabLine ctermfg=231 ctermbg=Grey
-"hi TabLineSel ctermfg=231 ctermbg=Black
-
 " Split navigations
 nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
@@ -146,53 +162,47 @@ nnoremap <C-H> <C-W><C-H>
 " This enables "visual" wrapping
 set nowrap
 
-""fix vim diff colors
-"highlight DiffAdd    cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
-"highlight DiffDelete cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
-"highlight DiffChange cterm=bold ctermfg=10 ctermbg=17 gui=none guifg=bg guibg=Red
-"highlight DiffText   cterm=bold ctermfg=10 ctermbg=88 gui=none guifg=bg guibg=Red
-
 " Uncomment the following to have Vim jump to the last position when reopening a file
 if has("autocmd")
   au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 endif
 
-" -----------Indent Python in the Google way.---------------------
-"  ( it probably differs with what yapf working in pep8 mode, but I think
-"  there is a google mode too, havent tried it though
-" ----------------------------------------------------------------
-
-setlocal indentexpr=GetGooglePythonIndent(v:lnum)
-
-let s:maxoff = 50 " maximum number of lines to look backwards.
-
-function GetGooglePythonIndent(lnum)
-
-  " Indent inside parens.
-  " Align with the open paren unless it is at the end of the line.
-  " E.g.
-  "   open_paren_not_at_EOL(100,
-  "                         (200,
-  "                          300),
-  "                         400)
-  "   open_paren_at_EOL(
-  "       100, 200, 300, 400)
-  call cursor(a:lnum, 1)
-  let [par_line, par_col] = searchpairpos('(\|{\|\[', '', ')\|}\|\]', 'bW',
-        \ "line('.') < " . (a:lnum - s:maxoff) . " ? dummy :"
-        \ . " synIDattr(synID(line('.'), col('.'), 1), 'name')"
-        \ . " =~ '\\(Comment\\|String\\)$'")
-  if par_line > 0
-    call cursor(par_line, 1)
-    if par_col != col("$") - 1
-      return par_col
-    endif
-  endif
-
-  " Delegate the rest to the original function.
-  return GetPythonIndent(a:lnum)
-
-endfunction
-
-let pyindent_nested_paren="&sw*2"
-let pyindent_open_paren="&sw*2"
+" " -----------Indent Python in the Google way.---------------------
+" "  ( it probably differs with what yapf working in pep8 mode, but I think
+" "  there is a google mode too, havent tried it though
+" " ----------------------------------------------------------------
+" 
+" setlocal indentexpr=GetGooglePythonIndent(v:lnum)
+" 
+" let s:maxoff = 50 " maximum number of lines to look backwards.
+" 
+" function GetGooglePythonIndent(lnum)
+" 
+"   " Indent inside parens.
+"   " Align with the open paren unless it is at the end of the line.
+"   " E.g.
+"   "   open_paren_not_at_EOL(100,
+"   "                         (200,
+"   "                          300),
+"   "                         400)
+"   "   open_paren_at_EOL(
+"   "       100, 200, 300, 400)
+"   call cursor(a:lnum, 1)
+"   let [par_line, par_col] = searchpairpos('(\|{\|\[', '', ')\|}\|\]', 'bW',
+"         \ "line('.') < " . (a:lnum - s:maxoff) . " ? dummy :"
+"         \ . " synIDattr(synID(line('.'), col('.'), 1), 'name')"
+"         \ . " =~ '\\(Comment\\|String\\)$'")
+"   if par_line > 0
+"     call cursor(par_line, 1)
+"     if par_col != col("$") - 1
+"       return par_col
+"     endif
+"   endif
+" 
+"   " Delegate the rest to the original function.
+"   return GetPythonIndent(a:lnum)
+" 
+" endfunction
+" 
+" let pyindent_nested_paren="&sw*2"
+" let pyindent_open_paren="&sw*2"
