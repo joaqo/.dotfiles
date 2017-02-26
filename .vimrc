@@ -6,15 +6,12 @@ Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
 
 Plug 'https://github.com/w0rp/ale.git'
-set statusline +=\ %{ALEGetStatusLine()}\ \ 
+set statusline +=\ %{ALEGetStatusLine()}\ \
 let g:ale_statusline_format = ['☀️️ %d', '🕯️ %d', '']
-highlight clear ALEErrorSign
-highlight clear ALEWarningSign
-let g:ale_sign_error = '❌'
-let g:ale_sign_warning = '⭕'
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
-highlight clear SignColumn
+" let g:ale_sign_error = '❌'
+" let g:ale_sign_warning = '⭕'
 
 Plug 'https://github.com/JamshedVesuna/vim-markdown-preview.git'
 let vim_markdown_preview_github=1
@@ -31,8 +28,6 @@ autocmd FileType python nnoremap <LocalLeader>= :0,$!yapf<CR>
 let g:ale_lint_on_save = 0
 let g:ale_lint_on_text_changed = 1
 let g:ale_sign_column_always = 1
-nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
 " =================================================================
 
@@ -60,7 +55,9 @@ set path=.,/usr/include,,**
 
 " Enable mouse
 set mouse=a
-set ttymouse=xterm2
+if !has('nvim')
+    set ttymouse=xterm2
+endif
 
 syntax on
 
@@ -94,9 +91,9 @@ set ruler
 "" Dont store swap files
 set noswapfile
 
-" For ALE linter plugin
-highlight clear ALEErrorSign
-highlight clear ALEWarningSign
+" " For ALE linter plugin
+" highlight clear ALEErrorSign
+" highlight clear ALEWarningSign
 highlight clear SignColumn
 
 " Show filename, always
@@ -154,12 +151,6 @@ set ttimeoutlen=100
 set backspace=indent,eol,start
 "set backspace=2 " make backspace work like most other apps
 
-" Split navigations
-nnoremap <C-J> <C-W><C-J>
-nnoremap <C-K> <C-W><C-K>
-nnoremap <C-L> <C-W><C-L>
-nnoremap <C-H> <C-W><C-H>
-
 " This enables "visual" wrapping
 set nowrap
 
@@ -178,5 +169,14 @@ nnoremap <C-p> :Files<CR>
 " Emoji stuff I havent actually tested lol
 if !has('nvim')     " does not work on neovim
   set emoji         " treat emojis 😄  as full width characters
-  set termguicolors " enable true colors
+  set termguicolors " enable true colors - uses gui colors - disable `set -g default-terminal "screen-256color"` from .tmux.conf!
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 end
+
+" This fixes problem with background being bright on lines with text and black
+" on lines without text, when using vim inside tmux, and with true color
+set t_ut=
+" https://github.com/mhartington/oceanic-next/issues/40
+" https://github.com/vim/vim/issues/804
+" http://stackoverflow.com/questions/6427650/vim-in-tmux-background-color-changes-when-paging/15095377#15095377

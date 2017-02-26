@@ -274,6 +274,7 @@ end
 " Must be at the end, because of ctermbg=234 bug.
 " https://groups.google.com/forum/#!msg/vim_dev/afPqwAFNdrU/nqh6tOM87QUJ
 set background=dark
+hi Normal guibg=Black
 
 "" -- Mis Modificaciones --
 "hi Exception       ctermfg=118               cterm=bold
