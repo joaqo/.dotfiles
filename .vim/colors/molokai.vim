@@ -275,13 +275,13 @@ end
 " https://groups.google.com/forum/#!msg/vim_dev/afPqwAFNdrU/nqh6tOM87QUJ
 set background=dark
 
-" -- Mis Modificaciones --
-hi Exception       ctermfg=118               cterm=bold
-hi Normal ctermfg=LightGrey ctermbg=Black
-hi Statement       ctermfg=yellow               cterm=bold
-hi String                   guifg=#af875f ctermfg=137
-hi Comment ctermfg=DarkGrey
-hi Todo                      guifg=#df5f5f guibg=NONE gui=bold ctermfg=167 ctermbg=NONE cterm=bold
-hi Visual                    guibg=#5f5f87 ctermbg=60
-"hi Constant ctermfg=Darkmagenta
-""hi String ctermfg=144
+"" -- Mis Modificaciones --
+"hi Exception       ctermfg=118               cterm=bold
+"hi Normal ctermfg=LightGrey ctermbg=Black
+"hi Statement       ctermfg=yellow               cterm=bold
+"hi String                   guifg=#af875f ctermfg=137
+"hi Comment ctermfg=DarkGrey
+"hi Todo                      guifg=#df5f5f guibg=NONE gui=bold ctermfg=167 ctermbg=NONE cterm=bold
+"hi Visual                    guibg=#5f5f87 ctermbg=60
+""hi Constant ctermfg=Darkmagenta
+"""hi String ctermfg=144

@@ -2,6 +2,8 @@
 call plug#begin('~/.vim/plugged')
 Plug 'https://github.com/jeetsukumaran/vim-indentwise.git'
 Plug 'https://github.com/tpope/vim-fugitive.git'
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 
 Plug 'https://github.com/w0rp/ale.git'
 set statusline +=\ %{ALEGetStatusLine()}\ \ 
@@ -20,7 +22,6 @@ let vim_markdown_preview_toggle=1
 let vim_markdown_preview_hotkey='<C-m>'
 let vim_markdown_preview_temp_file=1  " <- This may cause crashing on slow browsers
 
-Plug 'https://github.com/ctrlpvim/ctrlp.vim.git'
 call plug#end()
 
 " Run google/yapf (not really a plugin but whatever)
@@ -41,7 +42,7 @@ runtime! debian.vim
 set splitbelow "donde aparecen los nuevos splits
 set splitright "donde aparecen los nuevos splits
 
-filetype indent plugin on
+"filetype indent plugin on
 
 " Enable folding
 set foldmethod=indent
@@ -101,8 +102,8 @@ highlight clear SignColumn
 " Show filename, always
 set ls=2
 
-" Don't redraw while executing macros (good performance config)
-set lazyredraw 
+set lazyredraw  " Don't redraw while executing macros (good performance config)
+set ttyfast     " should make scrolling faster
 
 " Remap common typos
 command WQ wq
@@ -167,42 +168,15 @@ if has("autocmd")
   au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 endif
 
-" " -----------Indent Python in the Google way.---------------------
-" "  ( it probably differs with what yapf working in pep8 mode, but I think
-" "  there is a google mode too, havent tried it though
-" " ----------------------------------------------------------------
-" 
-" setlocal indentexpr=GetGooglePythonIndent(v:lnum)
-" 
-" let s:maxoff = 50 " maximum number of lines to look backwards.
-" 
-" function GetGooglePythonIndent(lnum)
-" 
-"   " Indent inside parens.
-"   " Align with the open paren unless it is at the end of the line.
-"   " E.g.
-"   "   open_paren_not_at_EOL(100,
-"   "                         (200,
-"   "                          300),
-"   "                         400)
-"   "   open_paren_at_EOL(
-"   "       100, 200, 300, 400)
-"   call cursor(a:lnum, 1)
-"   let [par_line, par_col] = searchpairpos('(\|{\|\[', '', ')\|}\|\]', 'bW',
-"         \ "line('.') < " . (a:lnum - s:maxoff) . " ? dummy :"
-"         \ . " synIDattr(synID(line('.'), col('.'), 1), 'name')"
-"         \ . " =~ '\\(Comment\\|String\\)$'")
-"   if par_line > 0
-"     call cursor(par_line, 1)
-"     if par_col != col("$") - 1
-"       return par_col
-"     endif
-"   endif
-" 
-"   " Delegate the rest to the original function.
-"   return GetPythonIndent(a:lnum)
-" 
-" endfunction
-" 
-" let pyindent_nested_paren="&sw*2"
-" let pyindent_open_paren="&sw*2"
+" FZF
+nnoremap <C-b> :Buffers<CR>
+nnoremap <C-g>g :Ag<CR>
+nnoremap <C-g>c :Commands<CR>
+nnoremap <C-f>l :BLines<CR>
+nnoremap <C-p> :Files<CR>
+
+" Emoji stuff I havent actually tested lol
+if !has('nvim')     " does not work on neovim
+  set emoji         " treat emojis 😄  as full width characters
+  set termguicolors " enable true colors
+end
