@@ -1,6 +1,8 @@
-"  ========================= VIM-PLUG =============================
+"================================ VIM-PLUG ==================================
 call plug#begin('~/.vim/plugged')
 Plug 'https://github.com/jeetsukumaran/vim-indentwise.git'
+Plug 'maralla/completor.vim'
+Plug 'morhetz/gruvbox'
 Plug 'https://github.com/tpope/vim-fugitive.git'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
@@ -27,10 +29,8 @@ autocmd FileType python nnoremap <LocalLeader>= :0,$!yapf<CR>
 let g:ale_lint_on_save = 0
 let g:ale_lint_on_text_changed = 1
 let g:ale_sign_column_always = 1
+"============================================================================
 
-" =================================================================
-
-colorscheme molokai
 
 runtime! debian.vim
 set splitbelow "donde aparecen los nuevos splits
@@ -38,20 +38,21 @@ set splitright "donde aparecen los nuevos splits
 
 "filetype indent plugin on
 
-" Enable folding
-set foldmethod=indent
-set foldlevel=99
+" " Enable folding
+" set foldmethod=indent
+" set foldlevel=99
 
-" Modify statusline
-set statusline +=%f\  " relative path
-set statusline +=%m\  " modified flag
-set statusline +=\ %{ALEGetStatusLine()}\ \ 
-set statusline +=%=%c\  " line length, right aligned
+" Makes buffers behave more like tabs, not having to save when switching
+" buffers and keeping undo history when switching buffers.
+set hidden
+
+" Prevent vim from looking in included files when using ctrl+n.
+" Dont know why it started doing that. Maybe fzf related?
+set complete-=i
 
 
-
-" Add recursive folders to path (**)
-set path=.,/usr/include,,**
+" " Add recursive folders to path (**)
+" set path=.,/usr/include,,**
 
 " Enable mouse
 set mouse=a
@@ -94,7 +95,7 @@ set noswapfile
 " " For ALE linter plugin
 " highlight clear ALEErrorSign
 " highlight clear ALEWarningSign
-highlight clear SignColumn
+" highlight clear SignColumn
 
 " Show filename, always
 set ls=2
@@ -159,12 +160,18 @@ if has("autocmd")
   au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
 endif
 
-" FZF
+" ======= FZF =============
 nnoremap <C-b> :Buffers<CR>
 nnoremap <C-g>g :Ag<CR>
 nnoremap <C-g>c :Commands<CR>
+
+" Not sure which one to use
+nnoremap <C-g>h :History<CR>
+nnoremap <C-n> :History<CR>
+
 nnoremap <C-f>l :BLines<CR>
 nnoremap <C-p> :Files<CR>
+" ==========================
 
 " Emoji stuff I havent actually tested lol
 if !has('nvim')     " does not work on neovim
@@ -176,11 +183,35 @@ end
 
 " This fixes problem with background being bright on lines with text and black
 " on lines without text, when using vim inside tmux, and with true color
-set t_ut=
+" Details:
 " https://github.com/mhartington/oceanic-next/issues/40
 " https://github.com/vim/vim/issues/804
 " http://stackoverflow.com/questions/6427650/vim-in-tmux-background-color-changes-when-paging/15095377#15095377
+set t_ut=
 
 " :w!! 
 " write the file when you accidentally opened it without the right (root) privileges
 cmap w!! w !sudo tee % > /dev/null
+
+" -- Visuals --
+colorscheme gruvbox
+highlight clear StatusLine
+hi vertsplit ctermfg=238 ctermbg=235
+hi LineNr ctermfg=237
+hi StatusLine ctermfg=235 ctermbg=245
+hi StatusLineNC ctermfg=235 ctermbg=37
+hi Search ctermbg=58 ctermfg=15
+hi Default ctermfg=1
+hi clear SignColumn
+hi SignColumn ctermbg=235
+hi GitGutterAdd ctermbg=235 ctermfg=245
+hi GitGutterChange ctermbg=235 ctermfg=245
+hi GitGutterDelete ctermbg=235 ctermfg=245
+hi GitGutterChangeDelete ctermbg=235 ctermfg=245
+hi EndOfBuffer ctermfg=237 ctermbg=235
+
+set statusline=%=%f%m\ %P\ %c\ %{ALEGetStatusLine()}
+set fillchars=vert:\ ,stl:\ ,stlnc:\ 
+set laststatus=2
+set noshowmode
+hi Normal guibg=Black
