@@ -194,6 +194,7 @@ set t_ut=
 cmap w!! w !sudo tee % > /dev/null
 
 " -- Visuals --
+set background=dark
 colorscheme gruvbox
 highlight clear StatusLine
 hi vertsplit ctermfg=238 ctermbg=235
