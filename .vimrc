@@ -32,7 +32,7 @@ let g:ale_sign_column_always = 1
 "============================================================================
 
 
-runtime! debian.vim
+runtime! debian.vim  " This breaks plugins in Ubuntu, not sure if its needed, maybe I should remove it!!
 set splitbelow "donde aparecen los nuevos splits
 set splitright "donde aparecen los nuevos splits
 
