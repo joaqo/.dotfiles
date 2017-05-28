@@ -31,8 +31,10 @@ let g:ale_lint_on_text_changed = 1
 let g:ale_sign_column_always = 1
 "============================================================================
 
+filetype plugin on
+syntax on
 
-runtime! debian.vim
+" runtime! debian.vim
 set splitbelow "donde aparecen los nuevos splits
 set splitright "donde aparecen los nuevos splits
 
@@ -187,13 +189,14 @@ end
 " https://github.com/mhartington/oceanic-next/issues/40
 " https://github.com/vim/vim/issues/804
 " http://stackoverflow.com/questions/6427650/vim-in-tmux-background-color-changes-when-paging/15095377#15095377
-set t_ut=
+" set t_ut=
 
 " :w!! 
 " write the file when you accidentally opened it without the right (root) privileges
 cmap w!! w !sudo tee % > /dev/null
 
 " -- Visuals --
+set background=dark
 colorscheme gruvbox
 highlight clear StatusLine
 hi vertsplit ctermfg=238 ctermbg=235
