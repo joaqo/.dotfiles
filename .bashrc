@@ -7,6 +7,11 @@ export WORKON_HOME=~/.virtualenvs
 # Save history after each command (to share history between windows)
 export PROMPT_COMMAND='history -a'
 
+# Expand size of bash history and dont save duplicate commands
+export HISTSIZE=20000
+export HISTFILESIZE=20000
+export HISTCONTROL=erasedups
+
 # Git official autocomplete
 source ~/Code/git-completion.bash
 
@@ -28,12 +33,34 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # For cs231n course jupyter noteobook
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
+#export BROWSER=open  # Appeared after osx update, should be temoporary
+
+# For Tryolabs/Levelup, ensures we are running the correct version of phantomjs
+export LEVELUP_DEVEL=True
+
+# For levelup servers
+export STAG=http://StagingLoadBalancer-1366108757.us-west-2.elb.amazonaws.com
+export PROD=http://LambdaLoadBalancer-587995896.us-west-2.elb.amazonaws.com
+export LOC='http://127.0.0.1'
 
 # Aliases
+alias v='vim'
 alias mux="tmuxinator"
 alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
 alias chrome-canary="/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary"
+alias gsb="git status -sb"
+alias g="git"
+alias l="ls -lhFG"
 
 workon() {
 source ~/.virtualenvs/$1/bin/activate
 }
+
+httpj() {
+http --pretty=format $1 | vim - -c 'set syntax=json' -c 'set foldmethod=syntax'
+}
+
+httpr() {
+echo $1
+}
+

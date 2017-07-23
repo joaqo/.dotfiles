@@ -16,8 +16,8 @@ nmap <silent> <C-j> <Plug>(ale_next_wrap)
 
 Plug 'https://github.com/JamshedVesuna/vim-markdown-preview.git'
 let vim_markdown_preview_github=1
-let vim_markdown_preview_toggle=1
-let vim_markdown_preview_hotkey='<C-m>'
+let vim_markdown_preview_toggle=3  " Automatically show preview on save
+" let vim_markdown_preview_hotkey='<Leader>m'  
 let vim_markdown_preview_temp_file=1  " <- This may cause crashing on slow browsers
 
 call plug#end()
@@ -29,18 +29,22 @@ autocmd FileType python nnoremap <LocalLeader>= :0,$!yapf<CR>
 let g:ale_lint_on_save = 0
 let g:ale_lint_on_text_changed = 1
 let g:ale_sign_column_always = 1
+
+" Json
+Plug 'https://github.com/elzr/vim-json'
+
 "============================================================================
 
 
 runtime! debian.vim  " This breaks plugins in Ubuntu, not sure if its needed, maybe I should remove it!!
 set splitbelow "donde aparecen los nuevos splits
 set splitright "donde aparecen los nuevos splits
+set diffopt+=vertical
 
 "filetype indent plugin on
 
-" " Enable folding
-" set foldmethod=indent
-" set foldlevel=99
+" Enable folding
+set foldlevel=99
 
 " Makes buffers behave more like tabs, not having to save when switching
 " buffers and keeping undo history when switching buffers.
@@ -49,6 +53,21 @@ set hidden
 " Prevent vim from looking in included files when using ctrl+n.
 " Dont know why it started doing that. Maybe fzf related?
 set complete-=i
+
+" ctags
+set tags=tags
+command Ctags !ctags -R --fields=+l --languages=python --python-kinds=-iv -f ./tags $(python -c "import os, sys; print(' '.join('{}'.format(d) for d in sys.path if os.path.isdir(d)))") ./
+" " Case sensitive ctags when having case insensitive search activated, not sure if necesary
+" fun! MatchCaseTag()
+"     let ic = &ic
+"     set noic
+"     try
+"         exe 'tjump ' . expand('<cword>')
+"     finally
+"        let &ic = ic
+"     endtry
+" endfun
+" nnoremap <silent> <c-]> :call MatchCaseTag()<CR>
 
 
 " " Add recursive folders to path (**)
@@ -62,6 +81,12 @@ endif
 
 syntax on
 
+au FileType c setlocal
+    \ tabstop=4
+    \ softtabstop=4
+    \ shiftwidth=4
+    \ noexpandtab
+
 au FileType python setlocal
     \ tabstop=8
     \ softtabstop=4
@@ -69,6 +94,12 @@ au FileType python setlocal
     \ expandtab
     \ autoindent
     \ fileformat=unix
+    \ foldmethod=indent
+
+" This can make openinig big jsons quite slow
+au FileType json setlocal
+    \ foldmethod=syntax
+
 
 au BufNewFile,BufRead *.py
     \ match ErrorMsg '\%>100v.\+'
@@ -162,7 +193,7 @@ endif
 
 " ======= FZF =============
 nnoremap <C-b> :Buffers<CR>
-nnoremap <C-g>g :Ag<CR>
+nnoremap <C-g>g :GGrep<CR>
 nnoremap <C-g>c :Commands<CR>
 
 " Not sure which one to use
@@ -170,7 +201,26 @@ nnoremap <C-g>h :History<CR>
 nnoremap <C-n> :History<CR>
 
 nnoremap <C-f>l :BLines<CR>
+nnoremap <C-f>g :GFiles<CR>
 nnoremap <C-p> :Files<CR>
+
+command! -bang -nargs=* Ag
+  \ call fzf#vim#ag(<q-args>,
+  \                 <bang>0 ? fzf#vim#with_preview('up:60%')
+  \                         : fzf#vim#with_preview('right:50%'),
+  \                 <bang>0)
+
+command! -bang -nargs=? -complete=dir Files
+  \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
+
+command! -bang -nargs=* GGrep
+  \ call fzf#vim#grep(
+  \   'git grep --line-number '.shellescape(<q-args>), 1,
+  \   <bang>0 ? fzf#vim#with_preview({'options': '--no-hscroll'},'up:60%')
+  \           : fzf#vim#with_preview({'options': '--no-hscroll'},'right:50%'),
+  \   <bang>0)
+
+
 " ==========================
 
 " Emoji stuff I havent actually tested lol
@@ -192,6 +242,39 @@ set t_ut=
 " :w!! 
 " write the file when you accidentally opened it without the right (root) privileges
 cmap w!! w !sudo tee % > /dev/null
+
+" -- Text editin mode --
+noremap <silent> <Leader>t :call ToggleWrap()<CR>
+function ToggleWrap()
+  if &wrap
+    echo "Text mode OFF"
+    setlocal spell! spelllang=en_us
+    setlocal nowrap
+    set virtualedit=all
+    silent! nunmap <buffer> k
+    silent! nunmap <buffer> j
+    silent! nunmap <buffer> H
+    silent! nunmap <buffer> L
+    " silent! iunmap <buffer> k
+    " silent! iunmap <buffer> j
+    " silent! iunmap <buffer> H
+    " silent! iunmap <buffer> L
+  else
+    echo "Text mode ON"
+    setlocal spell! spelllang=en_us
+    setlocal wrap linebreak nolist
+    set virtualedit=
+    setlocal display+=lastline
+    noremap  <buffer> <silent> k   gk
+    noremap  <buffer> <silent> j gj
+    noremap  <buffer> <silent> H g<Home>
+    noremap  <buffer> <silent> L  g<End>
+    " inoremap <buffer> <silent> k <C-o>gk
+    " inoremap <buffer> <silent> j <C-o>gj
+    " inoremap <buffer> <silent> H <C-o>g<Home>
+    " inoremap <buffer> <silent> L  <C-o>g<End>
+  endif
+endfunction
 
 " -- Visuals --
 set background=dark
@@ -216,3 +299,6 @@ set fillchars=vert:\ ,stl:\ ,stlnc:\
 set laststatus=2
 set noshowmode
 hi Normal guibg=Black
+
+
+
