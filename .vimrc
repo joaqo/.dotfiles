@@ -9,6 +9,7 @@ Plug 'junegunn/fzf.vim'
 
 Plug 'https://github.com/w0rp/ale.git'
 let g:ale_statusline_format = ['☀️️ %d', '🕯️ %d', '']
+let g:ale_set_highlights = 0  " Dont underline errors/warnings
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
 " let g:ale_sign_error = '❌'
@@ -20,23 +21,32 @@ let vim_markdown_preview_toggle=3  " Automatically show preview on save
 " let vim_markdown_preview_hotkey='<Leader>m'  
 let vim_markdown_preview_temp_file=1  " <- This may cause crashing on slow browsers
 
+" Json
+Plug 'https://github.com/elzr/vim-json'
+
+" Gitguter
+Plug 'airblade/vim-gitgutter'
+
+" Drawer
+Plug 'scrooloose/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
+map <C-n> :NERDTreeToggle<CR>
 call plug#end()
 
-" Run google/yapf (not really a plugin but whatever)
-autocmd FileType python nnoremap <LocalLeader>= :0,$!yapf<CR>
+"============================================================================
+
+" Vim update time, I added it for the gitgutter plug-in only, it defaults to 4000ms
+set updatetime=250
 
 " Ale options
 let g:ale_lint_on_save = 0
 let g:ale_lint_on_text_changed = 1
 let g:ale_sign_column_always = 1
 
-" Json
-Plug 'https://github.com/elzr/vim-json'
+" Run google/yapf (not really a plugin but whatever)
+autocmd FileType python nnoremap <LocalLeader>= :0,$!yapf<CR>
 
-"============================================================================
-
-
-runtime! debian.vim  " This breaks plugins in Ubuntu, not sure if its needed, maybe I should remove it!!
+" runtime! debian.vim  " This breaks plugins in Ubuntu, not sure if its needed, maybe I should remove it!!
 set splitbelow "donde aparecen los nuevos splits
 set splitright "donde aparecen los nuevos splits
 set diffopt+=vertical
@@ -124,15 +134,18 @@ set ruler
 set noswapfile
 
 " " For ALE linter plugin
-" highlight clear ALEErrorSign
-" highlight clear ALEWarningSign
-" highlight clear SignColumn
+highlight clear ALEErrorSign
+highlight clear ALEWarningSign
+highlight clear SignColumn
 
 " Show filename, always
 set ls=2
 
 set lazyredraw  " Don't redraw while executing macros (good performance config)
 set ttyfast     " should make scrolling faster
+
+" Open ~/.vimrc. (~/.vimrc should be a symlink to .dotfiles/.vimrc)
+command V e ~/.vimrc
 
 " Remap common typos
 command WQ wq
@@ -194,12 +207,9 @@ endif
 " ======= FZF =============
 nnoremap <C-b> :Buffers<CR>
 nnoremap <C-g>g :GGrep<CR>
+nnoremap <C-g>a :Ag<CR>
 nnoremap <C-g>c :Commands<CR>
-
-" Not sure which one to use
 nnoremap <C-g>h :History<CR>
-nnoremap <C-n> :History<CR>
-
 nnoremap <C-f>l :BLines<CR>
 nnoremap <C-f>g :GFiles<CR>
 nnoremap <C-p> :Files<CR>
@@ -215,7 +225,7 @@ command! -bang -nargs=? -complete=dir Files
 
 command! -bang -nargs=* GGrep
   \ call fzf#vim#grep(
-  \   'git grep --line-number '.shellescape(<q-args>), 1,
+  \   'git grep --line-number '.shellescape(<q-args>), 0,
   \   <bang>0 ? fzf#vim#with_preview({'options': '--no-hscroll'},'up:60%')
   \           : fzf#vim#with_preview({'options': '--no-hscroll'},'right:50%'),
   \   <bang>0)
@@ -294,11 +304,16 @@ hi GitGutterDelete ctermbg=235 ctermfg=245
 hi GitGutterChangeDelete ctermbg=235 ctermfg=245
 hi EndOfBuffer ctermfg=237 ctermbg=235
 
-set statusline=%=%f%m\ %P\ %c\ %{ALEGetStatusLine()}
+set statusline=%=%f%m\ %P\ %c\ %{ALEGetStatusLine()}\ %{fugitive#statusline()}
+
 set fillchars=vert:\ ,stl:\ ,stlnc:\ 
 set laststatus=2
 set noshowmode
 hi Normal guibg=Black
 
-
-
+" " -- Drawer --
+" let g:netrw_banner = 0
+" let g:netrw_liststyle = 3
+" let g:netrw_browse_split = 4
+" let g:netrw_altv = 1
+" let g:netrw_winsize = 20
