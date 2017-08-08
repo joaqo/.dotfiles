@@ -19,7 +19,6 @@ source ~/Code/git-completion.bash
 source ~/Code/git-prompt.sh
 export GIT_PS1_SHOWDIRTYSTATE=1
 export PS1='\[\033[01;34m\]\w\[\033[00m\]\[\033[01;36m\]$(__git_ps1 " %s")\[\033[00m\]\[\033[01;31m\] > \[\033[00m\]'
-#export PS1='\[\033[01;34m\]\w\[\033[00m\]\[\033[01;36m\]$(__git_ps1 " (%s)")\[\033[00m\]\[\033[01;31m\] > \[\033[00m\]'
 #export PS1='\w$(__git_ps1 " (%s)")> '  #  with no colors
 
 # Vim default editor
@@ -27,7 +26,8 @@ export EDITOR='vim'
 
 # Si no le agregaba la -t no me encontraba los .env que estuvieran
 # a mas de dos directorios de distancia recursiva, what??!!
-export FZF_DEFAULT_COMMAND='ag -U --ignore "*.pyc" --hidden -g ""'
+export FZF_DEFAULT_COMMAND='ag -U --ignore "*.pyc" --hidden --ignore-dir ".git" -g ""'
+#export FZF_DEFAULT_COMMAND='ag -U --ignore "*.pyc" --hidden -g ""'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 # For cs231n course jupyter noteobook
@@ -38,7 +38,7 @@ export LANG=en_US.UTF-8
 # For Tryolabs/Levelup, ensures we are running the correct version of phantomjs
 export LEVELUP_DEVEL=True
 
-# For levelup servers
+# Levelup-Providers servers
 export STAG=http://StagingLoadBalancer-1366108757.us-west-2.elb.amazonaws.com
 export PROD=http://LambdaLoadBalancer-587995896.us-west-2.elb.amazonaws.com
 export LOC='http://127.0.0.1'
@@ -56,11 +56,13 @@ workon() {
 source ~/.virtualenvs/$1/bin/activate
 }
 
+mkvenv() {
+cd ~/.virtualenvs
+virtualenv "$@"
+cd -
+workon "$1"
+}
+
 httpj() {
 http --pretty=format $1 | vim - -c 'set syntax=json' -c 'set foldmethod=syntax'
 }
-
-httpr() {
-echo $1
-}
-
