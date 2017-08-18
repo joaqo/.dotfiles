@@ -19,6 +19,8 @@ call plug#end()
 " NERDTree
 map <C-n> :NERDTreeToggle<CR>
 nnoremap <C-g>n :NERDTreeFind<CR><C-w><C-w>
+let NERDTreeQuitOnOpen=1
+let NERDTreeMinimalUI=1
 
 " Ale
 let g:ale_statusline_format = ['☀️️ %d', '🕯️ %d', '']
@@ -106,9 +108,8 @@ au FileType python setlocal
 au FileType json setlocal
     \ foldmethod=syntax
 
-
-au BufNewFile,BufRead *.py
-    \ match ErrorMsg '\%>100v.\+'
+" au BufNewFile,BufRead *.py
+"     \ match ErrorMsg '\%>100v.\+'
 
 au BufNewFile,BufRead *.js,*.html,*.css
     \ set tabstop=2 |
