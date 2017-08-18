@@ -6,47 +6,43 @@ Plug 'morhetz/gruvbox'
 Plug 'https://github.com/tpope/vim-fugitive.git'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-
 Plug 'https://github.com/w0rp/ale.git'
+Plug 'https://github.com/elzr/vim-json'
+Plug 'airblade/vim-gitgutter'
+Plug 'scrooloose/nerdtree'
+Plug 'Xuyuanp/nerdtree-git-plugin'
+Plug 'yuttie/comfortable-motion.vim'
+call plug#end()
+"============================================================================
+
+" ======================= Plug In Configs ===================================
+" NERDTree
+map <C-n> :NERDTreeToggle<CR>
+nnoremap <C-g>n :NERDTreeFind<CR><C-w><C-w>
+
+" Ale
 let g:ale_statusline_format = ['☀️️ %d', '🕯️ %d', '']
 let g:ale_set_highlights = 0  " Dont underline errors/warnings
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
 " let g:ale_sign_error = '❌'
 " let g:ale_sign_warning = '⭕'
-
-Plug 'https://github.com/JamshedVesuna/vim-markdown-preview.git'
-let vim_markdown_preview_github=1
-let vim_markdown_preview_toggle=3  " Automatically show preview on save
-" let vim_markdown_preview_hotkey='<Leader>m'  
-let vim_markdown_preview_temp_file=1  " <- This may cause crashing on slow browsers
-
-" Json
-Plug 'https://github.com/elzr/vim-json'
-
-" Gitguter
-Plug 'airblade/vim-gitgutter'
-
-" Drawer
-Plug 'scrooloose/nerdtree'
-Plug 'Xuyuanp/nerdtree-git-plugin'
-map <C-n> :NERDTreeToggle<CR>
-call plug#end()
-
-"============================================================================
-
-" Vim update time, I added it for the gitgutter plug-in only, it defaults to 4000ms
-set updatetime=250
-
-" Ale options
 let g:ale_lint_on_save = 0
 let g:ale_lint_on_text_changed = 1
 let g:ale_sign_column_always = 1
 
+" Vim update time, I added it for the gitgutter plug-in only, it defaults to 4000ms
+set updatetime=250
+
+" Comfortable vim - scrolling
+let g:comfortable_motion_no_default_key_mappings = 1
+nnoremap <silent> <C-d> :call comfortable_motion#flick(80)<CR>
+nnoremap <silent> <C-u> :call comfortable_motion#flick(-80)<CR>
+"============================================================================
+
 " Run google/yapf (not really a plugin but whatever)
 autocmd FileType python nnoremap <LocalLeader>= :0,$!yapf<CR>
 
-" runtime! debian.vim  " This breaks plugins in Ubuntu, not sure if its needed, maybe I should remove it!!
 set splitbelow "donde aparecen los nuevos splits
 set splitright "donde aparecen los nuevos splits
 set diffopt+=vertical
@@ -119,8 +115,6 @@ au BufNewFile,BufRead *.js,*.html,*.css
     \ set softtabstop=2 |
     \ set shiftwidth=2 |
 
-"set textwidth=100
-"set wildmenu
 set showmatch
 set number
 set relativenumber
@@ -175,16 +169,6 @@ nnoremap Q @q
 " Always show at least X lines above/below cursor
 set scrolloff=2
 
-" Same when moving up and down
-nnoremap <C-u> <C-u>zz
-nnoremap <C-d> <C-d>zz
-nnoremap <C-f> <C-f>zz
-nnoremap <C-b> <C-b>zz
-vnoremap <C-u> <C-u>zz
-vnoremap <C-d> <C-d>zz
-vnoremap <C-f> <C-f>zz
-vnoremap <C-b> <C-b>zz
-
 " Highlight current line, leader+l to highlight, :match to unhighlight
 nnoremap <silent> <Leader>l ml:execute 'match Search /\%'.line('.').'l/'<CR>
 
@@ -216,8 +200,8 @@ nnoremap <C-p> :Files<CR>
 
 command! -bang -nargs=* Ag
   \ call fzf#vim#ag(<q-args>,
-  \                 <bang>0 ? fzf#vim#with_preview('up:60%')
-  \                         : fzf#vim#with_preview('right:50%'),
+  \                 <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
+  \                         : fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'right:50%'),
   \                 <bang>0)
 
 command! -bang -nargs=? -complete=dir Files
@@ -226,11 +210,9 @@ command! -bang -nargs=? -complete=dir Files
 command! -bang -nargs=* GGrep
   \ call fzf#vim#grep(
   \   'git grep --line-number '.shellescape(<q-args>), 0,
-  \   <bang>0 ? fzf#vim#with_preview({'options': '--no-hscroll'},'up:60%')
-  \           : fzf#vim#with_preview({'options': '--no-hscroll'},'right:50%'),
+  \   <bang>0 ? fzf#vim#with_preview({'options': '--no-hscroll --delimiter : --nth 3..'}, 'up:60%')
+  \           : fzf#vim#with_preview({'options': '--no-hscroll --delimiter : --nth 3..'}, 'right:50%'),
   \   <bang>0)
-
-
 " ==========================
 
 " Emoji stuff I havent actually tested lol
