@@ -27,19 +27,23 @@ let g:ale_statusline_format = ['☀️️ %d', '🕯️ %d', '']
 let g:ale_set_highlights = 0  " Dont underline errors/warnings
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
-" let g:ale_sign_error = '❌'
-" let g:ale_sign_warning = '⭕'
 let g:ale_lint_on_save = 0
 let g:ale_lint_on_text_changed = 1
 let g:ale_sign_column_always = 1
 
-" Vim update time, I added it for the gitgutter plug-in only, it defaults to 4000ms
-set updatetime=250
+" Git Gutter
+set updatetime=250  " Vim update time, defaults to 4000ms
+let g:gitgutter_override_sign_column_highlight = 1
 
 " Comfortable vim - scrolling
 let g:comfortable_motion_no_default_key_mappings = 1
 nnoremap <silent> <C-d> :call comfortable_motion#flick(80)<CR>
 nnoremap <silent> <C-u> :call comfortable_motion#flick(-80)<CR>
+
+let g:ale_sign_error = '•'
+let g:ale_sign_warning = '•'
+hi link ALEErrorSign    GruvboxRed
+hi link ALEWarningSign  GruvboxYellow
 "============================================================================
 
 " Run google/yapf (not really a plugin but whatever)
@@ -281,10 +285,6 @@ hi Search ctermbg=58 ctermfg=15
 hi Default ctermfg=1
 hi clear SignColumn
 hi SignColumn ctermbg=235
-hi GitGutterAdd ctermbg=235 ctermfg=245
-hi GitGutterChange ctermbg=235 ctermfg=245
-hi GitGutterDelete ctermbg=235 ctermfg=245
-hi GitGutterChangeDelete ctermbg=235 ctermfg=245
 hi EndOfBuffer ctermfg=237 ctermbg=235
 
 set statusline=%=%f%m\ %P\ %c\ %{ALEGetStatusLine()}\ %{fugitive#statusline()}
