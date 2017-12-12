@@ -26,8 +26,8 @@ export EDITOR='vim'
 
 # Si no le agregaba la -t no me encontraba los .env que estuvieran
 # a mas de dos directorios de distancia recursiva, what??!!
-export FZF_DEFAULT_COMMAND='ag -U --ignore "*.pyc" --hidden --ignore-dir ".git" -g ""'
-#export FZF_DEFAULT_COMMAND='ag -U --ignore "*.pyc" --hidden -g ""'
+# export FZF_DEFAULT_COMMAND='ag -U --ignore "*.pyc" --hidden --ignore-dir ".git" -g ""'
+export FZF_DEFAULT_COMMAND='ag -U --ignore "*.pyc" --hidden -g ""'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 # For cs231n course jupyter noteobook
@@ -44,13 +44,20 @@ export PROD=http://LambdaLoadBalancer-587995896.us-west-2.elb.amazonaws.com
 export LOC='http://127.0.0.1'
 
 # Aliases
-alias v='vim'
+alias v='mvim -v'
 alias mux="tmuxinator"
 alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
 alias chrome-canary="/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary"
 alias gsb="git status -sb"
 alias g="git"
 alias l="ls -lhFG"
+alias ls="ls -G"
+
+# Add files in ~/bin to path
+PATH=$PATH:~/bin/
+
+# Add gcloud to path
+source ~/bin/google-cloud-sdk/path.bash.inc
 
 workon() {
 source ~/.virtualenvs/$1/bin/activate
@@ -66,3 +73,9 @@ workon "$1"
 httpj() {
 http --pretty=format $1 | vim - -c 'set syntax=json' -c 'set foldmethod=syntax'
 }
+
+# Highlight folders on ls
+LS_COLORS=$LS_COLORS:'di=0;35:' ; export LS_COLORS
+
+# # Pyenv
+# eval "$(pyenv init -)"
