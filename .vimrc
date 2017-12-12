@@ -18,8 +18,8 @@ call plug#end()
 " ======================= Plug In Configs ===================================
 " NERDTree
 map <C-n> :NERDTreeToggle<CR>
-nnoremap <C-g>n :NERDTreeFind<CR><C-w><C-w>
-let NERDTreeQuitOnOpen=1
+nnoremap <C-g>n :NERDTreeFind<CR>
+" let NERDTreeQuitOnOpen=1
 let NERDTreeMinimalUI=1
 
 " Ale
@@ -108,9 +108,9 @@ au FileType python setlocal
     \ fileformat=unix
     \ foldmethod=indent
 
-" This can make openinig big jsons quite slow
-au FileType json setlocal
-    \ foldmethod=syntax
+" " This can make openinig big jsons quite slow
+" au FileType json setlocal
+"     \ foldmethod=syntax
 
 " au BufNewFile,BufRead *.py
 "     \ match ErrorMsg '\%>100v.\+'
@@ -195,12 +195,12 @@ endif
 
 " ======= FZF =============
 nnoremap <C-b> :Buffers<CR>
-nnoremap <C-g>g :GGrep<CR>
+nnoremap <C-f> :GGrep<CR>
 nnoremap <C-g>a :Ag<CR>
 nnoremap <C-g>c :Commands<CR>
 nnoremap <C-g>h :History<CR>
-nnoremap <C-f>l :BLines<CR>
-nnoremap <C-f>g :GFiles<CR>
+nnoremap <C-g>l :BLines<CR>
+nnoremap <C-g>g :GFiles<CR>
 nnoremap <C-p> :Files<CR>
 
 command! -bang -nargs=* Ag
