@@ -44,20 +44,21 @@ export PROD=http://LambdaLoadBalancer-587995896.us-west-2.elb.amazonaws.com
 export LOC='http://127.0.0.1'
 
 # Aliases
-alias v='mvim -v'
+alias v='vim'
 alias mux="tmuxinator"
 alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
 alias chrome-canary="/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary"
 alias gsb="git status -sb"
 alias g="git"
 alias l="ls -lhFG"
-alias ls="ls -G"
+alias ls="ls --color"
+alias python="python3.6"
 
 # Add files in ~/bin to path
 PATH=$PATH:~/bin/
 
 # Add gcloud to path
-source ~/bin/google-cloud-sdk/path.bash.inc
+# source ~/bin/google-cloud-sdk/path.bash.inc
 
 workon() {
 source ~/.virtualenvs/$1/bin/activate
