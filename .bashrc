@@ -18,7 +18,7 @@ source ~/Code/git-completion.bash
 # Git official prompt
 source ~/Code/git-prompt.sh
 export GIT_PS1_SHOWDIRTYSTATE=1
-export PS1='\[\033[01;34m\]\w\[\033[00m\]\[\033[01;36m\]$(__git_ps1 " %s")\[\033[00m\]\[\033[01;31m\] > \[\033[00m\]'
+export PS1='\[\033[01;34m\]\w\[\033[00m\]\[\033[01;36m\]$(__git_ps1 " %s")\[\033[00m\]\[\033[01;35m\] > \[\033[00m\]'
 #export PS1='\w$(__git_ps1 " (%s)")> '  #  with no colors
 
 # Vim default editor
