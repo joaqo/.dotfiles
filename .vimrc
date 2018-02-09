@@ -12,6 +12,7 @@ Plug 'airblade/vim-gitgutter'
 Plug 'scrooloose/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'yuttie/comfortable-motion.vim'
+Plug 'https://github.com/noahfrederick/vim-noctu'
 call plug#end()
 "============================================================================
 
@@ -19,11 +20,9 @@ call plug#end()
 " NERDTree
 map <C-n> :NERDTreeToggle<CR>
 nnoremap <C-g>n :NERDTreeFind<CR>
-" let NERDTreeQuitOnOpen=1
 let NERDTreeMinimalUI=1
 
 " Ale
-let g:ale_statusline_format = ['☀️️ %d', '🕯️ %d', '']
 let g:ale_set_highlights = 0  " Dont underline errors/warnings
 nmap <silent> <C-k> <Plug>(ale_previous_wrap)
 nmap <silent> <C-j> <Plug>(ale_next_wrap)
@@ -46,21 +45,33 @@ hi link ALEErrorSign    GruvboxRed
 hi link ALEWarningSign  GruvboxYellow
 "============================================================================
 
-" Run google/yapf (not really a plugin but whatever)
-autocmd FileType python nnoremap <LocalLeader>= :0,$!yapf<CR>
-
 set splitbelow "donde aparecen los nuevos splits
 set splitright "donde aparecen los nuevos splits
 set diffopt+=vertical
 
-"filetype indent plugin on
+" TEMPORAL for search/replace
+set gdefault
 
 " Enable folding
 set foldlevel=99
 
+" Increase command history to 1000 (does not stored repeats!)
+set history=1000
+
 " Makes buffers behave more like tabs, not having to save when switching
 " buffers and keeping undo history when switching buffers.
 set hidden
+
+" 'Stamp' unnamed buffer over visually selected text, not sure if I should keep this
+vnoremap S "_d"0P
+
+" Settingds stolen from https://github.com/mcmillion/dotfiles/blob/master/home/.vimrc
+set smartcase
+set formatoptions-=c                    " Don't auto-wrap comments
+set formatoptions+=j                    " Smart join comment lines
+set nojoinspaces                        " Don't insert extra spaces after .  when joining
+set shortmess+=I                        " Hide splash screen
+set switchbuf=usetab                    " Reuse tabs with open buffers
 
 " Prevent vim from looking in included files when using ctrl+n.
 " Dont know why it started doing that. Maybe fzf related?
@@ -69,21 +80,6 @@ set complete-=i
 " ctags
 set tags=tags
 command Ctags !ctags -R --fields=+l --languages=python --python-kinds=-iv -f ./tags $(python -c "import os, sys; print(' '.join('{}'.format(d) for d in sys.path if os.path.isdir(d)))") ./
-" " Case sensitive ctags when having case insensitive search activated, not sure if necesary
-" fun! MatchCaseTag()
-"     let ic = &ic
-"     set noic
-"     try
-"         exe 'tjump ' . expand('<cword>')
-"     finally
-"        let &ic = ic
-"     endtry
-" endfun
-" nnoremap <silent> <c-]> :call MatchCaseTag()<CR>
-
-
-" " Add recursive folders to path (**)
-" set path=.,/usr/include,,**
 
 " Enable mouse
 set mouse=a
@@ -91,6 +87,7 @@ if !has('nvim')
     set ttymouse=xterm2
 endif
 
+" Syntax
 syntax on
 
 au FileType c setlocal
@@ -111,9 +108,6 @@ au FileType python setlocal
 " " This can make openinig big jsons quite slow
 " au FileType json setlocal
 "     \ foldmethod=syntax
-
-" au BufNewFile,BufRead *.py
-"     \ match ErrorMsg '\%>100v.\+'
 
 au BufNewFile,BufRead *.js,*.html,*.css
     \ set tabstop=2 |
@@ -198,7 +192,7 @@ nnoremap <C-b> :Buffers<CR>
 nnoremap <C-f> :GGrep<CR>
 nnoremap <C-g>a :Ag<CR>
 nnoremap <C-g>c :Commands<CR>
-nnoremap <C-g>h :History<CR>
+nnoremap <C-g>h :History:<CR>
 nnoremap <C-g>l :BLines<CR>
 nnoremap <C-g>g :GFiles<CR>
 nnoremap <C-p> :Files<CR>
@@ -220,25 +214,15 @@ command! -bang -nargs=* GGrep
   \   <bang>0)
 " ==========================
 
-" Emoji stuff I havent actually tested lol
-if !has('nvim')     " does not work on neovim
-  set emoji         " treat emojis 😄  as full width characters
-  set termguicolors " enable true colors - uses gui colors - disable `set -g default-terminal "screen-256color"` from .tmux.conf!
-  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-end
-
 " This fixes problem with background being bright on lines with text and black
 " on lines without text, when using vim inside tmux, and with true color
-" Details:
-" https://github.com/mhartington/oceanic-next/issues/40
-" https://github.com/vim/vim/issues/804
-" http://stackoverflow.com/questions/6427650/vim-in-tmux-background-color-changes-when-paging/15095377#15095377
+" Details: https://github.com/mhartington/oceanic-next/issues/40
+"          https://github.com/vim/vim/issues/804
+"           http://stackoverflow.com/questions/6427650/vim-in-tmux-background-color-changes-when-paging/15095377#15095377
 set t_ut=
 
-" :w!! 
-" write the file when you accidentally opened it without the right (root) privileges
-cmap w!! w !sudo tee % > /dev/null
+" Use :w!! to force write files with sudo
+cnoremap w!! %!sudo tee > /dev/null %
 
 " -- Text editin mode --
 noremap <silent> <Leader>t :call ToggleWrap()<CR>
@@ -252,10 +236,6 @@ function ToggleWrap()
     silent! nunmap <buffer> j
     silent! nunmap <buffer> H
     silent! nunmap <buffer> L
-    " silent! iunmap <buffer> k
-    " silent! iunmap <buffer> j
-    " silent! iunmap <buffer> H
-    " silent! iunmap <buffer> L
   else
     echo "Text mode ON"
     setlocal spell! spelllang=en_us
@@ -266,37 +246,19 @@ function ToggleWrap()
     noremap  <buffer> <silent> j gj
     noremap  <buffer> <silent> H g<Home>
     noremap  <buffer> <silent> L  g<End>
-    " inoremap <buffer> <silent> k <C-o>gk
-    " inoremap <buffer> <silent> j <C-o>gj
-    " inoremap <buffer> <silent> H <C-o>g<Home>
-    " inoremap <buffer> <silent> L  <C-o>g<End>
   endif
 endfunction
 
-" -- Visuals --
-set background=dark
+" " -- Visuals --
+let g:gruvbox_termcolors = 16
 colorscheme gruvbox
-highlight clear StatusLine
-hi vertsplit ctermfg=238 ctermbg=235
-hi LineNr ctermfg=237
-hi StatusLine ctermfg=235 ctermbg=245
-hi StatusLineNC ctermfg=235 ctermbg=37
-hi Search ctermbg=58 ctermfg=15
-hi Default ctermfg=1
-hi clear SignColumn
-hi SignColumn ctermbg=235
-hi EndOfBuffer ctermfg=237 ctermbg=235
-
-set statusline=%=%f%m\ %P\ %c\ %{ALEGetStatusLine()}\ %{fugitive#statusline()}
-
-set fillchars=vert:\ ,stl:\ ,stlnc:\ 
+set background=dark
+hi Normal ctermbg=0
+hi StatusLine ctermbg=red ctermfg=black
 set laststatus=2
 set noshowmode
-hi Normal guibg=Black
+set statusline=%=%f%m\ %P\|%c\ %{ALEGetStatusLine()}
 
-" " -- Drawer --
-" let g:netrw_banner = 0
-" let g:netrw_liststyle = 3
-" let g:netrw_browse_split = 4
-" let g:netrw_altv = 1
-" let g:netrw_winsize = 20
+" Abbreviations
+iabbrev @@d from IPython import embed; embed(display_banner=False)
+iabbrev @@t tf.InteractiveSession; from IPython import embed; embed(display_banner=False)
