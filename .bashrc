@@ -80,6 +80,10 @@ PATH=$PATH:/usr/local/sbin
 
 # Add pyenv to path
 PATH=~/.pyenv/shims:$PATH
+PATH=~/.pyenv/bin:$PATH
+
+# pipenv looks for this to integrate with pyenv
+export PYENV_ROOT=~/.pyenv/
 
 workon() {
 source ~/.virtualenvs/$1/bin/activate
