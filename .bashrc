@@ -85,6 +85,11 @@ PATH=~/.pyenv/bin:$PATH
 # pipenv looks for this to integrate with pyenv
 export PYENV_ROOT=~/.pyenv/
 
+# activate current folder's virtualenv en pipenv
+venv() {
+source $(pipenv --venv)/bin/activate
+}
+
 workon() {
 source ~/.virtualenvs/$1/bin/activate
 }
