@@ -29,7 +29,7 @@ then
     source ~/Code/git-prompt.sh
     export PS1='\033[01;34m\]\w\[\033[00m\]\[\033[01;36m\]$(__git_ps1 " %s")\[\033[00m\]\[\033[01;31m\] > \[\033[00m\]'
 else
-    export PS1='\[\033[01;36m\]\h \[\033[00m\]\[\033[01;34m\]\w\[\033[00m\]\[\033[01;36m\]$(__git_ps1 " %s")\[\033[00m\]\[\033[01;31m\] > \[\033[00m\]'
+    export PS1='\[\033[01;31m\]\h \[\033[00m\]\[\033[01;34m\]\w\[\033[00m\]\[\033[01;36m\]$(__git_ps1 " %s")\[\033[00m\]\[\033[01;31m\] > \[\033[00m\]'
 fi
 
 # Vim default editor
@@ -77,13 +77,15 @@ PATH=~/.pyenv/bin:$PATH
 # pipenv looks for this to integrate with pyenv
 export PYENV_ROOT=~/.pyenv/
 
-# activate current folder's virtualenv en pipenv
-venv() {
-source $(pipenv --venv)/bin/activate
-}
-
+# Activate current folder's pipenv virtualenv
+# or accept an explicit virtualenv name
 workon() {
-source ~/.virtualenvs/$1/bin/activate
+if [ $# -eq 0 ]
+then
+    source $(pipenv --venv)/bin/activate
+else
+    source ~/.virtualenvs/$1/bin/activate
+fi
 }
 
 mkvenv() {
