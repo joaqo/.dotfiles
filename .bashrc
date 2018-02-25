@@ -43,8 +43,8 @@ export VISUAL='vim'
 # Only in my computer cause it requires ag to be installed.
 if [[ ${hname} == *"macbook-joaquin"* ]]
 then
-export FZF_DEFAULT_COMMAND='ag -U --ignore={"*.pyc",".git"} --hidden -g ""'
-export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+    export FZF_DEFAULT_COMMAND='ag -U --ignore={"*.pyc",".git"} --hidden -g ""'
+    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 fi
 
 # For cs231n course jupyter noteobook
@@ -53,15 +53,22 @@ export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
 # Aliases
-alias v='mvim -v'
 alias mux="tmuxinator"
 alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
 alias chrome-canary="/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary"
 alias gsb="git status -sb"
 alias g="git"
 alias l="ls -lhFG"
-alias ls="ls -G"
 alias callcito="/Applications/Call\ of\ Duty\ 2\ Multiplayer.app/Contents/MacOS/Call\ of\ Duty\ 2\ Multiplayer"
+alias p="pipenv run"
+
+# ls with colors
+if [[ ${hname} == *"macbook-joaquin"* ]]
+then
+    alias ls="ls -G"
+else
+    alias ls='ls --color=auto'
+fi
 
 # Add files in ~/bin to path
 PATH=$PATH:~/bin
@@ -99,5 +106,14 @@ httpj() {
 http --pretty=format $1 | vim - -c 'set syntax=json' -c 'set foldmethod=syntax'
 }
 
+title() {
+    echo -n -e "\033]0;"$*"\007"
+}
+
 # Highlight folders on ls
 LS_COLORS=$LS_COLORS:'di=0;35:' ; export LS_COLORS
+
+# Load custom, per machine, options. Such as adding cuda libraries to path
+if [ -f ~/.bashrc_extra ]; then
+  . ~/.bashrc_extra
+fi

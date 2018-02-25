@@ -10,5 +10,6 @@
 	grog = log --graph --abbrev-commit --decorate --all --format=format:\"%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(dim white) - %an%C(reset) %C(bold green)(%ar)%C(reset)%C(bold yellow)%d%C(reset)%n %C(white)%s%C(reset)\"
 	deploys = log --pretty=format:%s
 	logdiff = log --left-right --graph --cherry-pick --oneline # Argument would be `dev...master` for example
+	d = diff --word-diff=color
 [diff]
 	tool = vimdiff
