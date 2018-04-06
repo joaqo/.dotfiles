@@ -229,6 +229,8 @@ noremap <silent> <Leader>t :call ToggleWrap()<CR>
 function ToggleWrap()
   if &wrap
     echo "Text mode OFF"
+    set nu
+    set rnu
     setlocal spell! spelllang=en_us
     setlocal nowrap
     set virtualedit=all
@@ -238,6 +240,8 @@ function ToggleWrap()
     silent! nunmap <buffer> L
   else
     echo "Text mode ON"
+    set nonu
+    set nornu
     setlocal spell! spelllang=en_us
     setlocal wrap linebreak nolist
     set virtualedit=
@@ -260,5 +264,6 @@ set noshowmode
 set statusline=%=%f%m\ %P\|%c\ %{ALEGetStatusLine()}
 
 " Abbreviations
-iabbrev @@d from IPython import embed; embed(display_banner=False)
+iabbrev @@i from IPython import embed; embed(display_banner=False)
+iabbrev @@d import ipdb; ipdb.set_trace()
 iabbrev @@t tf.InteractiveSession; from IPython import embed; embed(display_banner=False)

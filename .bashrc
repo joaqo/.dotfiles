@@ -61,6 +61,7 @@ alias g="git"
 alias l="ls -lhFG"
 alias callcito="/Applications/Call\ of\ Duty\ 2\ Multiplayer.app/Contents/MacOS/Call\ of\ Duty\ 2\ Multiplayer"
 alias p="pipenv run"
+alias t="tmux a -t 0"
 
 # ls with colors
 if [[ ${hname} == *"macbook-joaquin"* ]]

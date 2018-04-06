@@ -11,5 +11,8 @@
 	deploys = log --pretty=format:%s
 	logdiff = log --left-right --graph --cherry-pick --oneline # Argument would be `dev...master` for example
 	d = diff --word-diff=color
+	edit = !$EDITOR $(git status --short | awk '$1 ~ /^M|A|U/ {print $2}' )
+	edit-unmerged = "!$EDITOR `git diff --name-only --diff-filter=U`"
+	add-unmerged = "!git add `git diff --name-only --diff-filter=U`"
 [diff]
 	tool = vimdiff
