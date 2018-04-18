@@ -23,14 +23,6 @@ map <C-n> :NERDTreeToggle<CR>
 nnoremap <C-g>n :NERDTreeFind<CR>
 let NERDTreeMinimalUI=1
 
-" Ale
-let g:ale_set_highlights = 0  " Dont underline errors/warnings
-nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-nmap <silent> <C-j> <Plug>(ale_next_wrap)
-let g:ale_lint_on_save = 0
-let g:ale_lint_on_text_changed = 1
-let g:ale_sign_column_always = 1
-
 " Git Gutter
 set updatetime=250  " Vim update time, defaults to 4000ms
 let g:gitgutter_override_sign_column_highlight = 1
@@ -40,6 +32,13 @@ let g:comfortable_motion_no_default_key_mappings = 1
 nnoremap <silent> <C-d> :call comfortable_motion#flick(80)<CR>
 nnoremap <silent> <C-u> :call comfortable_motion#flick(-80)<CR>
 
+" Ale
+let g:ale_set_highlights = 0  " Dont underline errors/warnings
+nmap <silent> <Leader>k <Plug>(ale_previous_wrap)
+nmap <silent> <Leader>j <Plug>(ale_next_wrap)
+let g:ale_lint_on_save = 0
+let g:ale_lint_on_text_changed = 1
+let g:ale_sign_column_always = 1
 let g:ale_sign_error = '•'
 let g:ale_sign_warning = '•'
 hi link ALEErrorSign    GruvboxRed
