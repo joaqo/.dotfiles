@@ -16,3 +16,5 @@
 	add-unmerged = "!git add `git diff --name-only --diff-filter=U`"
 [diff]
 	tool = vimdiff
+[commit]
+	verbose = true
