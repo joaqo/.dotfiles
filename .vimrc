@@ -13,6 +13,7 @@ Plug 'scrooloose/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'yuttie/comfortable-motion.vim'
 Plug 'https://github.com/noahfrederick/vim-noctu'
+Plug 'christoomey/vim-tmux-navigator'
 call plug#end()
 "============================================================================
 
