@@ -90,6 +90,7 @@ else
 fi
 }
 
+# Making virtualenv alias
 mkvenv() {
 cd ~/.virtualenvs
 virtualenv "$@"
@@ -97,10 +98,26 @@ cd -
 workon "$1"
 }
 
+# Automatic virtualenv sourcing
+function auto_pipenv_shell {
+    if [ ! -n "$VIRTUAL_ENV" ]; then
+        if [ -f "Pipfile" ] ; then
+            workon
+        fi
+    fi
+}
+function cd {
+    builtin cd "$@"
+    auto_pipenv_shell
+}
+auto_pipenv_shell
+
+# Get json from api
 httpj() {
 http --pretty=format $1 | vim - -c 'set syntax=json' -c 'set foldmethod=syntax'
 }
 
+# Add title to current iterm window
 title() {
     echo -n -e "\033]0;"$*"\007"
 }
