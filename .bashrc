@@ -12,12 +12,6 @@ export HISTSIZE=20000
 export HISTFILESIZE=20000
 export HISTCONTROL=ignoredups:erasedups
 
-# # Doesn't save history duplicates but kinda really really sucks
-# export HISTSIZE=10000
-# export HISTFILESIZE=10000
-# export HISTCONTROL=ignoreboth:erasedups
-# export PROMPT_COMMAND="history -n; history -w; history -c; history -r; $PROMPT_COMMAND"
-
 # Configure prompt
 export GIT_PS1_SHOWDIRTYSTATE=1
 hname="$(hostname)"
