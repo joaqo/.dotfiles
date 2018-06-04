@@ -43,6 +43,14 @@ let g:ale_sign_error = '•'
 let g:ale_sign_warning = '•'
 hi link ALEErrorSign    GruvboxRed
 hi link ALEWarningSign  GruvboxYellow
+
+" Vim-tmux-navigator support for :term
+if has('terminal')
+    tmap <c-k> <c-w>:TmuxNavigateUp<cr>
+    tmap <c-j> <c-w>:TmuxNavigateDown<cr>
+    tmap <c-h> <c-w>:TmuxNavigateLeft<cr>
+    tmap <c-l> <c-w>:TmuxNavigateRight<cr>
+endif
 "============================================================================
 
 set splitbelow "donde aparecen los nuevos splits
@@ -155,6 +163,13 @@ set clipboard=unnamed
 
 " Git commits format:
 autocmd Filetype gitcommit setlocal spell textwidth=72
+
+" QOL improvements to :term
+tmap <C-[> <C-w>N  " Enter normal mode with ESC
+tmap <C-w>% <C-w>N:vert term<CR> 
+tmap <C-w>" <C-w>N:term<CR> 
+nnoremap <C-w>% :vert term<CR> 
+nnoremap <C-w>" :term<CR> 
 
 " Remap H and L (top, bottom of screen to left and right end of line)
 nnoremap H ^
