@@ -12,6 +12,7 @@ Plug 'scrooloose/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'yuttie/comfortable-motion.vim'
 Plug 'christoomey/vim-tmux-navigator'
+Plug 'sheerun/vim-polyglot'
 call plug#end()
 "============================================================================
 
@@ -53,6 +54,9 @@ if has('terminal')
     tmap <c-h> <c-w>:TmuxNavigateLeft<cr>
     tmap <c-l> <c-w>:TmuxNavigateRight<cr>
 endif
+
+" Polyglot
+let g:python_highlight_space_errors = 0
 "============================================================================
 
 set splitbelow "donde aparecen los nuevos splits
