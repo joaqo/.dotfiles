@@ -1,7 +1,6 @@
 "================================ VIM-PLUG ==================================
 call plug#begin('~/.vim/plugged')
 Plug 'https://github.com/jeetsukumaran/vim-indentwise.git'
-Plug 'maralla/completor.vim'
 Plug 'morhetz/gruvbox'
 Plug 'https://github.com/tpope/vim-fugitive.git'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -42,6 +41,10 @@ let g:ale_sign_error = '•'
 let g:ale_sign_warning = '•'
 hi link ALEErrorSign    GruvboxRed
 hi link ALEWarningSign  GruvboxYellow
+let g:ale_completion_enabled = 1
+let g:ale_linters = {
+            \ 'python' : ['pyls'],
+            \ }
 
 " Vim-tmux-navigator support for :term
 if has('terminal')
