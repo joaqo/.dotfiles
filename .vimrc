@@ -46,6 +46,8 @@ let g:ale_completion_enabled = 1
 let g:ale_linters = {
             \ 'python' : ['pyls'],
             \ }
+noremap <silent> gd :ALEGoToDefinition<CR>
+noremap <silent> gr :ALEFindReferences<CR>
 
 " Vim-tmux-navigator support for :term
 if has('terminal')
