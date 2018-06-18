@@ -247,6 +247,9 @@ set t_ut=
 " Use :w!! to force write files with sudo
 cnoremap w!! %!sudo tee > /dev/null %
 
+" Format json
+noremap <silent> <Leader>j :execute '%!python -m json.tool'<CR>
+
 " -- Text editin mode --
 noremap <silent> <Leader>t :call ToggleWrap()<CR>
 function ToggleWrap()
