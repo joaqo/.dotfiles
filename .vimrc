@@ -31,7 +31,7 @@ let g:comfortable_motion_no_default_key_mappings = 1
 nnoremap <silent> <C-d> :call comfortable_motion#flick(80)<CR>
 nnoremap <silent> <C-u> :call comfortable_motion#flick(-80)<CR>
 
-" Ale
+" Ale General configuration
 let g:ale_set_highlights = 0  " Dont underline errors/warnings
 nmap <silent> <Leader>k <Plug>(ale_previous_wrap)
 nmap <silent> <Leader>j <Plug>(ale_next_wrap)
@@ -48,6 +48,20 @@ let g:ale_linters = {
             \ }
 noremap <silent> gd :ALEGoToDefinition<CR>
 noremap <silent> gr :ALEFindReferences<CR>
+"
+" ALE Statusline function
+function! LinterStatus() abort
+    let l:counts = ale#statusline#Count(bufnr(''))
+
+    let l:all_errors = l:counts.error + l:counts.style_error
+    let l:all_non_errors = l:counts.total - l:all_errors
+
+    return l:counts.total == 0 ? '' : printf(
+    \   '%dW|%dE',
+    \   all_non_errors,
+    \   all_errors
+    \)
+endfunction
 
 " Vim-tmux-navigator support for :term
 if has('terminal')
@@ -287,7 +301,8 @@ hi Normal ctermbg=0
 hi StatusLine ctermbg=red ctermfg=black
 set laststatus=2
 set noshowmode
-set statusline=%=%f%m\ %P\|%c\ %{ALEGetStatusLine()}
+" set statusline=%=%f%m\ %P\|%c\ %{LinterStatus()}
+set statusline=%{LinterStatus()}%=%f%m\ %P\|%c
 
 " Abbreviations
 iabbrev @@i from IPython import embed; embed(display_banner=False)
