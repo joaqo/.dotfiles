@@ -13,6 +13,8 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'yuttie/comfortable-motion.vim'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'sheerun/vim-polyglot'
+Plug 'https://github.com/roxma/vim-tmux-clipboard'
+Plug 'tmux-plugins/vim-tmux-focus-events'  " For vim-tmux-clipboard plugin
 call plug#end()
 "============================================================================
 
