@@ -126,6 +126,44 @@ title() {
 # Highlight folders on ls
 LS_COLORS=$LS_COLORS:'di=0;35:' ; export LS_COLORS
 
+# Note taking function and command completion
+export NOTE_DIR=~/Notes
+_n() {
+  local lis cur
+  lis=$(find "${NOTE_DIR}" -name "*.md" | \
+    sed -e "s|${NOTE_DIR}/||" | \
+    sed -e 's/\.md$//')
+  cur=${COMP_WORDS[COMP_CWORD]}
+  COMPREPLY=( $(compgen -W "$lis" -- "$cur") )
+}
+n() {
+  : "${NOTE_DIR:?'NOTE_DIR ENV Var not set'}"
+  if [ $# -eq 0 ]; then
+    local file
+    file=$(find "${NOTE_DIR}" -name "*.md" | \
+      sed -e "s|${NOTE_DIR}/||" | \
+      sed -e 's/\.md$//' | \
+      fzf \
+        --multi \
+        --select-1 \
+        --exit-0 \
+        --preview="cat ${NOTE_DIR}/{}.md" \
+        --preview-window=right:70%:wrap)
+    [[ -n $file ]] && \
+      ${EDITOR:-vim} "${NOTE_DIR}/${file}.md"
+  else
+    case "$1" in
+      "-d")
+        rm "${NOTE_DIR}"/"$2".md
+        ;;
+      *)
+        ${EDITOR:-vim} "${NOTE_DIR}"/"$*".md
+        ;;
+    esac
+  fi
+}
+complete -F _n n
+
 # Load custom, per machine, options. Such as adding cuda libraries to path
 if [ -f ~/.bashrc_extra ]; then
   . ~/.bashrc_extra
