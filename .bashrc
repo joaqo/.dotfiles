@@ -80,8 +80,8 @@ PATH=~/.pyenv/bin:$PATH
 # pipenv looks for this to integrate with pyenv
 export PYENV_ROOT=~/.pyenv/
 
-# Activate current folder's pipenv virtualenv
-# or accept an explicit virtualenv name
+# Activate current folder's pipenv virtualenv or activate an explicit virtualenv name,
+# Hardcoded to ~/.virtualenvs. Supports autocomplete 
 workon() {
 if [ $# -eq 0 ]
 then
@@ -90,6 +90,13 @@ else
     source ~/.virtualenvs/$1/bin/activate
 fi
 }
+_workon() {
+  local lis cur
+  lis=$(ls ~/.virtualenvs)
+  cur=${COMP_WORDS[COMP_CWORD]}
+  COMPREPLY=( $(compgen -W "$lis" -- "$cur") )
+}
+complete -F _workon workon
 
 # Making virtualenv alias
 mkvenv() {
