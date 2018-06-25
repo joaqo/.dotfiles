@@ -146,7 +146,7 @@ au BufNewFile,BufRead *.js,*.html,*.css
 
 set showmatch
 set number
-set relativenumber
+" set relativenumber
 set incsearch
 set tabpagemax=400
 set ignorecase
