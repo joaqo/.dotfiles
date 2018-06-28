@@ -1,6 +1,5 @@
 "================================ VIM-PLUG ==================================
 call plug#begin('~/.vim/plugged')
-Plug 'https://github.com/jeetsukumaran/vim-indentwise.git'
 Plug 'morhetz/gruvbox'
 Plug 'https://github.com/tpope/vim-fugitive.git'
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -235,6 +234,7 @@ nnoremap <C-g>h :History:<CR>
 nnoremap <C-g>l :BLines<CR>
 nnoremap <C-g>g :GFiles<CR>
 nnoremap <C-p> :Files<CR>
+nnoremap / :BLines<CR>
 
 command! -bang -nargs=* Ag
   \ call fzf#vim#ag(<q-args>,
