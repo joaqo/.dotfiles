@@ -74,6 +74,7 @@ endif
 
 " Polyglot
 let g:python_highlight_space_errors = 0
+let g:vim_markdown_new_list_item_indent = 0  " https://github.com/plasticboy/vim-markdown
 "============================================================================
 
 set splitbelow "donde aparecen los nuevos splits
