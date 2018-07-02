@@ -134,7 +134,6 @@ title() {
 LS_COLORS=$LS_COLORS:'di=0;35:' ; export LS_COLORS
 
 # Note taking function and command completion
-export NOTE_DIR=~/Notes
 _n() {
   local lis cur
   lis=$(find "${NOTE_DIR}" -name "*.md" | \
