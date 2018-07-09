@@ -19,8 +19,20 @@ call plug#end()
 
 " ======================= Plug In Configs ===================================
 " NERDTree
-map <C-n> :NERDTreeToggle<CR>
-nnoremap <C-g>n :NERDTreeFind<CR>
+function! NERDTreeToggleInCurDir()                                                                                                                                                             
+    " If NERDTree is open in the current buffer
+    if (exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) != -1)
+        exe ":NERDTreeClose"
+    else
+        if (expand("%:t") != '')
+            exe ":NERDTreeFind"
+        else
+            exe ":NERDTreeToggle"
+        endif
+    endif
+endfunction
+
+map <C-n> :call NERDTreeToggleInCurDir()<CR>
 let NERDTreeMinimalUI=1
 
 " Git Gutter
@@ -190,10 +202,6 @@ autocmd Filetype gitcommit setlocal spell textwidth=72
 
 " QOL improvements to :term
 tmap <C-[> <C-w>N  " Enter normal mode with ESC
-tmap <C-w>% <C-w>N:vert term<CR> 
-tmap <C-w>" <C-w>N:term<CR> 
-nnoremap <C-w>% :vert term<CR> 
-nnoremap <C-w>" :term<CR> 
 
 " Remap H and L (top, bottom of screen to left and right end of line)
 nnoremap H ^
