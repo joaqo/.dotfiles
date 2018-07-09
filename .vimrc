@@ -240,10 +240,10 @@ nnoremap <C-f> :GGrep<CR>
 nnoremap <C-g>a :Ag<CR>
 nnoremap <C-g>c :Commands<CR>
 nnoremap <C-g>h :History:<CR>
+nnoremap <C-g>f :BLines<CR>
 nnoremap <C-g>l :BLines<CR>
 nnoremap <C-g>g :GFiles<CR>
 nnoremap <C-p> :Files<CR>
-nnoremap / :BLines<CR>
 
 command! -bang -nargs=* Ag
   \ call fzf#vim#ag(<q-args>,
