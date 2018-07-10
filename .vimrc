@@ -158,6 +158,8 @@ au BufNewFile,BufRead *.js,*.html,*.css
     \ set softtabstop=2 |
     \ set shiftwidth=2 |
 
+au BufNewFile,BufRead *.md,*.txt :call ToggleWrap()
+
 set showmatch
 set number
 " set relativenumber
@@ -279,10 +281,9 @@ noremap <silent> <Leader>j :execute '%!python -m json.tool'<CR>
 noremap <silent> <Leader>t :call ToggleWrap()<CR>
 function ToggleWrap()
   if &wrap
-    echo "Text mode OFF"
     set nu
     set rnu
-    setlocal spell! spelllang=en_us
+    " setlocal spell! spelllang=en_us
     setlocal nowrap
     set virtualedit=all
     silent! nunmap <buffer> k
@@ -290,10 +291,9 @@ function ToggleWrap()
     silent! nunmap <buffer> H
     silent! nunmap <buffer> L
   else
-    echo "Text mode ON"
     set nonu
     set nornu
-    setlocal spell! spelllang=en_us
+    " setlocal spell! spelllang=en_us
     setlocal wrap linebreak nolist
     set virtualedit=
     setlocal display+=lastline
