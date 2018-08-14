@@ -61,7 +61,8 @@ let g:ale_linters = {
             \ }
 noremap <silent> gd :ALEGoToDefinition<CR>
 noremap <silent> gr :ALEFindReferences<CR>
-"
+set completeopt=menu,menuone,preview,noselect,noinsert  " This is a temporary measure due to bug in ale: https://github.com/w0rp/ale/issues/1700
+
 " ALE Statusline function
 function! LinterStatus() abort
     let l:counts = ale#statusline#Count(bufnr(''))
