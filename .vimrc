@@ -62,6 +62,7 @@ let g:ale_linters = {
 noremap <silent> gd :ALEGoToDefinition<CR>
 noremap <silent> gr :ALEFindReferences<CR>
 set completeopt=menu,menuone,preview,noselect,noinsert  " This is a temporary measure due to bug in ale: https://github.com/w0rp/ale/issues/1700
+setlocal shortmess+=c  " Or i get the 'Pattern not found' message all the time
 
 " ALE Statusline function
 function! LinterStatus() abort
@@ -122,9 +123,9 @@ set switchbuf=usetab                    " Reuse tabs with open buffers
 " Dont know why it started doing that. Maybe fzf related?
 set complete-=i
 
-" ctags
-set tags=tags
-command Ctags !ctags -R --fields=+l --languages=python --python-kinds=-iv -f ./tags $(python -c "import os, sys; print(' '.join('{}'.format(d) for d in sys.path if os.path.isdir(d)))") ./
+" " ctags
+" set tags=tags
+" command Ctags !ctags -R --fields=+l --languages=python --python-kinds=-iv -f ./tags $(python -c "import os, sys; print(' '.join('{}'.format(d) for d in sys.path if os.path.isdir(d)))") ./
 
 " Enable mouse
 set mouse=a
