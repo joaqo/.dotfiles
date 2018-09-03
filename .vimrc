@@ -12,14 +12,15 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'yuttie/comfortable-motion.vim'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'sheerun/vim-polyglot'
-Plug 'https://github.com/roxma/vim-tmux-clipboard'
-Plug 'tmux-plugins/vim-tmux-focus-events'  " For vim-tmux-clipboard plugin
-call plug#end()
-"============================================================================
 
-" ======================= Plug In Configs ===================================
+" Plug 'https://github.com/roxma/vim-tmux-clipboard'
+" Plug 'tmux-plugins/vim-tmux-focus-events'  " For vim-tmux-clipboard plugin
+call plug#end()
+
+
+" ======================= PLUG-IN CONFIGS ===================================
 " NERDTree
-function! NERDTreeToggleInCurDir()                                                                                                                                                             
+function! NERDTreeToggleInCurDir()
     " If NERDTree is open in the current buffer
     if (exists("t:NERDTreeBufName") && bufwinnr(t:NERDTreeBufName) != -1)
         exe ":NERDTreeClose"
@@ -44,201 +45,11 @@ let g:comfortable_motion_no_default_key_mappings = 1
 nnoremap <silent> <C-d> :call comfortable_motion#flick(80)<CR>
 nnoremap <silent> <C-u> :call comfortable_motion#flick(-80)<CR>
 
-" Ale General configuration
-let g:ale_set_highlights = 0  " Dont underline errors/warnings
-nmap <silent> <Leader>k <Plug>(ale_previous_wrap)
-nmap <silent> <Leader>j <Plug>(ale_next_wrap)
-let g:ale_lint_on_save = 0
-let g:ale_lint_on_text_changed = 1
-let g:ale_sign_column_always = 1
-let g:ale_sign_error = '•'
-let g:ale_sign_warning = '•'
-hi link ALEErrorSign    GruvboxRed
-hi link ALEWarningSign  GruvboxYellow
-let g:ale_completion_enabled = 1
-let g:ale_linters = {
-            \ 'python' : ['pyls'],
-            \ }
-noremap <silent> gd :ALEGoToDefinition<CR>
-noremap <silent> gr :ALEFindReferences<CR>
-set completeopt=menu,menuone,preview,noselect,noinsert  " This is a temporary measure due to bug in ale: https://github.com/w0rp/ale/issues/1700
-setlocal shortmess+=c  " Or i get the 'Pattern not found' message all the time
-
-" ALE Statusline function
-function! LinterStatus() abort
-    let l:counts = ale#statusline#Count(bufnr(''))
-
-    let l:all_errors = l:counts.error + l:counts.style_error
-    let l:all_non_errors = l:counts.total - l:all_errors
-
-    return l:counts.total == 0 ? '' : printf(
-    \   '%dW|%dE',
-    \   all_non_errors,
-    \   all_errors
-    \)
-endfunction
-
-" Vim-tmux-navigator support for :term
-if has('terminal')
-    tmap <c-k> <c-w>:TmuxNavigateUp<cr>
-    tmap <c-j> <c-w>:TmuxNavigateDown<cr>
-    tmap <c-h> <c-w>:TmuxNavigateLeft<cr>
-    tmap <c-l> <c-w>:TmuxNavigateRight<cr>
-endif
-
 " Polyglot
 let g:python_highlight_space_errors = 0
 let g:vim_markdown_new_list_item_indent = 0  " https://github.com/plasticboy/vim-markdown
-"============================================================================
 
-set splitbelow "donde aparecen los nuevos splits
-set splitright "donde aparecen los nuevos splits
-set diffopt+=vertical
-
-" TEMPORAL for search/replace
-set gdefault
-
-" Enable folding
-set foldlevel=99
-
-" Increase command history to 1000 (does not stored repeats!)
-set history=1000
-
-" Makes buffers behave more like tabs, not having to save when switching
-" buffers and keeping undo history when switching buffers.
-set hidden
-
-" 'Stamp' unnamed buffer over visually selected text, not sure if I should keep this
-vnoremap S "_d"0P
-
-" Settingds stolen from https://github.com/mcmillion/dotfiles/blob/master/home/.vimrc
-set smartcase
-set formatoptions-=c                    " Don't auto-wrap comments
-set formatoptions+=j                    " Smart join comment lines
-set nojoinspaces                        " Don't insert extra spaces after .  when joining
-set shortmess+=I                        " Hide splash screen
-set switchbuf=usetab                    " Reuse tabs with open buffers
-
-" Prevent vim from looking in included files when using ctrl+n.
-" Dont know why it started doing that. Maybe fzf related?
-set complete-=i
-
-" " ctags
-" set tags=tags
-" command Ctags !ctags -R --fields=+l --languages=python --python-kinds=-iv -f ./tags $(python -c "import os, sys; print(' '.join('{}'.format(d) for d in sys.path if os.path.isdir(d)))") ./
-
-" Enable mouse
-set mouse=a
-if !has('nvim')
-    set ttymouse=xterm2
-endif
-
-" Syntax
-syntax on
-
-au FileType c setlocal
-    \ tabstop=4
-    \ softtabstop=4
-    \ shiftwidth=4
-    \ noexpandtab
-
-au FileType python setlocal
-    \ tabstop=8
-    \ softtabstop=4
-    \ shiftwidth=4
-    \ expandtab
-    \ autoindent
-    \ fileformat=unix
-    \ foldmethod=indent
-
-" " This can make openinig big jsons quite slow
-" au FileType json setlocal
-"     \ foldmethod=syntax
-
-au BufNewFile,BufRead *.js,*.html,*.css
-    \ set tabstop=2 |
-    \ set softtabstop=2 |
-    \ set shiftwidth=2 |
-
-au BufNewFile,BufRead *.md,*.txt :call ToggleWrap()
-
-set showmatch
-set number
-" set relativenumber
-set incsearch
-set tabpagemax=400
-set ignorecase
-map Y y$
-set ruler
-
-"" Dont store swap files
-set noswapfile
-
-" " For ALE linter plugin
-highlight clear ALEErrorSign
-highlight clear ALEWarningSign
-highlight clear SignColumn
-
-" Show filename, always
-set ls=2
-
-set lazyredraw  " Don't redraw while executing macros (good performance config)
-set ttyfast     " should make scrolling faster
-
-" Open ~/.vimrc. (~/.vimrc should be a symlink to .dotfiles/.vimrc)
-command V e ~/.vimrc
-
-" Remap common typos
-command WQ wq
-command W w
-command Wq wq
-command Q q
-command Wa wa
-
-" Remap vertical find to more logical command: vsf = vert sf
-cnoreabbrev <expr> vsf getcmdtype() == ":" && getcmdline() == 'vsf' ? 'vert sf' : 'vsf'
-
-" Share clipboard with OS, it can destroy your normal yank, wtf!
-set clipboard=unnamed
-
-" Git commits format:
-autocmd Filetype gitcommit setlocal spell textwidth=72
-
-" QOL improvements to :term
-tmap <C-[> <C-w>N  " Enter normal mode with ESC
-
-" Remap H and L (top, bottom of screen to left and right end of line)
-nnoremap H ^
-nnoremap L $
-vnoremap H ^
-vnoremap L g_
-
-" Quick replay q macro
-nnoremap Q @q
-
-" Always show at least X lines above/below cursor
-set scrolloff=2
-
-" Highlight current line, leader+l to highlight, :match to unhighlight
-nnoremap <silent> <Leader>l ml:execute 'match Search /\%'.line('.').'l/'<CR>
-
-" Error times, from tim pope
-set ttimeout
-set ttimeoutlen=100
-
-" Fix backspace
-set backspace=indent,eol,start
-"set backspace=2 " make backspace work like most other apps
-
-" This enables "visual" wrapping
-set nowrap
-
-" Uncomment the following to have Vim jump to the last position when reopening a file
-if has("autocmd")
-  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-endif
-
-" ======= FZF =============
+" FZF
 nnoremap <C-b> :Buffers<CR>
 nnoremap <C-f> :GGrep<CR>
 nnoremap <C-g>a :Ag<CR>
@@ -264,22 +75,78 @@ command! -bang -nargs=* GGrep
   \   <bang>0 ? fzf#vim#with_preview({'options': '--no-hscroll --delimiter : --nth 3..'}, 'up:60%')
   \           : fzf#vim#with_preview({'options': '--no-hscroll --delimiter : --nth 3..'}, 'right:50%'),
   \   <bang>0)
-" ==========================
 
-" This fixes problem with background being bright on lines with text and black
-" on lines without text, when using vim inside tmux, and with true color
-" Details: https://github.com/mhartington/oceanic-next/issues/40
-"          https://github.com/vim/vim/issues/804
-"           http://stackoverflow.com/questions/6427650/vim-in-tmux-background-color-changes-when-paging/15095377#15095377
-set t_ut=
+" ALE
+let g:ale_sign_column_always = 1
 
-" Use :w!! to force write files with sudo
+
+" ======================== Set defaults =====================================
+set splitbelow  " Donde aparecen los nuevos splits
+set splitright  " Donde aparecen los nuevos splits
+set diffopt+=vertical
+set gdefault  " TEMPORAL for search/replace
+set foldlevel=99  " Enable folding
+set history=1000  " Increase command history to 1000 (does not stored repeats!)
+set hidden  " Makes buffers behave more like tabs, not having to save when switching buffers and keeping undo history when switching buffers.
+set smartcase
+set formatoptions+=j  " Smart join comment lines
+set nojoinspaces  " Don't insert extra spaces after .  when joining
+set shortmess+=I  " Hide splash screen
+set mouse=a  " Enable mouse
+set showmatch
+set number
+" set relativenumber
+set incsearch
+set tabpagemax=400
+set ignorecase
+map Y y$
+set ruler
+set noswapfile  " Dont store swap files
+set ls=2
+" set lazyredraw  " Don't redraw while executing macros (good performance config)
+" set ttyfast     " should make scrolling faster
+set clipboard=unnamed
+set scrolloff=2
+set backspace=indent,eol,start  " Make backspace work like most other apps
+" set backspace=2 
+
+" ============================== Syntax =====================================
+syntax on
+au FileType c setlocal
+    \ tabstop=4
+    \ softtabstop=4
+    \ shiftwidth=4
+    \ noexpandtab
+au FileType python setlocal
+    \ tabstop=8
+    \ softtabstop=4
+    \ shiftwidth=4
+    \ expandtab
+    \ autoindent
+    \ fileformat=unix
+    \ foldmethod=indent
+au BufNewFile,BufRead *.js,*.html,*.css
+    \ set tabstop=2 |
+    \ set softtabstop=2 |
+    \ set shiftwidth=2 |
+au BufNewFile,BufRead *.md,*.txt :call ToggleWrap()
+autocmd Filetype gitcommit setlocal spell textwidth=72
+
+
+" ============================== Remaps ======================================
+command V e ~/.vimrc
+command WQ wq
+command W w
+command Wq wq
+command Q q
+command Wa wa
+nnoremap H ^
+nnoremap L $
+vnoremap H ^
+vnoremap L g_
+nnoremap Q @q
 cnoremap w!! %!sudo tee > /dev/null %
-
-" Format json
 noremap <silent> <Leader>j :execute '%!python -m json.tool'<CR>
-
-" -- Text editin mode --
 noremap <silent> <Leader>t :call ToggleWrap()<CR>
 function ToggleWrap()
   if &wrap
@@ -306,7 +173,8 @@ function ToggleWrap()
   endif
 endfunction
 
-" " -- Visuals --
+
+" ============================== Looks =====================================
 let g:gruvbox_termcolors = 16
 colorscheme gruvbox
 set background=dark
@@ -314,10 +182,9 @@ hi Normal ctermbg=0
 hi StatusLine ctermbg=red ctermfg=black
 set laststatus=2
 set noshowmode
-" set statusline=%=%f%m\ %P\|%c\ %{LinterStatus()}
-set statusline=%{LinterStatus()}%=%f%m\ %P\|%c
 
-" Abbreviations
+
+" =========================== Abbreviations ================================
 iabbrev @@i from IPython import embed; embed(display_banner=False)
 iabbrev @@d import ipdb; ipdb.set_trace()
 iabbrev @@t tf.InteractiveSession; from IPython import embed; embed(display_banner=False)
