@@ -12,13 +12,18 @@ Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'yuttie/comfortable-motion.vim'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'sheerun/vim-polyglot'
+Plug 'https://github.com/ervandew/supertab'
 
 " Plug 'https://github.com/roxma/vim-tmux-clipboard'
 " Plug 'tmux-plugins/vim-tmux-focus-events'  " For vim-tmux-clipboard plugin
 call plug#end()
 
-
 " ======================= PLUG-IN CONFIGS ===================================
+" Click
+let g:SuperTabDefaultCompletionType = 'context'
+let g:SuperTabClosePreviewOnPopupClose = 1
+" let g:SuperTabRetainCompletionDuration = 'completion'  " Remembers current completion type
+
 " NERDTree
 function! NERDTreeToggleInCurDir()
     " If NERDTree is open in the current buffer
@@ -95,7 +100,7 @@ set shortmess+=I  " Hide splash screen
 set mouse=a  " Enable mouse
 set showmatch
 set number
-" set relativenumber
+set relativenumber
 set incsearch
 set tabpagemax=400
 set ignorecase
@@ -109,6 +114,10 @@ set clipboard=unnamed
 set scrolloff=2
 set backspace=indent,eol,start  " Make backspace work like most other apps
 " set backspace=2 
+set ttimeout
+set ttimeoutlen=100  " Or some vim things are annoyingly slow
+set nowrap  " Or long lines wrap around
+let g:netrw_silent=1  " Dont ask for an enter-key press after saving an 'scp://' file
 
 " ============================== Syntax =====================================
 syntax on
@@ -125,6 +134,7 @@ au FileType python setlocal
     \ autoindent
     \ fileformat=unix
     \ foldmethod=indent
+    \ omnifunc=python3complete#Complete
 au BufNewFile,BufRead *.js,*.html,*.css
     \ set tabstop=2 |
     \ set softtabstop=2 |
@@ -134,6 +144,13 @@ autocmd Filetype gitcommit setlocal spell textwidth=72
 
 
 " ============================== Remaps ======================================
+" n  Normal mode map. Defined using ':nmap' or ':nnoremap'.
+" i  Insert mode map. Defined using ':imap' or ':inoremap'.
+" v  Visual and select mode map. Defined using ':vmap' or ':vnoremap'.
+" x  Visual mode map. Defined using ':xmap' or ':xnoremap'.
+" s  Select mode map. Defined using ':smap' or ':snoremap'.
+" c  Command-line mode map. Defined using ':cmap' or ':cnoremap'.
+" o  Operator pending mode map. Defined using ':omap' or ':onoremap'.
 command V e ~/.vimrc
 command WQ wq
 command W w
@@ -148,6 +165,7 @@ nnoremap Q @q
 cnoremap w!! %!sudo tee > /dev/null %
 noremap <silent> <Leader>j :execute '%!python -m json.tool'<CR>
 noremap <silent> <Leader>t :call ToggleWrap()<CR>
+xnoremap p "_dP
 function ToggleWrap()
   if &wrap
     set nu
@@ -188,3 +206,14 @@ set noshowmode
 iabbrev @@i from IPython import embed; embed(display_banner=False)
 iabbrev @@d import ipdb; ipdb.set_trace()
 iabbrev @@t tf.InteractiveSession; from IPython import embed; embed(display_banner=False)
+
+
+" ========== Virtualenv support for omnicomplete, python3 only =============
+python3 << EOF
+import os
+virtualenv = os.environ.get('VIRTUAL_ENV')
+if virtualenv:
+  activate_this = os.path.join(virtualenv, 'bin', 'activate_this.py')
+  if os.path.exists(activate_this):
+    exec(compile(open(activate_this).read(), activate_this, 'exec'), {'__file__': activate_this})
+EOF
