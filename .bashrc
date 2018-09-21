@@ -56,7 +56,7 @@ alias l="ls -lhFG"
 alias callcito="/Applications/Call\ of\ Duty\ 2\ Multiplayer.app/Contents/MacOS/Call\ of\ Duty\ 2\ Multiplayer"
 alias p="pipenv run"
 alias t="tmux a -t 0"
-alias "pipdefs"="pip install ipdb ipython jedi"
+alias "pipdefs"="pip install ipdb ipython jedi flake8"
 
 # ls with colors
 if [[ ${hname} == *"macbook-joaquin"* ]]
