@@ -13,15 +13,15 @@ Plug 'yuttie/comfortable-motion.vim'
 Plug 'christoomey/vim-tmux-navigator'
 Plug 'sheerun/vim-polyglot'
 Plug 'https://github.com/ervandew/supertab'
-
-" Plug 'https://github.com/roxma/vim-tmux-clipboard'
-" Plug 'tmux-plugins/vim-tmux-focus-events'  " For vim-tmux-clipboard plugin
+Plug 'maralla/completor.vim'
+Plug 'https://github.com/roxma/vim-tmux-clipboard'
+Plug 'tmux-plugins/vim-tmux-focus-events'  " For vim-tmux-clipboard plugin
 call plug#end()
 
 " ======================= PLUG-IN CONFIGS ===================================
-" Click
-let g:SuperTabDefaultCompletionType = 'context'
-let g:SuperTabClosePreviewOnPopupClose = 1
+" " Supertab
+" let g:SuperTabDefaultCompletionType = 'context'
+" let g:SuperTabClosePreviewOnPopupClose = 1
 " let g:SuperTabRetainCompletionDuration = 'completion'  " Remembers current completion type
 
 " NERDTree
@@ -83,7 +83,10 @@ command! -bang -nargs=* GGrep
 
 " ALE
 let g:ale_sign_column_always = 1
-
+let g:ale_set_highlights = 0  " Dont underline errors/warnings
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_lint_on_save = 0
+let g:ale_lint_on_insert_leave = 1
 
 " ======================== Set defaults =====================================
 set splitbelow  " Donde aparecen los nuevos splits
@@ -134,7 +137,6 @@ au FileType python setlocal
     \ autoindent
     \ fileformat=unix
     \ foldmethod=indent
-    \ omnifunc=python3complete#Complete
 au BufNewFile,BufRead *.js,*.html,*.css
     \ set tabstop=2 |
     \ set softtabstop=2 |
@@ -206,14 +208,3 @@ set noshowmode
 iabbrev @@i from IPython import embed; embed(display_banner=False)
 iabbrev @@d import ipdb; ipdb.set_trace()
 iabbrev @@t tf.InteractiveSession; from IPython import embed; embed(display_banner=False)
-
-
-" ========== Virtualenv support for omnicomplete, python3 only =============
-python3 << EOF
-import os
-virtualenv = os.environ.get('VIRTUAL_ENV')
-if virtualenv:
-  activate_this = os.path.join(virtualenv, 'bin', 'activate_this.py')
-  if os.path.exists(activate_this):
-    exec(compile(open(activate_this).read(), activate_this, 'exec'), {'__file__': activate_this})
-EOF
