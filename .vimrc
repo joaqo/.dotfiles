@@ -167,6 +167,8 @@ command WQ wq
 command W w
 command Wq wq
 command Q q
+command Qa qa
+command QA qa
 command Wa wa
 nnoremap H ^
 nnoremap L $
