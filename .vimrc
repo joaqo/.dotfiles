@@ -19,10 +19,10 @@ Plug 'tmux-plugins/vim-tmux-focus-events'  " For vim-tmux-clipboard plugin
 call plug#end()
 
 " ======================= PLUG-IN CONFIGS ===================================
-" " Supertab
-" let g:SuperTabDefaultCompletionType = 'context'
-" let g:SuperTabClosePreviewOnPopupClose = 1
-" let g:SuperTabRetainCompletionDuration = 'completion'  " Remembers current completion type
+" Supertab
+let g:SuperTabDefaultCompletionType = 'context'
+let g:SuperTabClosePreviewOnPopupClose = 1
+let g:SuperTabRetainCompletionDuration = 'completion'  " Remembers current completion type
 
 " NERDTree
 function! NERDTreeToggleInCurDir()
