@@ -41,10 +41,10 @@ then
     export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 fi
 
-# For cs231n course jupyter noteobook
-# Delete ?
-export LC_ALL=en_US.UTF-8
-export LANG=en_US.UTF-8
+# # For cs231n course jupyter noteobook
+# # Delete ?
+# export LC_ALL=en_US.UTF-8
+# export LANG=en_US.UTF-8
 
 # Aliases
 alias mux="tmuxinator"
@@ -56,7 +56,7 @@ alias l="ls -lhFG"
 alias callcito="/Applications/Call\ of\ Duty\ 2\ Multiplayer.app/Contents/MacOS/Call\ of\ Duty\ 2\ Multiplayer"
 alias p="pipenv run"
 alias t="tmux a -t 0"
-alias "pipdefs"="pip install ipdb ipython python-language-server[all]"
+alias "pipdefs"="pip install ipdb ipython jedi flake8"
 
 # ls with colors
 if [[ ${hname} == *"macbook-joaquin"* ]]
@@ -65,6 +65,9 @@ then
 else
     alias ls='ls --color=auto'
 fi
+
+# Make python > 3.7 debugger use ipdb when calling `breakpoint()`
+PYTHONBREAKPOINT=ipdb.set_trace
 
 # Add files in ~/bin to path
 PATH=$PATH:~/bin
