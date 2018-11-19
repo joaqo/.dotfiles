@@ -178,7 +178,6 @@ nnoremap Q @q
 cnoremap w!! %!sudo tee > /dev/null %
 noremap <silent> <Leader>j :execute '%!python -m json.tool'<CR>
 noremap <silent> <Leader>t :call ToggleWrap()<CR>
-xnoremap p "_dP
 function ToggleWrap()
   if &wrap
     set nu
