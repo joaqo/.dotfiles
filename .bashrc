@@ -18,9 +18,9 @@ hname="$(hostname)"
 if [[ ${hname} == *"macbook-joaquin"* ]]
 then
     # Git official autocomplete
-    source ~/Code/git-completion.bash
+    source /usr/local/etc/bash_completion.d/git-completion.bash
     # Git official prompt
-    source ~/Code/git-prompt.sh
+    source /usr/local/etc/bash_completion.d/git-prompt.sh
     export PS1='\[\033[01;34m\]\w\[\033[00m\]\[\033[01;36m\]$(__git_ps1 " %s")\[\033[00m\]\[\033[01;31m\] > \[\033[00m\]'
 else
     export PS1='\[\033[01;31m\]\h \[\033[00m\]\[\033[01;34m\]\w\[\033[00m\]\[\033[01;36m\]$(__git_ps1 " %s")\[\033[00m\]\[\033[01;31m\] > \[\033[00m\]'
