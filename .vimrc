@@ -111,6 +111,7 @@ set formatoptions+=j  " Smart join comment lines
 set nojoinspaces  " Don't insert extra spaces after .  when joining
 set shortmess+=I  " Hide splash screen
 set mouse=a  " Enable mouse
+set ttymouse=xterm2  " Fixes some mouse bugs when using vim+tmux
 set showmatch
 set number
 set relativenumber
