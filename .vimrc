@@ -16,6 +16,7 @@ Plug 'https://github.com/ervandew/supertab'
 Plug 'maralla/completor.vim'
 Plug 'https://github.com/roxma/vim-tmux-clipboard'
 Plug 'tmux-plugins/vim-tmux-focus-events'  " For vim-tmux-clipboard plugin
+Plug 'ambv/black'
 call plug#end()
 
 " ======================= PLUG-IN CONFIGS ===================================
