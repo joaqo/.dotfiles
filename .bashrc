@@ -14,8 +14,8 @@ export HISTCONTROL=ignoredups:erasedups
 
 # Configure prompt
 export GIT_PS1_SHOWDIRTYSTATE=1
-hname="$(hostname)"
-if [[ ${hname} == *"macbook-joaquin"* ]]
+os_type="$(uname -a)"
+if [[ ${os_type} == *"Darwin"* ]]
 then
     # Git official autocomplete
     source /usr/local/etc/bash_completion.d/git-completion.bash
@@ -35,7 +35,7 @@ export VISUAL='vim'
 # Si no le agregaba la -t no me encontraba los .env que estuvieran
 # a mas de dos directorios de distancia recursiva, what??!!
 # Only in my computer cause it requires ag to be installed.
-if [[ ${hname} == *"macbook-joaquin"* ]]
+if [[ ${os_type} == *"Darwin"* ]]
 then
     export FZF_DEFAULT_COMMAND='ag -U --ignore={"*.pyc",".git"} --hidden -g ""'
     export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
@@ -59,7 +59,7 @@ alias t="tmux a -t 0"
 alias "pipdefs"="pip install ipdb ipython jedi flake8"
 
 # ls with colors
-if [[ ${hname} == *"macbook-joaquin"* ]]
+if [[ ${os_type} == *"Darwin"* ]]
 then
     alias ls="ls -G"
 else
