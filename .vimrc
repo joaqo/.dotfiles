@@ -207,13 +207,15 @@ function ToggleWrap()
   endif
 endfunction
 
-" Remap Enter to : in normal mode
-nnoremap <CR> :
-augroup CRSpecialCases
-  autocmd!
-  autocmd CmdwinEnter * nnoremap <buffer> <CR> <CR>
-  autocmd FileType qf nnoremap <buffer> <CR> <CR>
-augroup END
+" Remap Space to : in normal mode
+nnoremap <Space> :
+" " Remap Enter to Leader in normal mode
+" nmap <CR> <Leader>
+" augroup CRSpecialCases
+"   autocmd!
+"   autocmd CmdwinEnter * nnoremap <buffer> <CR> <CR>
+"   autocmd FileType qf nnoremap <buffer> <CR> <CR>
+" augroup END
 
 " ============================== Looks =====================================
 let g:gruvbox_termcolors = 16
