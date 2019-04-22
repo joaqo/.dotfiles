@@ -55,16 +55,20 @@ nnoremap <silent> <C-u> :call comfortable_motion#flick(-80)<CR>
 let g:python_highlight_space_errors = 0
 let g:vim_markdown_new_list_item_indent = 0  " https://github.com/plasticboy/vim-markdown
 
+" Fugitive
+command S vertical Gstatus
+
 " FZF
-nnoremap <C-b> :Buffers<CR>
 nnoremap <C-f> :GGrep<CR>
+nnoremap <C-p> :Files<CR>
+nnoremap <C-b> :Buffers<CR>
+nnoremap <C-g>w :GGrepCword<CR>
 nnoremap <C-g>a :Ag<CR>
 nnoremap <C-g>c :Commands<CR>
 nnoremap <C-g>h :History:<CR>
 nnoremap <C-g>f :BLines<CR>
 nnoremap <C-g>l :BLines<CR>
 nnoremap <C-g>g :GFiles<CR>
-nnoremap <C-p> :Files<CR>
 
 command! -bang -nargs=* Ag
   \ call fzf#vim#ag(<q-args>,
@@ -82,11 +86,18 @@ command! -bang -nargs=* GGrep
   \           : fzf#vim#with_preview({'options': '--no-hscroll --delimiter : --nth 3..'}, 'right:50%'),
   \   <bang>0)
 
+command! -bang -nargs=* GGrepCword
+  \ call fzf#vim#grep(
+  \   'git grep --line-number '.shellescape(<q-args>), 0,
+  \   <bang>0 ? fzf#vim#with_preview({'options': '--no-hscroll --delimiter : --nth 3.. -q '.shellescape(expand('<cword>'))}, 'up:60%')
+  \           : fzf#vim#with_preview({'options': '--no-hscroll --delimiter : --nth 3.. -q '.shellescape(expand('<cword>'))}, 'right:50%'),
+  \   <bang>0)
+
 " ALE
 let g:ale_sign_column_always = 1
 let g:ale_set_highlights = 0  " Dont underline errors/warnings
-let g:ale_sign_error = '•'
-let g:ale_sign_warning = '•'
+let g:ale_sign_error = '◉' "•
+let g:ale_sign_warning = '◉' "•
 function! LinterStatus() abort
     let l:counts = ale#statusline#Count(bufnr(''))
 
@@ -134,6 +145,7 @@ set ttimeout
 set ttimeoutlen=100  " Or some vim things are annoyingly slow
 set nowrap  " Or long lines wrap around
 let g:netrw_silent=1  " Dont ask for an enter-key press after saving an 'scp://' file
+" let g:pyindent_searchpair_timeout=10  " Not sure if it is needed, from: https://github.com/vim/vim/issues/1098
 
 " ============================== Syntax =====================================
 syntax on

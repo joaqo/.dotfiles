@@ -51,6 +51,7 @@ alias mux="tmuxinator"
 alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
 alias chrome-canary="/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary"
 alias gsb="git status -sb"
+alias gd="clear; git diff"
 alias g="git"
 alias l="ls -lhFG"
 alias callcito="/Applications/Call\ of\ Duty\ 2\ Multiplayer.app/Contents/MacOS/Call\ of\ Duty\ 2\ Multiplayer"
@@ -82,6 +83,7 @@ PATH=~/.pyenv/bin:$PATH
 
 # pipenv looks for this to integrate with pyenv
 export PYENV_ROOT=~/.pyenv/
+export PIPENV_SKIP_LOCK=True
 
 # Activate current folder's pipenv virtualenv or activate an explicit virtualenv name,
 # Hardcoded to ~/.virtualenvs. Supports autocomplete 
