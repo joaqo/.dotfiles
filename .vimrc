@@ -168,7 +168,17 @@ au BufNewFile,BufRead *.js,*.html,*.css
     \ set shiftwidth=2 |
 au BufNewFile,BufRead *.md,*.txt :call ToggleWrap()
 autocmd Filetype gitcommit setlocal spell textwidth=72
-
+"
+" Highlight TODO, FIXME, NOTE, etc.
+if has('autocmd') && v:version > 701
+    augroup todo
+        autocmd!
+        autocmd Syntax * call matchadd(
+                    \ 'Debug',
+                    \ '\v\W\zs<(NOTE|INFO|IDEA|TODO|FIXME|CHANGED|XXX|BUG|HACK|TRICKY)>'
+                    \ )
+    augroup END
+endif
 
 " ============================== Remaps ======================================
 " n  Normal mode map. Defined using ':nmap' or ':nnoremap'.
