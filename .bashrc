@@ -41,10 +41,11 @@ then
     export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 fi
 
-# # For cs231n course jupyter noteobook
-# # Delete ?
-# export LC_ALL=en_US.UTF-8
-# export LANG=en_US.UTF-8
+# Tell the OS that your prefered language is english and your encoding utf-8.
+# Specially helpfull to avoid problems I had with vim not showing UTF-8 chars.
+# As explained here: https://unix.stackexchange.com/questions/23389/how-can-i-set-vims-default-encoding-to-utf-8
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
 
 # Aliases
 alias mux="tmuxinator"
