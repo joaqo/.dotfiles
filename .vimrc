@@ -16,9 +16,11 @@ Plug 'sheerun/vim-polyglot'
 " Plug 'maralla/completor.vim'
 Plug 'https://github.com/roxma/vim-tmux-clipboard'
 Plug 'tmux-plugins/vim-tmux-focus-events'  " For vim-tmux-clipboard plugin
-Plug 'ambv/black'
+" Plug 'ambv/black'
+" let g:black_virtualenv = '~/.virtualenvs/black'
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 call plug#end()
+
 
 " ======================= PLUG-IN CONFIGS ===================================
 " Supertab
@@ -94,6 +96,7 @@ command! -bang -nargs=* GGrepCword
   \           : fzf#vim#with_preview({'options': '--no-hscroll --delimiter : --nth 3.. -q '.shellescape(expand('<cword>'))}, 'right:50%'),
   \   <bang>0)
 
+
 " ======================== Set defaults =====================================
 set splitbelow  " Donde aparecen los nuevos splits
 set splitright  " Donde aparecen los nuevos splits
@@ -115,7 +118,7 @@ set incsearch
 set tabpagemax=400
 set ignorecase
 map Y y$
-set ruler
+" set ruler
 set noswapfile  " Dont store swap files
 set ls=2
 " set lazyredraw  " Don't redraw while executing macros (good performance config)
@@ -129,6 +132,7 @@ set ttimeoutlen=100  " Or some vim things are annoyingly slow
 set nowrap  " Or long lines wrap around
 let g:netrw_silent=1  " Dont ask for an enter-key press after saving an 'scp://' file
 " let g:pyindent_searchpair_timeout=10  " Not sure if it is needed, from: https://github.com/vim/vim/issues/1098
+
 
 " ============================== Syntax =====================================
 syntax on
@@ -145,6 +149,8 @@ au FileType python setlocal
     \ autoindent
     \ fileformat=unix
     \ foldmethod=indent
+au FileType json setlocal
+    \ foldmethod=syntax
 au BufNewFile,BufRead *.js,*.html,*.css
     \ set tabstop=2 |
     \ set softtabstop=2 |
@@ -162,6 +168,7 @@ if has('autocmd') && v:version > 701
                     \ )
     augroup END
 endif
+
 
 " ============================== Remaps ======================================
 " n  Normal mode map. Defined using ':nmap' or ':nnoremap'.
@@ -218,16 +225,33 @@ nnoremap <Space> :
 " Bind p in visual mode to paste without overriding the current register
 vnoremap p pgvy
 
+
 " ============================== Looks =====================================
 let g:gruvbox_termcolors = 16
 colorscheme gruvbox
 set background=dark
 hi Normal ctermbg=0
 hi StatusLine ctermbg=red ctermfg=black
-set laststatus=2
-set noshowmode
-" set statusline=%{LinterStatus()}%=%f%m\ %P\|%c
-set statusline=%{coc#status()}%=%f%m\ %P\|%c
+
+let s:hidden_all = 1
+function ToggleStatusBar()
+    if s:hidden_all  == 0
+        let s:hidden_all = 1
+        set noshowmode
+        set noruler
+        set laststatus=1
+        set noshowcmd
+    else
+        let s:hidden_all = 0
+        set showmode
+        set ruler
+        set laststatus=2
+        set showcmd
+    endif
+endfunction
+call ToggleStatusBar()
+command SB call ToggleStatusBar()
+
 
 " =========================== Abbreviations ================================
 iabbrev @@b breakpoint()
@@ -236,9 +260,13 @@ iabbrev @@d import ipdb; ipdb.set_trace()
 iabbrev @@p import pudb; pu.db
 iabbrev @@t tf.InteractiveSession; from IPython import embed; embed(display_banner=False)
 
-"
+
 " ================================ COC =====================================
-" if hidden is not set, TextEdit might fail.
+" Deterimne workspace folder by first looking which folder has a .vim and
+" then a .git
+let b:coc_root_patterns = ['.vim']
+
+" If hidden is not set, TextEdit might fail.
 set hidden
 
 " Some servers have issues with backup files, see #649
@@ -251,7 +279,7 @@ set cmdheight=2
 " You will have bad experience for diagnostic messages when it's default 4000.
 set updatetime=300
 
-" don't give |ins-completion-menu| messages.
+" Don't give |ins-completion-menu| messages.
 set shortmess+=c
 
 " always show signcolumns
@@ -343,7 +371,7 @@ command! -nargs=? Fold :call     CocAction('fold', <f-args>)
 command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
 
 " Add status line support, for integration with other plugin, checkout `:h coc-status`
-set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}%=\ %f%m\ %P\|%c
 
 " " Using CocList
 " " Show all diagnostics
@@ -362,3 +390,4 @@ set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 " nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
 " " Resume latest coc list
 " nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
+"
