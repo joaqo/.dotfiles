@@ -1,6 +1,6 @@
 # This is Git's per-user configuration file.
 [user]
-	name = Joaquin Alori
+	name = joaqo
 	email = joaquin.alori@gmail.com
 [push]
 	default = simple
