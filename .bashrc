@@ -89,10 +89,13 @@ export PIPENV_SKIP_LOCK=True
 
 # Activate current folder's pipenv virtualenv or activate an explicit virtualenv name,
 # Hardcoded to ~/.virtualenvs. Supports autocomplete 
-workon() {
+# renamed from workon to wo as I type this a lot
+wo() {
 if [ $# -eq 0 ]
 then
-    source $(pipenv --venv)/bin/activate
+    # source $(pipenv --venv)/bin/activate
+    # . "$(dirname $(poetry run which python))/activate"
+    source ~/.virtualenvs/${PWD##*/}/bin/activate 
 else
     source ~/.virtualenvs/$1/bin/activate
 fi
@@ -103,7 +106,7 @@ _workon() {
   cur=${COMP_WORDS[COMP_CWORD]}
   COMPREPLY=( $(compgen -W "$lis" -- "$cur") )
 }
-complete -F _workon workon
+complete -F _workon wo
 
 # Making virtualenv alias
 mkvenv() {
@@ -113,19 +116,19 @@ cd -
 workon "$1"
 }
 
-# Automatic virtualenv sourcing
-function auto_pipenv_shell {
-    if [ ! -n "$VIRTUAL_ENV" ]; then
-        if [ -f "Pipfile" ] ; then
-            workon
-        fi
-    fi
-}
-function cd {
-    builtin cd "$@"
-    auto_pipenv_shell
-}
-auto_pipenv_shell
+# # Automatic virtualenv sourcing
+# function auto_pipenv_shell {
+#     if [ ! -n "$VIRTUAL_ENV" ]; then
+#         if [ -f "Pipfile" ] ; then
+#             workon
+#         fi
+#     fi
+# }
+# function cd {
+#     builtin cd "$@"
+#     auto_pipenv_shell
+# }
+# auto_pipenv_shell
 
 # Get json from api
 httpj() {

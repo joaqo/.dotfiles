@@ -149,6 +149,7 @@ au FileType python setlocal
     \ autoindent
     \ fileformat=unix
     \ foldmethod=indent
+au FileType python match Error /\%101v.\+/
 au FileType json setlocal
     \ foldmethod=syntax
 au BufNewFile,BufRead *.js,*.html,*.css
@@ -233,7 +234,7 @@ set background=dark
 hi Normal ctermbg=0
 hi StatusLine ctermbg=red ctermfg=black
 
-let s:hidden_all = 1
+let s:hidden_all = 0
 function ToggleStatusBar()
     if s:hidden_all  == 0
         let s:hidden_all = 1
