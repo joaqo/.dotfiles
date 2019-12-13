@@ -73,7 +73,7 @@ fi
 PYTHONBREAKPOINT=ipdb.set_trace
 
 # Add files in ~/bin to path
-PATH=$PATH:~/bin
+PATH=$PATH:~/code/bin
 
 # Fixes the following problem with brew
 # https://github.com/Homebrew/homebrew-php/issues/4527#issuecomment-346483994
