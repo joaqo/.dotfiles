@@ -27,5 +27,4 @@ function bernie() {
 }
 # ===============================
 
-alias gcloud="~/bin/google-cloud-sdk/bin/gcloud"
 export NOTE_DIR=~/workspace/tryo_notes
