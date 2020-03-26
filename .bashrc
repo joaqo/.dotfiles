@@ -110,10 +110,8 @@ complete -F _workon wo
 
 # Making virtualenv alias
 mkvenv() {
-cd ~/.virtualenvs
-virtualenv "$@"
-cd -
-workon "$1"
+python3 -m venv ~/.virtualenvs/"$1"
+wo "$1"
 }
 
 # # Automatic virtualenv sourcing
