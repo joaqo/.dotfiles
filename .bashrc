@@ -47,6 +47,9 @@ fi
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 
+# Homebrew autoupdate is horribly slow
+HOMEBREW_NO_AUTO_UPDATE=1
+
 # Aliases
 alias mux="tmuxinator"
 alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
