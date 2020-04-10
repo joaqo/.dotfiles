@@ -13,6 +13,8 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'sheerun/vim-polyglot'
 Plug 'https://github.com/roxma/vim-tmux-clipboard'
 Plug 'tmux-plugins/vim-tmux-focus-events'  " For vim-tmux-clipboard plugin
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/vim-lsp'
 call plug#end()
 
 
@@ -254,3 +256,14 @@ iabbrev @@i from IPython import embed; embed(display_banner=False)
 iabbrev @@d import ipdb; ipdb.set_trace()
 iabbrev @@p import pudb; pu.db
 iabbrev @@t tf.InteractiveSession; from IPython import embed; embed(display_banner=False)
+
+
+" =========================== Swift =======================================
+if executable('sourcekit-lsp')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'sourcekit-lsp',
+        \ 'cmd': {server_info->['sourcekit-lsp']},
+        \ 'whitelist': ['swift'],
+        \ })
+endif
+autocmd FileType swift setlocal omnifunc=lsp#complete
