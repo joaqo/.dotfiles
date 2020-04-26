@@ -234,8 +234,22 @@ fshow() {
                 --bind "enter:execute:$_viewGitLogLine   | less -R" \
                 --bind "alt-y:execute:$_gitLogLineToHash | xclip"
 }
-###################################### O ###############################################
+###################################### Night Mode ######################################
+if [[ "$(uname -s)" == "Darwin" ]]; then
+    sith() {
+        val=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
+        if [[ $val == "Dark" ]]; then
+            echo -ne "\033]50;SetProfile=Default\a"
+            export ITERM_PROFILE="Dark"
+        else
+            echo -ne "\033]50;SetProfile=DefaultLight\a"
+            export ITERM_PROFILE="Light"
+        fi
+    }
+    sith
+fi
 
+#######################################################################################
 # Load custom, per machine, options. Such as adding cuda libraries to path
 if [ -f ~/.bashrc_extra ]; then
   . ~/.bashrc_extra

@@ -13,12 +13,17 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'sheerun/vim-polyglot'
 Plug 'https://github.com/roxma/vim-tmux-clipboard'
 Plug 'tmux-plugins/vim-tmux-focus-events'  " For vim-tmux-clipboard plugin
-Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/async.vim'  " For vim-lsp
 Plug 'prabirshrestha/vim-lsp'
+Plug 'git@github.com:ervandew/supertab.git'
 call plug#end()
+
+highlight CursorLine cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
+set cursorline
 
 
 " ======================= PLUG-IN CONFIGS ===================================
+
 " NERDTree
 function! NERDTreeToggleInCurDir()
     " If NERDTree is open in the current buffer
@@ -35,6 +40,21 @@ endfunction
 
 map <C-n> :call NERDTreeToggleInCurDir()<CR>
 let NERDTreeMinimalUI=1
+
+" Vim-lsp
+" Diagnostics in bottom bar
+" let g:lsp_diagnostics_echo_cursor = 1
+" Diagnostics in pop-up
+let g:lsp_diagnostics_float_cursor = 1
+let g:lsp_diagnostics_float_delay = 500
+nnoremap gd :<C-u>LspDefinition<CR>
+nnoremap gh :<C-u>LspHover<CR>
+nnoremap gr :<C-u>LspReferences<CR>
+nnoremap gb :<C-u>LspDocumentDiagnostics<CR>
+nnoremap gb :<C-u>LspDocumentDiagnostics<CR>
+
+" Supertab
+let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
 
 " Git Gutter
 set updatetime=250  " Vim update time, defaults to 4000ms
@@ -109,7 +129,6 @@ set incsearch
 set tabpagemax=400
 set ignorecase
 map Y y$
-" set ruler
 set noswapfile  " Dont store swap files
 set ls=2
 " set lazyredraw  " Don't redraw while executing macros (good performance config)
@@ -123,6 +142,7 @@ set ttimeoutlen=100  " Or some vim things are annoyingly slow
 set nowrap  " Or long lines wrap around
 let g:netrw_silent=1  " Dont ask for an enter-key press after saving an 'scp://' file
 " let g:pyindent_searchpair_timeout=10  " Not sure if it is needed, from: https://github.com/vim/vim/issues/1098
+set signcolumn=yes  " Always show left debug/diff column so the screen doesn't jump left every time a bug appears
 
 
 " ============================== Syntax =====================================
@@ -175,6 +195,8 @@ endif
 " s  Select mode map. Defined using ':smap' or ':snoremap'.
 " c  Command-line mode map. Defined using ':cmap' or ':cnoremap'.
 " o  Operator pending mode map. Defined using ':omap' or ':onoremap'.
+" IMPORTANT: Use `:verbose nmap <keys>` to chech already used maps before adding new ones.
+"            It doesn't seem to work with default vim keys though, wtf.
 command V e ~/.vimrc
 command WQ wq
 command W w
@@ -224,11 +246,23 @@ vnoremap p pgvy
 
 
 " ============================== Looks =====================================
-let g:gruvbox_termcolors = 16
 colorscheme gruvbox
-set background=dark
-hi Normal ctermbg=0
-hi StatusLine ctermbg=red ctermfg=black
+" set background=dark
+" hi Normal ctermbg=0
+" hi StatusLine ctermbg=red ctermfg=black
+"
+" Automatically detect dark/light mode from environment variable set in bashrc
+let iterm_profile = $ITERM_PROFILE
+if iterm_profile == "Dark"
+    set background=dark | hi Normal ctermbg=0 | hi StatusLine ctermbg=red ctermfg=black
+else
+    set background=light | hi Normal ctermbg=0 | hi StatusLine ctermbg=red ctermfg=black
+endif
+
+" Change it on the fly if you are programming just when sundown happens, cron
+" job seems excessive lol.
+command D set background=dark | hi Normal ctermbg=0 | hi StatusLine ctermbg=red ctermfg=black
+command L set background=light | hi Normal ctermbg=0 | hi StatusLine ctermbg=red ctermfg=black
 
 let s:hidden_all = 0
 function ToggleStatusBar()
@@ -267,3 +301,23 @@ if executable('sourcekit-lsp')
         \ })
 endif
 autocmd FileType swift setlocal omnifunc=lsp#complete
+autocmd Filetype swift setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2 autoindent
+
+set foldmethod=expr
+  \ foldexpr=lsp#ui#vim#folding#foldexpr()
+  \ foldtext=lsp#ui#vim#folding#foldtext()
+
+
+"auto close {
+function! s:CloseBracket()
+    let line = getline('.')
+    if line =~# '^\s*\(struct\|class\|enum\) '
+        return "{\<Enter>};\<Esc>O"
+    elseif searchpair('(', '', ')', 'bmn', '', line('.'))
+        " Probably inside a function call. Close it off.
+        return "{\<Enter>});\<Esc>O"
+    else
+        return "{\<Enter>}\<Esc>O"
+    endif
+endfunction
+inoremap <expr> {<Enter> <SID>CloseBracket()
