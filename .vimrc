@@ -253,10 +253,10 @@ colorscheme gruvbox
 "
 " Automatically detect dark/light mode from environment variable set in bashrc
 let iterm_profile = $ITERM_PROFILE
-if iterm_profile == "Dark"
-    set background=dark | hi Normal ctermbg=0 | hi StatusLine ctermbg=red ctermfg=black
-else
+if iterm_profile == "Light"
     set background=light | hi Normal ctermbg=0 | hi StatusLine ctermbg=red ctermfg=black
+else
+    set background=dark | hi Normal ctermbg=0 | hi StatusLine ctermbg=red ctermfg=black
 endif
 
 " Change it on the fly if you are programming just when sundown happens, cron

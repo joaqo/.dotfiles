@@ -1,6 +1,9 @@
 # FZF
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
+# Select cuda library version to use
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-9.0/lib64
+
 # Virtualenv wrapper doesnt do this when you install it for some reason
 export WORKON_HOME=~/.virtualenvs
 
@@ -238,12 +241,12 @@ fshow() {
 if [[ "$(uname -s)" == "Darwin" ]]; then
     sith() {
         val=$(defaults read -g AppleInterfaceStyle 2>/dev/null)
-        if [[ $val == "Dark" ]]; then
-            echo -ne "\033]50;SetProfile=Default\a"
-            export ITERM_PROFILE="Dark"
-        else
+        if [[ $val == "Light" ]]; then
             echo -ne "\033]50;SetProfile=DefaultLight\a"
             export ITERM_PROFILE="Light"
+        else
+            echo -ne "\033]50;SetProfile=Default\a"
+            export ITERM_PROFILE="Dark"
         fi
     }
     sith
