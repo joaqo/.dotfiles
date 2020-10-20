@@ -2,10 +2,19 @@
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 # Select cuda library version to use
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-9.0/lib64
+export PATH=/usr/local/cuda-10.2/bin${PATH:+:${PATH}}
+export LD_LIBRARY_PATH=/usr/local/cuda-10.2/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+
+# Select S4TF swift version
+export PATH=~/swift_binaries_0_9/usr/bin:"${PATH}"
 
 # Virtualenv wrapper doesnt do this when you install it for some reason
-export WORKON_HOME=~/.virtualenvs
+export WORKON_HOME=~/data/.virtualenvs
+export POETRY_VIRTUALENVS_PATH=$WORKON_HOME
+
+# Add poetry to path. The poetry installation script adds this to
+# your .profile file, I just moved it here.
+export PATH="$HOME/.poetry/bin:$PATH"
 
 # Save history after each command (to share history between windows)
 export PROMPT_COMMAND='history -a'
@@ -101,14 +110,14 @@ if [ $# -eq 0 ]
 then
     # source $(pipenv --venv)/bin/activate
     # . "$(dirname $(poetry run which python))/activate"
-    source ~/.virtualenvs/${PWD##*/}/bin/activate 
+    source ${WORKON_HOME}${PWD##*/}/bin/activate 
 else
-    source ~/.virtualenvs/$1/bin/activate
+    source ${WORKON_HOME}/$1/bin/activate
 fi
 }
 _workon() {
   local lis cur
-  lis=$(ls ~/.virtualenvs)
+  lis=$(ls $WORKON_HOME)
   cur=${COMP_WORDS[COMP_CWORD]}
   COMPREPLY=( $(compgen -W "$lis" -- "$cur") )
 }
@@ -116,7 +125,7 @@ complete -F _workon wo
 
 # Making virtualenv alias
 mkvenv() {
-python3 -m venv ~/.virtualenvs/"$1"
+python3 -m venv ${WORKON_HOME}/"$1"
 wo "$1"
 }
 
