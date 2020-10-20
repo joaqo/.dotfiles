@@ -72,9 +72,10 @@ alias g="git"
 alias l="ls -lhFG"
 alias callcito="/Applications/Call\ of\ Duty\ 2\ Multiplayer.app/Contents/MacOS/Call\ of\ Duty\ 2\ Multiplayer"
 alias p="pipenv run"
-alias i="ipython"
+alias i="bpython"
+alias b="bpython"
 alias t="tmux a"
-alias "pipdefs"="pip install ipdb ipython jedi flake8"
+alias "pipdefs"="pip install ipdb bpython jedi flake8"
 
 # ls with colors
 if [[ ${os_type} == *"Darwin"* ]]
