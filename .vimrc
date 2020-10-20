@@ -247,22 +247,7 @@ vnoremap p pgvy
 
 " ============================== Looks =====================================
 colorscheme gruvbox
-" set background=dark
-" hi Normal ctermbg=0
-" hi StatusLine ctermbg=red ctermfg=black
-"
-" Automatically detect dark/light mode from environment variable set in bashrc
-let iterm_profile = $ITERM_PROFILE
-if iterm_profile == "Light"
-    set background=light | hi Normal ctermbg=0 | hi StatusLine ctermbg=red ctermfg=black
-else
-    set background=dark | hi Normal ctermbg=0 | hi StatusLine ctermbg=red ctermfg=black
-endif
-
-" Change it on the fly if you are programming just when sundown happens, cron
-" job seems excessive lol.
-command D set background=dark | hi Normal ctermbg=0 | hi StatusLine ctermbg=red ctermfg=black
-command L set background=light | hi Normal ctermbg=0 | hi StatusLine ctermbg=red ctermfg=black
+set background=dark | hi Normal ctermbg=0 | hi StatusLine ctermbg=red ctermfg=black
 
 let s:hidden_all = 0
 function ToggleStatusBar()
