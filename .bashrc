@@ -20,9 +20,9 @@ export PATH="$HOME/.poetry/bin:$PATH"
 export PROMPT_COMMAND='history -a'
 
 # Expand size of bash history and dont save duplicate commands
-export HISTSIZE=20000
-export HISTFILESIZE=20000
-export HISTCONTROL=ignoredups:erasedups
+export HISTSIZE=80000
+export HISTFILESIZE=80000
+export HISTCONTROL=ignoredups:erasedups:ignorespace
 
 # Configure prompt
 export GIT_PS1_SHOWDIRTYSTATE=1
