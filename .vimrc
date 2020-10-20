@@ -16,6 +16,7 @@ Plug 'tmux-plugins/vim-tmux-focus-events'  " For vim-tmux-clipboard plugin
 Plug 'prabirshrestha/async.vim'  " For vim-lsp
 Plug 'prabirshrestha/vim-lsp'
 Plug 'git@github.com:ervandew/supertab.git'
+Plug 'junegunn/gv.vim'
 call plug#end()
 
 highlight CursorLine cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
