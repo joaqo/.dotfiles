@@ -166,7 +166,6 @@ au FileType python setlocal
     \ autoindent
     \ fileformat=unix
     \ foldmethod=indent
-au FileType python match Error /\%101v.\+/
 au FileType json setlocal
     \ foldmethod=syntax
 au BufNewFile,BufRead *.js,*.html,*.css
