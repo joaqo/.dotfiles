@@ -249,6 +249,9 @@ vnoremap p pgvy
 colorscheme gruvbox
 set background=dark | hi Normal ctermbg=0 | hi StatusLine ctermbg=red ctermfg=black
 
+command L set background=light | hi Normal ctermbg=white | hi StatusLine ctermbg=red ctermfg=white
+command D set background=dark | hi Normal ctermbg=0 | hi StatusLine ctermbg=red ctermfg=black
+
 let s:hidden_all = 0
 function ToggleStatusBar()
     if s:hidden_all  == 0
@@ -271,8 +274,7 @@ command SB call ToggleStatusBar()
 
 " =========================== Abbreviations ================================
 iabbrev @@b breakpoint()
-iabbrev @@i from IPython import embed; embed(display_banner=False)
-iabbrev @@d import ipdb; ipdb.set_trace()
+iabbrev @@d import bpdb; bpdb.set_trace()
 iabbrev @@p import pudb; pu.db
 iabbrev @@t tf.InteractiveSession; from IPython import embed; embed(display_banner=False)
 
