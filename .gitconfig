@@ -4,10 +4,6 @@
 	email = joaquin.alori@gmail.com
 [push]
 	default = simple
-[core]
-	pager = delta
-[delta]
-	features = side-by-side line-numbers decorations
 [interactive]
 	diffFilter = delta --color-only
 [alias]
