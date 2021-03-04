@@ -13,10 +13,8 @@ Plug 'christoomey/vim-tmux-navigator'
 Plug 'sheerun/vim-polyglot'
 Plug 'https://github.com/roxma/vim-tmux-clipboard'
 Plug 'tmux-plugins/vim-tmux-focus-events'  " For vim-tmux-clipboard plugin
-Plug 'prabirshrestha/async.vim'  " For vim-lsp
-Plug 'prabirshrestha/vim-lsp'
-Plug 'git@github.com:ervandew/supertab.git'
 Plug 'junegunn/gv.vim'
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 call plug#end()
 
 highlight CursorLine cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
@@ -41,21 +39,6 @@ endfunction
 
 map <C-n> :call NERDTreeToggleInCurDir()<CR>
 let NERDTreeMinimalUI=1
-
-" Vim-lsp
-" Diagnostics in bottom bar
-" let g:lsp_diagnostics_echo_cursor = 1
-" Diagnostics in pop-up
-let g:lsp_diagnostics_float_cursor = 1
-let g:lsp_diagnostics_float_delay = 500
-nnoremap gd :<C-u>LspDefinition<CR>
-nnoremap gh :<C-u>LspHover<CR>
-nnoremap gr :<C-u>LspReferences<CR>
-nnoremap gb :<C-u>LspDocumentDiagnostics<CR>
-nnoremap gb :<C-u>LspDocumentDiagnostics<CR>
-
-" Supertab
-let g:SuperTabDefaultCompletionType = "<C-X><C-O>"
 
 " Git Gutter
 set updatetime=250  " Vim update time, defaults to 4000ms
@@ -280,32 +263,5 @@ iabbrev @@p import pudb; pu.db
 iabbrev @@t tf.InteractiveSession; from IPython import embed; embed(display_banner=False)
 
 
-" =========================== Swift =======================================
-if executable('sourcekit-lsp')
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'sourcekit-lsp',
-        \ 'cmd': {server_info->['sourcekit-lsp']},
-        \ 'whitelist': ['swift'],
-        \ })
-endif
-autocmd FileType swift setlocal omnifunc=lsp#complete
-autocmd Filetype swift setlocal expandtab tabstop=2 shiftwidth=2 softtabstop=2 autoindent
-
-set foldmethod=expr
-  \ foldexpr=lsp#ui#vim#folding#foldexpr()
-  \ foldtext=lsp#ui#vim#folding#foldtext()
-
-
-"auto close {
-function! s:CloseBracket()
-    let line = getline('.')
-    if line =~# '^\s*\(struct\|class\|enum\) '
-        return "{\<Enter>};\<Esc>O"
-    elseif searchpair('(', '', ')', 'bmn', '', line('.'))
-        " Probably inside a function call. Close it off.
-        return "{\<Enter>});\<Esc>O"
-    else
-        return "{\<Enter>}\<Esc>O"
-    endif
-endfunction
-inoremap <expr> {<Enter> <SID>CloseBracket()
+" ========================== Other vim configs ===============================
+source ~/.vimrc_coc
