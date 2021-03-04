@@ -75,8 +75,9 @@ alias p="pipenv run"
 alias i="bpython"
 alias b="bpython"
 alias t="tmux a"
-alias "pipdefs"="pip install ipdb bpython jedi flake8"
+alias "pipdefs"="pip install ipdb bpython flake8 pretty_errors"
 alias "process"="ps -feww | grep"
+alias nvim="/home/lalo/nvim/nvim.appimage"
 
 # ls with colors
 if [[ ${os_type} == *"Darwin"* ]]
