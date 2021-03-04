@@ -2,9 +2,8 @@
   "python.formatting.provider": "black",
   "python.linting.pylintEnabled": true,
   "python.linting.enabled": true,
-  "python.jediEnabled": false,
   "python.pythonPath": "python",
-  "diagnostic.checkCurrentLine": true,
   "python.analysis.useLibraryCodeForTypes": false,
-  "python.analysis.typeCheckingMode": "off"
+  "python.analysis.typeCheckingMode": "off",
+  "python.formatting.blackArgs": ["--line-length=100"]
 }
