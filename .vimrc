@@ -157,7 +157,7 @@ au BufNewFile,BufRead *.js,*.html,*.css
     \ set shiftwidth=2 |
 au BufNewFile,BufRead *.md,*.txt :call ToggleWrap()
 autocmd Filetype gitcommit setlocal spell textwidth=72
-autocmd BufEnter *.png,*.jpg,*gif exec "! /usr/bin/imgcat ".expand("%") | :bw
+autocmd BufNewFile,BufRead *.png,*.jpg,*gif exec "! /usr/bin/imgcat ".expand("%") | :bw
 "
 " Highlight TODO, FIXME, NOTE, etc.
 if has('autocmd') && v:version > 701
