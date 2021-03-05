@@ -232,6 +232,7 @@ vnoremap p pgvy
 " ============================== Looks =====================================
 colorscheme gruvbox
 set background=dark | hi Normal ctermbg=0 | hi StatusLine ctermbg=red ctermfg=black
+hi CocErrorHighlight cterm=underline
 hi CocWarningHighlight cterm=underline
 hi CocInfoHighlight cterm=underline
 hi CocHintHighlight cterm=underline
