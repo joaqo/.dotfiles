@@ -1,15 +1,16 @@
-# FZF
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
+# # Temp
+# export LD_LIBRARY_PATH=/opt/intel/ipp/lib:$LD_LIBRARY_PATH
+# export FASTREID_DATASETS=/mnt/hdd1/lalo/
 
 # Select cuda library version to use
-export PATH=/usr/local/cuda-10.2/bin${PATH:+:${PATH}}
-export LD_LIBRARY_PATH=/usr/local/cuda-10.2/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+cuda-env() {
+  export PATH=/usr/local/cuda-$1/bin${PATH:+:${PATH}}
+  export LD_LIBRARY_PATH=/usr/local/cuda-$1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+  export CUDA_HOME=/usr/local/cuda-$1/
+}
+cuda-env 11.0
 
-# Select S4TF swift version
-export PATH=~/swift_binaries_0_9/usr/bin:"${PATH}"
-
-# Virtualenv wrapper doesnt do this when you install it for some reason
-export WORKON_HOME=~/data/.virtualenvs
+export WORKON_HOME=/mnt/hdd1/lalo/.virtualenvs
 export POETRY_VIRTUALENVS_PATH=$WORKON_HOME
 
 # Add poetry to path. The poetry installation script adds this to
@@ -38,11 +39,14 @@ else
     export PS1='\[\033[01;31m\]\h \[\033[00m\]\[\033[01;34m\]\w\[\033[00m\]\[\033[01;36m\]$(__git_ps1 " %s")\[\033[00m\]\[\033[01;31m\] > \[\033[00m\]'
 fi
 
-# Vim default editor
+# Vim as default editor
 export EDITOR='vim'
 
-# Not sure what this is, maybe for man an the such?
+# Not sure what this is, maybe for man and such?
 export VISUAL='vim'
+
+# Load FZF
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
 # Si no le agregaba la -t no me encontraba los .env que estuvieran
 # a mas de dos directorios de distancia recursiva, what??!!
@@ -63,21 +67,15 @@ export LANG=en_US.UTF-8
 HOMEBREW_NO_AUTO_UPDATE=1
 
 # Aliases
-alias mux="tmuxinator"
-alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
-alias chrome-canary="/Applications/Google\ Chrome\ Canary.app/Contents/MacOS/Google\ Chrome\ Canary"
 alias gsb="git status -sb"
 alias gd="clear; git diff"
 alias g="git"
 alias l="ls -lhFG"
-alias callcito="/Applications/Call\ of\ Duty\ 2\ Multiplayer.app/Contents/MacOS/Call\ of\ Duty\ 2\ Multiplayer"
-alias p="pipenv run"
-alias i="bpython"
+alias i="ipython"
 alias b="bpython"
 alias t="tmux a"
-alias "pipdefs"="pip install ipdb bpython flake8 pretty_errors"
-alias "process"="ps -feww | grep"
-alias nvim="/home/lalo/nvim/nvim.appimage"
+alias pipdefs="pip install ipdb bpython ipython flake8 pretty_errors"
+alias process="ps -feww | grep"
 
 # ls with colors
 if [[ ${os_type} == *"Darwin"* ]]
@@ -88,7 +86,7 @@ else
 fi
 
 # Make python > 3.7 debugger use ipdb when calling `breakpoint()`
-PYTHONBREAKPOINT=ipdb.set_trace
+export PYTHONBREAKPOINT=ipdb.set_trace
 
 # Add files in ~/bin to path
 PATH=$PATH:~/code/bin
@@ -101,22 +99,21 @@ PATH=$PATH:/usr/local/sbin
 PATH=~/.pyenv/shims:$PATH
 PATH=~/.pyenv/bin:$PATH
 
-# pipenv looks for this to integrate with pyenv
+# Pipenv looks for this to integrate with pyenv
 export PYENV_ROOT=~/.pyenv/
 export PIPENV_SKIP_LOCK=True
 
 # Activate current folder's pipenv virtualenv or activate an explicit virtualenv name,
-# Hardcoded to ~/.virtualenvs. Supports autocomplete 
-# renamed from workon to wo as I type this a lot
+# Supports autocomplete, renamed from workon to wo as I type this a lot
 wo() {
-if [ $# -eq 0 ]
-then
-    # source $(pipenv --venv)/bin/activate
-    # . "$(dirname $(poetry run which python))/activate"
-    source ${WORKON_HOME}${PWD##*/}/bin/activate 
-else
-    source ${WORKON_HOME}/$1/bin/activate
-fi
+  if [ $# -eq 0 ]
+  then
+      # source $(pipenv --venv)/bin/activate
+      # . "$(dirname $(poetry run which python))/activate"
+      source ${WORKON_HOME}${PWD##*/}/bin/activate 
+  else
+      source ${WORKON_HOME}/$1/bin/activate
+  fi
 }
 _workon() {
   local lis cur
@@ -126,34 +123,16 @@ _workon() {
 }
 complete -F _workon wo
 
-# Making virtualenv alias
+# Making a new virtualenv
 mkvenv() {
-python3 -m venv ${WORKON_HOME}/"$1"
-wo "$1"
+  python3 -m venv ${WORKON_HOME}/"$1"
+  wo "$1"
+  pip install --upgrade pip
 }
-
-# # Automatic virtualenv sourcing
-# function auto_pipenv_shell {
-#     if [ ! -n "$VIRTUAL_ENV" ]; then
-#         if [ -f "Pipfile" ] ; then
-#             workon
-#         fi
-#     fi
-# }
-# function cd {
-#     builtin cd "$@"
-#     auto_pipenv_shell
-# }
-# auto_pipenv_shell
 
 # Get json from api
 httpj() {
 http --pretty=format $1 | vim - -c 'set syntax=json' -c 'set foldmethod=syntax'
-}
-
-# Add title to current iterm window
-title() {
-    echo -n -e "\033]0;"$*"\007"
 }
 
 # Highlight folders on ls
@@ -196,42 +175,10 @@ n() {
 }
 complete -F _n n
 
-########################### Git + FZF Integrations ####################################
-
-# fstash - easier way to deal with stashes
-# type fstash to get a list of your stashes
-# enter shows you the contents of the stash
-# ctrl-d shows a diff of the stash against your current HEAD
-# ctrl-b checks the stash out as a branch, for easier merging
-fstash() {
-  local out q k sha
-  while out=$(
-    git stash list --pretty="%C(yellow)%h %>(14)%Cgreen%cr %C(blue)%gs" |
-    fzf --ansi --no-sort --query="$q" --print-query \
-        --expect=ctrl-d,ctrl-b);
-  do
-    mapfile -t out <<< "$out"
-    q="${out[0]}"
-    k="${out[1]}"
-    sha="${out[-1]}"
-    sha="${sha%% *}"
-    [[ -z "$sha" ]] && continue
-    if [[ "$k" == 'ctrl-d' ]]; then
-      git diff $sha
-    elif [[ "$k" == 'ctrl-b' ]]; then
-      git stash branch "stash-$sha" $sha
-      break;
-    else
-      git stash show -p $sha
-    fi
-  done
-}
-
+# fcheckout - checkout git commit with previews
 alias glNoGraph='git log --color=always --format="%C(auto)%h%d %s %C(black)%C(bold)%cr% C(auto)%an" "$@"'
 _gitLogLineToHash="echo {} | grep -o '[a-f0-9]\{7\}' | head -1"
 _viewGitLogLine="$_gitLogLineToHash | xargs -I % sh -c 'git show --color=always %'"
-
-# fcheckout - checkout git commit with previews
 fcoc_preview() {
   local commit
   commit=$( glNoGraph |
@@ -250,8 +197,7 @@ fshow() {
                 --bind "alt-y:execute:$_gitLogLineToHash | xclip"
 }
 
-#######################################################################################
-# Load custom, per machine, options. Such as adding cuda libraries to path
+# Optionally load custom non versioned per machine options.
 if [ -f ~/.bashrc_extra ]; then
   . ~/.bashrc_extra
 fi
