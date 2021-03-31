@@ -10,7 +10,7 @@ cuda-env() {
 }
 cuda-env 11.0
 
-export WORKON_HOME=/mnt/hdd1/lalo/.virtualenvs
+export WORKON_HOME=~/.virtualenvs
 export POETRY_VIRTUALENVS_PATH=$WORKON_HOME
 
 # Add poetry to path. The poetry installation script adds this to
