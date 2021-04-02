@@ -189,10 +189,14 @@ command Q q
 command Qa qa
 command QA qa
 command Wa wa
-nnoremap H ^
-nnoremap L $
-vnoremap H ^
-vnoremap L g_
+" This fixes things like dH (deleting till start of line) not working.
+" Remove these comments after testing it thoroughly
+" nnoremap H ^
+" nnoremap L $
+" vnoremap H ^
+" vnoremap L g_
+map H ^
+map L $
 nnoremap Q @q
 cnoremap w!! %!sudo tee > /dev/null %
 noremap <silent> <Leader>j :execute '%!python -m json.tool'<CR>
