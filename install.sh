@@ -8,6 +8,7 @@ ln -s -f .dotfiles/.gitconfig .
 ln -s -f .dotfiles/.inputrc .
 ln -s -f .dotfiles/.tmux.conf .
 ln -s -f .dotfiles/.vimrc .
+ln -s -f .dotfiles/.vimrc_coc .
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
