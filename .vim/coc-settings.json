@@ -4,7 +4,7 @@
   "python.linting.enabled": true,
   "python.pythonPath": "python",
   "python.analysis.typeCheckingMode": "off",
-  "python.formatting.blackArgs": ["--line-length=98"],
+  "python.formatting.blackArgs": ["--line-length=100"],
 
   "suggest.completionItemKindLabels": {
     "keyword": "keyword",
