@@ -201,6 +201,7 @@ nnoremap Q @q
 cnoremap w!! %!sudo tee > /dev/null %
 noremap <silent> <Leader>j :execute '%!python -m json.tool'<CR>
 noremap <silent> <Leader>t :call ToggleWrap()<CR>
+noremap <silent> <Leader>s :w<CR> :silent !sh sync.sh<CR> :redraw!<CR> :echo "Synced!"<CR>
 function ToggleWrap()
   if &wrap
     set nu
