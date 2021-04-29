@@ -1,7 +1,8 @@
 # Run me from your home folder
 
-wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh --directory-prefix=/usr/local/etc/bash_completion.d/
-wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash --directory-prefix=/usr/local/etc/bash_completion.d/
+mkdir -p ~/.bin
+wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh --directory-prefix=~/.bin/
+wget https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash --directory-prefix=~/.bin/
 ln -s -f .dotfiles/.bashrc .
 ln -s -f .dotfiles/.profile .
 ln -s -f .dotfiles/.gitconfig .

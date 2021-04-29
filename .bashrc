@@ -12,6 +12,7 @@ cuda-env 11.0
 
 export WORKON_HOME=~/.virtualenvs
 export POETRY_VIRTUALENVS_PATH=$WORKON_HOME
+export PATH="$HOME/.bin:$PATH"
 
 # Add poetry to path. The poetry installation script adds this to
 # your .profile file, I just moved it here.
@@ -31,9 +32,9 @@ os_type="$(uname -a)"
 if [[ ${os_type} == *"Darwin"* ]]
 then
     # Git official autocomplete
-    source /usr/local/etc/bash_completion.d/git-completion.bash
+    source ~/.bin/git-completion.bash
     # Git official prompt
-    source /usr/local/etc/bash_completion.d/git-prompt.sh
+    source ~/.bin/git-prompt.sh
     export PS1='\[\033[01;34m\]\w\[\033[00m\]\[\033[01;36m\]$(__git_ps1 " %s")\[\033[00m\]\[\033[01;31m\] > \[\033[00m\]'
 else
     export PS1='\[\033[01;31m\]\h \[\033[00m\]\[\033[01;34m\]\w\[\033[00m\]\[\033[01;36m\]$(__git_ps1 " %s")\[\033[00m\]\[\033[01;31m\] > \[\033[00m\]'
