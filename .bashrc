@@ -32,9 +32,9 @@ os_type="$(uname -a)"
 if [[ ${os_type} == *"Darwin"* ]]
 then
     # Git official autocomplete
-    source ~/.bin/git-completion.bash
+    source $HOME/.bin/git-completion.bash
     # Git official prompt
-    source ~/.bin/git-prompt.sh
+    source $HOME/.bin/git-prompt.sh
     export PS1='\[\033[01;34m\]\w\[\033[00m\]\[\033[01;36m\]$(__git_ps1 " %s")\[\033[00m\]\[\033[01;31m\] > \[\033[00m\]'
 else
     export PS1='\[\033[01;31m\]\h \[\033[00m\]\[\033[01;34m\]\w\[\033[00m\]\[\033[01;36m\]$(__git_ps1 " %s")\[\033[00m\]\[\033[01;31m\] > \[\033[00m\]'
