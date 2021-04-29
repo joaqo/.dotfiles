@@ -199,6 +199,6 @@ fshow() {
 }
 
 # Optionally load custom non versioned per machine options.
-if [ -f ~/.bashrc_extra ]; then
-  . ~/.bashrc_extra
+if [ -f ~/.bashrclocal ]; then
+  . ~/.bashrclocal
 fi
