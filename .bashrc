@@ -26,15 +26,16 @@ export HISTSIZE=80000
 export HISTFILESIZE=80000
 export HISTCONTROL=ignoredups:erasedups:ignorespace
 
+# Git official autocomplete
+source $HOME/.bin/git-completion.bash
+# Git official prompt
+source $HOME/.bin/git-prompt.sh
+
 # Configure prompt
 export GIT_PS1_SHOWDIRTYSTATE=1
 os_type="$(uname -a)"
 if [[ ${os_type} == *"Darwin"* ]]
 then
-    # Git official autocomplete
-    source $HOME/.bin/git-completion.bash
-    # Git official prompt
-    source $HOME/.bin/git-prompt.sh
     export PS1='\[\033[01;34m\]\w\[\033[00m\]\[\033[01;36m\]$(__git_ps1 " %s")\[\033[00m\]\[\033[01;31m\] > \[\033[00m\]'
 else
     export PS1='\[\033[01;31m\]\h \[\033[00m\]\[\033[01;34m\]\w\[\033[00m\]\[\033[01;36m\]$(__git_ps1 " %s")\[\033[00m\]\[\033[01;31m\] > \[\033[00m\]'
