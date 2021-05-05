@@ -201,7 +201,19 @@ nnoremap Q @q
 cnoremap w!! %!sudo tee > /dev/null %
 noremap <silent> <Leader>j :execute '%!python -m json.tool'<CR>
 noremap <silent> <Leader>t :call ToggleWrap()<CR>
-noremap <silent> <Leader>s :w<CR> :silent !sh sync.sh<CR> :redraw!<CR> :echo "Synced!"<CR>
+command! -nargs=* S call Sync(<f-args>)
+
+" Arguments are referenced using 'a:'
+" The string concatenation operator is: '.'
+function Sync(...)
+  let machine = a:0 >= 1 ? a:1 : "dev"
+  let command = '!sh sync.sh '
+  w
+  silent execute command . machine  
+  redraw!
+  echo "Synced " . machine
+endfunction
+
 function ToggleWrap()
   if &wrap
     set nu
