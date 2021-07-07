@@ -206,7 +206,7 @@ command! -nargs=* S call Sync(<f-args>)
 " Arguments are referenced using 'a:'
 " The string concatenation operator is: '.'
 function Sync(...)
-  let machine = a:0 >= 1 ? a:1 : "dev"
+  let machine = a:0 >= 1 ? a:1 : ""
   let command = '!sh sync.sh '
   w
   silent execute command . machine  
