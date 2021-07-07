@@ -211,7 +211,14 @@ function Sync(...)
   w
   silent execute command . machine  
   redraw!
-  echo "Synced " . machine
+  " echo "Synced " . machine
+  if v:shell_error == 0
+    echo "Synced " . machine . "!"
+  elseif v:shell_error == 12
+    echo "Error syncing " . machine . ": Could not resolve hostname or timed out."
+  else
+    echo "Error syncing " . machine . ": " . v:shell_error
+  endif
 endfunction
 
 function ToggleWrap()
