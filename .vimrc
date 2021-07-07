@@ -1,3 +1,9 @@
+"================================= GET OS ===================================
+let s:uname = system("echo -n \"$(uname)\"")
+if v:shell_error
+  s:uname = "ERROR"
+endif
+
 "================================ VIM-PLUG ==================================
 call plug#begin('~/.vim/plugged')
 Plug 'morhetz/gruvbox'
@@ -14,7 +20,10 @@ Plug 'sheerun/vim-polyglot'
 Plug 'https://github.com/roxma/vim-tmux-clipboard'
 Plug 'tmux-plugins/vim-tmux-focus-events'  " For vim-tmux-clipboard plugin
 Plug 'junegunn/gv.vim'
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+if s:uname == "Darwin"
+  Plug 'neoclide/coc.nvim', {'branch': 'release'}
+  source ~/.vimrc_coc
+endif
 call plug#end()
 
 highlight CursorLine cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
@@ -289,7 +298,3 @@ iabbrev @@b breakpoint()
 iabbrev @@d import bpdb; bpdb.set_trace()
 iabbrev @@p import pudb; pu.db
 iabbrev @@t tf.InteractiveSession; from IPython import embed; embed(display_banner=False)
-
-
-" ========================== Other vim configs ===============================
-source ~/.vimrc_coc
