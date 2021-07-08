@@ -90,8 +90,9 @@ fi
 # Make python > 3.7 debugger use ipdb when calling `breakpoint()`
 export PYTHONBREAKPOINT=ipdb.set_trace
 
-# Add files in ~/bin to path
-PATH=$PATH:~/code/bin
+# Add local bins to path
+PATH=$PATH:~/code/bin  # Personal bins
+PATH=$PATH:~/.local/bin  # Ubuntu bins
 
 # Fixes the following problem with brew
 # https://github.com/Homebrew/homebrew-php/issues/4527#issuecomment-346483994
