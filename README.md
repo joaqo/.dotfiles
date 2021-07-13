@@ -2,9 +2,14 @@
 
 ## Installation
 
+### For remote nodes
 ```bash
 cd
-git clone git@github.com:joaqo/.dotfiles.git
+git clone https://github.com/joaqo/.dotfiles.git --depth 1
 sh .dotfiles/install.sh
 ```
-Logout from machine, do `scp ~/.bashrclocal machines_name:`, and re-login.
+Logout from machine
+```bash
+scp ~/.bashrclocal machines_name:
+```
+Re-login.
