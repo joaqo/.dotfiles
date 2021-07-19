@@ -13,6 +13,9 @@
 	edit = !$EDITOR $(git status --short | awk '$1 ~ /^M|A|U/ {print $2}' )
 	edit-unmerged = "!$EDITOR `git diff --name-only --diff-filter=U`"
 	add-unmerged = "!git add `git diff --name-only --diff-filter=U`"
+	tags = tag -ln --sort=-v:refname
+	tags-full = tag -l --format='%(color:green)%(tag)%(color:reset) %(color:blue)%(subject)%(color:reset) \n\n%(contents:body) %0a' --sort=-v:refname
+
 [diff]
 	tool = vimdiff
 [commit]
