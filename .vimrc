@@ -11,7 +11,7 @@ Plug 'https://github.com/tpope/vim-fugitive.git'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'https://github.com/elzr/vim-json'
-Plug 'airblade/vim-gitgutter'
+Plug 'mhinz/vim-signify'
 Plug 'scrooloose/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'yuttie/comfortable-motion.vim'
@@ -49,9 +49,25 @@ endfunction
 map <C-n> :call NERDTreeToggleInCurDir()<CR>
 let NERDTreeMinimalUI=1
 
-" Git Gutter
-set updatetime=250  " Vim update time, defaults to 4000ms
+" Vim Signify
+set updatetime=100  " Vim update time defaults to 4000ms
+" Left over config from git gutter, if I remove it the sign column gets a background
+" color. I have to keep this setting even after deleting gitgutter for some reason.
 let g:gitgutter_override_sign_column_highlight = 1
+" To print 'Hunk 2/4'
+autocmd User SignifyHunk call s:show_current_hunk()
+function! s:show_current_hunk() abort
+  let h = sy#util#get_hunk_stats()
+  if !empty(h)
+    echo printf('[Hunk %d/%d]', h.current_hunk, h.total_hunks)
+  endif
+endfunction
+" To undo hunk
+noremap <silent> <Leader>u :SignifyHunkUndo<CR>
+" To show diff in new tab
+noremap <silent> <Leader>d :SignifyDiff<CR>
+" To preview hunk's diff
+noremap <silent> <Leader>p :SignifyHunkDiff<CR>
 
 " Comfortable vim - scrolling
 let g:comfortable_motion_no_default_key_mappings = 1
