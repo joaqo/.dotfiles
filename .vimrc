@@ -1,9 +1,3 @@
-"================================= GET OS ===================================
-let s:uname = system("echo -n \"$(uname)\"")
-if v:shell_error
-  s:uname = "ERROR"
-endif
-
 "================================ VIM-PLUG ==================================
 call plug#begin('~/.vim/plugged')
 Plug 'morhetz/gruvbox'
@@ -20,10 +14,8 @@ Plug 'sheerun/vim-polyglot'
 Plug 'https://github.com/roxma/vim-tmux-clipboard'
 Plug 'tmux-plugins/vim-tmux-focus-events'  " For vim-tmux-clipboard plugin
 Plug 'junegunn/gv.vim'
-if s:uname == "Darwin"
-  Plug 'neoclide/coc.nvim', {'branch': 'release'}
-  source ~/.vimrc_coc
-endif
+Plug 'skywind3000/asyncrun.vim'
+Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': 'bash install.sh'}
 call plug#end()
 
 highlight CursorLine cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
@@ -31,6 +23,19 @@ set cursorline
 
 
 " ======================= PLUG-IN CONFIGS ===================================
+" LanguageClient
+let g:LanguageClient_serverCommands = {
+    \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
+    \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
+    \ 'python': ['/Users/joaqo/.virtualenvs/test/bin/pyls'],
+    \ 'cpp': ['/usr/bin/clangd'],
+    \ }
+
+" Asyncrun
+let g:asyncrun_open = 7  " Number is how many lines it takes in vertical space
+nmap <silent>K <Plug>(lcn-hover)
+nmap <silent> gd <Plug>(lcn-definition)
+nmap <silent> <F2> <Plug>(lcn-rename)
 
 " NERDTree
 function! NERDTreeToggleInCurDir()
@@ -92,30 +97,25 @@ nnoremap <C-g>h :History:<CR>
 nnoremap <C-g>f :BLines<CR>
 nnoremap <C-g>l :BLines<CR>
 nnoremap <C-g>g :GFiles<CR>
-
 command! -bang -nargs=* Ag
   \ call fzf#vim#ag(<q-args>,
   \                 <bang>0 ? fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'up:60%')
   \                         : fzf#vim#with_preview({'options': '--delimiter : --nth 4..'}, 'right:50%'),
   \                 <bang>0)
-
 command! -bang -nargs=? -complete=dir Files
   \ call fzf#vim#files(<q-args>, fzf#vim#with_preview(), <bang>0)
-
 command! -bang -nargs=* GGrep
   \ call fzf#vim#grep(
   \   'git grep --line-number '.shellescape(<q-args>), 0,
   \   <bang>0 ? fzf#vim#with_preview({'options': '--no-hscroll --delimiter : --nth 3..'}, 'up:60%')
   \           : fzf#vim#with_preview({'options': '--no-hscroll --delimiter : --nth 3..'}, 'right:50%'),
   \   <bang>0)
-
 command! -bang -nargs=* GGrepCword
   \ call fzf#vim#grep(
   \   'git grep --line-number '.shellescape(<q-args>), 0,
   \   <bang>0 ? fzf#vim#with_preview({'options': '--no-hscroll --delimiter : --nth 3.. -q '.shellescape(expand('<cword>'))}, 'up:60%')
   \           : fzf#vim#with_preview({'options': '--no-hscroll --delimiter : --nth 3.. -q '.shellescape(expand('<cword>'))}, 'right:50%'),
   \   <bang>0)
-
 
 " ======================== Set defaults =====================================
 set splitbelow  " Donde aparecen los nuevos splits
@@ -214,12 +214,6 @@ command Q q
 command Qa qa
 command QA qa
 command Wa wa
-" This fixes things like dH (deleting till start of line) not working.
-" Remove these comments after testing it thoroughly
-" nnoremap H ^
-" nnoremap L $
-" vnoremap H ^
-" vnoremap L g_
 map H ^
 map L $
 nnoremap Q @q
@@ -228,22 +222,13 @@ noremap <silent> <Leader>j :execute '%!python -m json.tool'<CR>
 noremap <silent> <Leader>t :call ToggleWrap()<CR>
 command! -nargs=* S call Sync(<f-args>)
 
-" Arguments are referenced using 'a:'
-" The string concatenation operator is: '.'
+" Run :copen to repoen quickfix window after it auto closes,
+" in case you want to confirm which machines synced.
 function Sync(...)
-  let machine = a:0 >= 1 ? a:1 : ""
-  let command = '!sh sync.sh '
-  w
-  silent execute command . machine  
-  redraw!
-  " echo "Synced " . machine
-  if v:shell_error == 0
-    echo "Synced " . machine . "!"
-  elseif v:shell_error == 12
-    echo "Error syncing " . machine . ": Could not resolve hostname or timed out."
-  else
-    echo "Error syncing " . machine . ": " . v:shell_error
-  endif
+  let machines = join(a:000)
+  let command = 'sh sync.sh ' . machines . ';echo Done!; sleep 2'
+  wa
+  call asyncrun#run("!", {'post': 'ccl'}, command)
 endfunction
 
 function ToggleWrap()
@@ -281,10 +266,6 @@ vnoremap p pgvy
 " ============================== Looks =====================================
 colorscheme gruvbox
 set background=dark | hi Normal ctermbg=0 | hi StatusLine ctermbg=red ctermfg=black
-hi CocErrorHighlight cterm=underline
-hi CocWarningHighlight cterm=underline
-hi CocInfoHighlight cterm=underline
-hi CocHintHighlight cterm=underline
 
 command L set background=light | hi Normal ctermbg=white | hi StatusLine ctermbg=red ctermfg=white
 command D set background=dark | hi Normal ctermbg=0 | hi StatusLine ctermbg=red ctermfg=black

@@ -9,9 +9,7 @@ ln -s -f .dotfiles/.gitconfig .
 ln -s -f .dotfiles/.inputrc .
 ln -s -f .dotfiles/.tmux.conf .
 ln -s -f .dotfiles/.vimrc .
-ln -s -f .dotfiles/.vimrc_coc .
 mkdir -p .vim
-ln -s -f $HOME/.dotfiles/.vim/coc-settings.json .vim/coc-settings.json
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
