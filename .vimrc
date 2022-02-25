@@ -30,6 +30,12 @@ let g:LanguageClient_serverCommands = {
     \ 'python': ['/Users/joaqo/.virtualenvs/test/bin/pyls'],
     \ 'cpp': ['/usr/bin/clangd'],
     \ }
+" They don't really give a fuck about what color I chose, don't know why.
+" They just set it to black background and white text for some reason.
+hi link LanguageClientErrorSign orange
+hi link LanguageClientWarningSign orange
+hi link LanguageClientInfoSign orange
+hi link LanguageClientInfoSign orange
 
 " Asyncrun
 let g:asyncrun_open = 7  " Number is how many lines it takes in vertical space
