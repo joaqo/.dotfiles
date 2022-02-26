@@ -23,8 +23,8 @@ call plug#end()
 let g:LanguageClient_serverCommands = {
     \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
     \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
-    \ 'python': ['/Users/joaqo/.virtualenvs/test/bin/pyls'],
-    \ 'cpp': ['/usr/bin/clangd'],
+    \ 'python': ['pyls'],
+    \ 'cpp': ['clangd'],
     \ }
 " DEBUG: They don't really give a fuck about what color I chose, don't know why.
 "        They just set it to black background and white text for some reason.
