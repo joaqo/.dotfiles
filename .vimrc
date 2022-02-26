@@ -10,7 +10,6 @@ Plug 'scrooloose/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
 Plug 'yuttie/comfortable-motion.vim'
 Plug 'christoomey/vim-tmux-navigator'
-Plug 'sheerun/vim-polyglot'
 Plug 'https://github.com/roxma/vim-tmux-clipboard'
 Plug 'tmux-plugins/vim-tmux-focus-events'  " For vim-tmux-clipboard plugin
 Plug 'junegunn/gv.vim'
@@ -81,10 +80,6 @@ noremap <silent> <Leader>p :SignifyHunkDiff<CR>
 let g:comfortable_motion_no_default_key_mappings = 1
 nnoremap <silent> <C-d> :call comfortable_motion#flick(80)<CR>
 nnoremap <silent> <C-u> :call comfortable_motion#flick(-80)<CR>
-
-" Polyglot
-let g:python_highlight_space_errors = 0
-let g:vim_markdown_new_list_item_indent = 0  " https://github.com/plasticboy/vim-markdown
 
 " Fugitive
 command S vertical Gstatus
