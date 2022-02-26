@@ -1,4 +1,4 @@
-"================================ VIM-PLUG ==================================
+"================================ Vim-Plug ==================================
 call plug#begin('~/.vim/plugged')
 Plug 'morhetz/gruvbox'
 Plug 'https://github.com/tpope/vim-fugitive.git'
@@ -18,11 +18,8 @@ Plug 'skywind3000/asyncrun.vim'
 Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': 'bash install.sh'}
 call plug#end()
 
-highlight CursorLine cterm=NONE ctermbg=NONE ctermfg=NONE guibg=NONE guifg=NONE
-set cursorline
 
-
-" ======================= PLUG-IN CONFIGS ===================================
+" ======================= Plug-In Configs ===================================
 " LanguageClient
 let g:LanguageClient_serverCommands = {
     \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
@@ -30,8 +27,8 @@ let g:LanguageClient_serverCommands = {
     \ 'python': ['/Users/joaqo/.virtualenvs/test/bin/pyls'],
     \ 'cpp': ['/usr/bin/clangd'],
     \ }
-" They don't really give a fuck about what color I chose, don't know why.
-" They just set it to black background and white text for some reason.
+" DEBUG: They don't really give a fuck about what color I chose, don't know why.
+"        They just set it to black background and white text for some reason.
 hi link LanguageClientErrorSign orange
 hi link LanguageClientWarningSign orange
 hi link LanguageClientInfoSign orange
@@ -123,6 +120,7 @@ command! -bang -nargs=* GGrepCword
   \           : fzf#vim#with_preview({'options': '--no-hscroll --delimiter : --nth 3.. -q '.shellescape(expand('<cword>'))}, 'right:50%'),
   \   <bang>0)
 
+
 " ======================== Set defaults =====================================
 set splitbelow  " Donde aparecen los nuevos splits
 set splitright  " Donde aparecen los nuevos splits
@@ -139,25 +137,23 @@ set mouse=a  " Enable mouse
 set ttymouse=xterm2  " Fixes some mouse bugs when using vim+tmux
 set showmatch
 set number
-set relativenumber
 set incsearch
 set tabpagemax=400
 set ignorecase
 map Y y$
 set noswapfile  " Dont store swap files
 set ls=2
-" set lazyredraw  " Don't redraw while executing macros (good performance config)
-" set ttyfast     " should make scrolling faster
 set clipboard=unnamed
 set scrolloff=2
 set backspace=indent,eol,start  " Make backspace work like most other apps
-" set backspace=2 
 set ttimeout
 set ttimeoutlen=100  " Or some vim things are annoyingly slow
 set nowrap  " Or long lines wrap around
 let g:netrw_silent=1  " Dont ask for an enter-key press after saving an 'scp://' file
-" let g:pyindent_searchpair_timeout=10  " Not sure if it is needed, from: https://github.com/vim/vim/issues/1098
 set signcolumn=yes  " Always show left debug/diff column so the screen doesn't jump left every time a bug appears
+set nocursorcolumn
+set nocursorline
+set norelativenumber
 
 
 " ============================== Syntax =====================================
