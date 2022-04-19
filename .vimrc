@@ -18,7 +18,7 @@ Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': 'bash install.sh
 call plug#end()
 
 
-" ======================= Plug-In Configs ===================================
+" ========================== Plug-In Configs ================================
 " LanguageClient
 let g:LanguageClient_serverCommands = {
     \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
@@ -151,7 +151,7 @@ set nocursorline
 set norelativenumber
 
 
-" ============================== Syntax =====================================
+" ======================== Syntax Highlighting =============================
 syntax on
 au FileType c setlocal
     \ tabstop=4
@@ -218,6 +218,12 @@ cnoremap w!! %!sudo tee > /dev/null %
 noremap <silent> <Leader>j :execute '%!python -m json.tool'<CR>
 noremap <silent> <Leader>t :call ToggleWrap()<CR>
 command! -nargs=* S call Sync(<f-args>)
+
+" I did some research and found that _, S, and + are perfect for remapping.
+" The key `s` may also be perfect for remapping, taken from this site:
+" https://vim.fandom.com/wiki/Unused_keys
+" so I am storing this here not to forget about it.
+map _ <C-6>
 
 " Run :copen to repoen quickfix window after it auto closes,
 " in case you want to confirm which machines synced.
