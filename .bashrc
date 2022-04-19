@@ -128,9 +128,14 @@ complete -F _workon wo
 
 # Making a new virtualenv
 mkvenv() {
-  python3 -m venv ${WORKON_HOME}/"$1"
-  wo "$1"
-  pip install --upgrade pip
+  if [ $# -eq 0 ]  # The $# variable stores the number of input arguments the script was passed
+  then
+    echo "No arguments supplied"
+  else
+    python3 -m venv ${WORKON_HOME}/"$1"
+    wo "$1"
+    pip install --upgrade pip
+  fi
 }
 
 # Get json from api
