@@ -1,8 +1,6 @@
 # Define OS
 if [[ "$(uname -a)" == *"Darwin"* ]]; then
-    is_macos=1
-else
-    is_macos=0
+    is_macos=true
 fi
 
 # Select cuda library version to use
@@ -36,7 +34,7 @@ source $HOME/.bin/git-prompt.sh
 
 # Configure prompt
 export GIT_PS1_SHOWDIRTYSTATE=1
-if [ is_macos ]; then
+if [ $is_macos ]; then
     export PS1='\[\033[01;34m\]\w\[\033[00m\]\[\033[01;36m\]$(__git_ps1 " %s")\[\033[00m\]\[\033[01;31m\] > \[\033[00m\]'
 else
     export PS1='\[\033[01;31m\]\h \[\033[00m\]\[\033[01;34m\]\w\[\033[00m\]\[\033[01;36m\]$(__git_ps1 " %s")\[\033[00m\]\[\033[01;31m\] > \[\033[00m\]'
@@ -54,7 +52,7 @@ export VISUAL='vim'
 # Si no le agregaba la -t no me encontraba los .env que estuvieran
 # a mas de dos directorios de distancia recursiva, what??!!
 # Only in my computer cause it requires ag to be installed.
-if [ is_macos ]; then
+if [ $is_macos ]; then
     export FZF_DEFAULT_COMMAND='ag -U --ignore={"*.pyc",".git"} --hidden -g ""'
     export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 fi
@@ -69,7 +67,7 @@ export LANG=en_US.UTF-8
 HOMEBREW_NO_AUTO_UPDATE=1
 
 # Fix homebrew for macOS with M1 chip
-if [ is_macos ]; then
+if [ $is_macos ]; then
     export PATH=/opt/homebrew/bin:$PATH
 fi
 
@@ -87,7 +85,7 @@ alias mux=tmuxinator
 alias v="vim"
 
 # ls with colors
-if [ is_macos ]; then
+if [ $is_macos ]; then
     alias ls="ls -G"
 else
     alias ls='ls --color=auto'
