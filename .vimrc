@@ -32,12 +32,13 @@ hi link LanguageClientErrorSign orange
 hi link LanguageClientWarningSign orange
 hi link LanguageClientInfoSign orange
 hi link LanguageClientInfoSign orange
+nmap <silent>K <Plug>(lcn-hover)
+nmap <silent> gd <Plug>(lcn-definition)
+nmap <silent> gr <Plug>(lcn-references)
+nmap <silent> <F2> <Plug>(lcn-rename)
 
 " Asyncrun
 let g:asyncrun_open = 7  " Number is how many lines it takes in vertical space
-nmap <silent>K <Plug>(lcn-hover)
-nmap <silent> gd <Plug>(lcn-definition)
-nmap <silent> <F2> <Plug>(lcn-rename)
 
 " NERDTree
 function! NERDTreeToggleInCurDir()
