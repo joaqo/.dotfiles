@@ -1,6 +1,9 @@
-# # Temp
-# export LD_LIBRARY_PATH=/opt/intel/ipp/lib:$LD_LIBRARY_PATH
-# export FASTREID_DATASETS=/mnt/hdd1/lalo/
+# Define OS
+if [[ "$(uname -a)" == *"Darwin"* ]]; then
+    is_macos=1
+else
+    is_macos=0
+fi
 
 # Select cuda library version to use
 cuda-env() {
@@ -33,9 +36,7 @@ source $HOME/.bin/git-prompt.sh
 
 # Configure prompt
 export GIT_PS1_SHOWDIRTYSTATE=1
-os_type="$(uname -a)"
-if [[ ${os_type} == *"Darwin"* ]]
-then
+if [ is_macos ]; then
     export PS1='\[\033[01;34m\]\w\[\033[00m\]\[\033[01;36m\]$(__git_ps1 " %s")\[\033[00m\]\[\033[01;31m\] > \[\033[00m\]'
 else
     export PS1='\[\033[01;31m\]\h \[\033[00m\]\[\033[01;34m\]\w\[\033[00m\]\[\033[01;36m\]$(__git_ps1 " %s")\[\033[00m\]\[\033[01;31m\] > \[\033[00m\]'
@@ -53,8 +54,7 @@ export VISUAL='vim'
 # Si no le agregaba la -t no me encontraba los .env que estuvieran
 # a mas de dos directorios de distancia recursiva, what??!!
 # Only in my computer cause it requires ag to be installed.
-if [[ ${os_type} == *"Darwin"* ]]
-then
+if [ is_macos ]; then
     export FZF_DEFAULT_COMMAND='ag -U --ignore={"*.pyc",".git"} --hidden -g ""'
     export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 fi
@@ -78,10 +78,11 @@ alias b="bpython"
 alias t="tmux a"
 alias pipdefs="pip install ipdb bpython ipython flake8 pretty_errors"
 alias process="ps -feww | grep"
+alias mux=tmuxinator
+alias v="vim"
 
 # ls with colors
-if [[ ${os_type} == *"Darwin"* ]]
-then
+if [ is_macos ]; then
     alias ls="ls -G"
 else
     alias ls='ls --color=auto'
@@ -109,10 +110,7 @@ export PIPENV_SKIP_LOCK=True
 # Activate current folder's pipenv virtualenv or activate an explicit virtualenv name,
 # Supports autocomplete, renamed from workon to wo as I type this a lot
 wo() {
-  if [ $# -eq 0 ]
-  then
-      # source $(pipenv --venv)/bin/activate
-      # . "$(dirname $(poetry run which python))/activate"
+  if [ $# -eq 0 ]; then
       source ${WORKON_HOME}${PWD##*/}/bin/activate 
   else
       source ${WORKON_HOME}/$1/bin/activate
@@ -128,8 +126,7 @@ complete -F _workon wo
 
 # Making a new virtualenv
 mkvenv() {
-  if [ $# -eq 0 ]  # The $# variable stores the number of input arguments the script was passed
-  then
+  if [ $# -eq 0 ]; then  # The $# variable stores the number of input arguments the script was passed
     echo "No arguments supplied"
   else
     python3 -m venv ${WORKON_HOME}/"$1"
