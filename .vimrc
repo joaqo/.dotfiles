@@ -82,7 +82,7 @@ nnoremap <silent> <C-d> :call comfortable_motion#flick(80)<CR>
 nnoremap <silent> <C-u> :call comfortable_motion#flick(-80)<CR>
 
 " Fugitive
-command S vertical Gstatus
+" :G to go to Gstatus and from there you can do whatever or read help
 
 " FZF
 nnoremap <C-f> :GGrep<CR>
