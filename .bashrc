@@ -68,6 +68,11 @@ export LANG=en_US.UTF-8
 # Homebrew autoupdate is horribly slow
 HOMEBREW_NO_AUTO_UPDATE=1
 
+# Fix homebrew for macOS with M1 chip
+if [ is_macos ]; then
+    export PATH=/opt/homebrew/bin:$PATH
+fi
+
 # Aliases
 alias gsb="git status -sb"
 alias gd="clear; git diff"
