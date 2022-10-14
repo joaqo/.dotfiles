@@ -83,6 +83,7 @@ alias pipdefs="pip install ipdb bpython ipython flake8 pretty_errors"
 alias process="ps -feww | grep"
 alias mux=tmuxinator
 alias v="vim"
+alias grep="grep --color"
 
 # ls with colors
 if [ $is_macos ]; then
