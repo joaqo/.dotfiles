@@ -266,6 +266,12 @@ nnoremap <Space> :
 " Bind p in visual mode to paste without overriding the current register
 vnoremap p pgvy
 
+" By default, <c-l> clears and redraws the screen (like :redraw!). The following mapping does the same,
+" plus de-highlighting the matches found via /, ? etc.,
+" plus fixing syntax highlighting (sometimes Vim loses highlighting due to complex highlighting rules),
+" plus force updating the syntax highlighting in diff mode:
+nnoremap <leader>l :nohlsearch<cr>:diffupdate<cr>:syntax sync fromstart<cr><c-l>
+
 
 " ============================== Looks =====================================
 colorscheme gruvbox
