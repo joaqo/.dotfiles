@@ -19,6 +19,10 @@ export PATH="$HOME/.bin:$PATH"
 # your .profile file, I just moved it here.
 export PATH="$HOME/.poetry/bin:$PATH"
 
+# Add google cloud (gcloud) to path
+export PATH="$HOME/.bin/google-cloud-sdk/bin:$PATH"
+export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/gcloud/application_default_credentials.json"
+
 # Save history after each command (to share history between windows)
 export PROMPT_COMMAND='history -a'
 
