@@ -14,18 +14,18 @@ Plug 'https://github.com/roxma/vim-tmux-clipboard'
 Plug 'tmux-plugins/vim-tmux-focus-events'  " For vim-tmux-clipboard plugin
 Plug 'junegunn/gv.vim'
 Plug 'skywind3000/asyncrun.vim'
-Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': 'bash install.sh'}
+" Plug 'autozimu/LanguageClient-neovim', {'branch': 'next', 'do': 'bash install.sh'}
 call plug#end()
 
 
 " ========================== Plug-In Configs ================================
 " LanguageClient
-let g:LanguageClient_serverCommands = {
-    \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
-    \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
-    \ 'python': ['pyls'],
-    \ 'cpp': ['clangd'],
-    \ }
+" let g:LanguageClient_serverCommands = {
+"     \ 'rust': ['~/.cargo/bin/rustup', 'run', 'stable', 'rls'],
+"     \ 'javascript.jsx': ['tcp://127.0.0.1:2089'],
+"     \ 'python': ['pyls'],
+"     \ 'cpp': ['clangd'],
+"     \ }
 " DEBUG: They don't really give a fuck about what color I chose, don't know why.
 "        They just set it to black background and white text for some reason.
 hi link LanguageClientErrorSign orange
