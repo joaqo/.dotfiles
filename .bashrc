@@ -45,10 +45,10 @@ else
 fi
 
 # Vim as default editor
-export EDITOR='vim'
+export EDITOR='nvim'
 
 # Not sure what this is, maybe for man and such?
-export VISUAL='vim'
+export VISUAL='nvim'
 
 # Load FZF
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
@@ -86,8 +86,10 @@ alias t="tmux a"
 alias pipdefs="pip install ipdb bpython ipython flake8 pretty_errors"
 alias process="ps -feww | grep"
 alias mux=tmuxinator
-alias v="vim"
+alias v="nvim"
+alias vim="nvim"
 alias grep="grep --color"
+alias dash="cd $HOME/dashboard-feyn/; wo dashboard; jupyter notebook main.ipynb"
 
 # ls with colors
 if [ $is_macos ]; then
@@ -145,7 +147,7 @@ mkvenv() {
 
 # Get json from api
 httpj() {
-http --pretty=format $1 | vim - -c 'set syntax=json' -c 'set foldmethod=syntax'
+http --pretty=format $1 | nvim - -c 'set syntax=json' -c 'set foldmethod=syntax'
 }
 
 # Highlight folders on ls
@@ -174,14 +176,14 @@ n() {
         --preview="cat ${NOTE_DIR}/{}.md" \
         --preview-window=right:70%:wrap)
     [[ -n $file ]] && \
-      ${EDITOR:-vim} "${NOTE_DIR}/${file}.md"
+      ${EDITOR:-nvim} "${NOTE_DIR}/${file}.md"
   else
     case "$1" in
       "-d")
         rm "${NOTE_DIR}"/"$2".md
         ;;
       *)
-        ${EDITOR:-vim} "${NOTE_DIR}"/"$*".md
+        ${EDITOR:-nvim} "${NOTE_DIR}"/"$*".md
         ;;
     esac
   fi

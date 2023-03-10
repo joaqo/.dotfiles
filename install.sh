@@ -17,3 +17,6 @@ vim -c 'PlugInstall' -c 'qa!'
 
 git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 ~/.fzf/install --key-bindings --completion --no-update-rc  # So we don't get prompts
+
+cd ~/.config
+ln -s -f ~/.dotfiles/.config/nvim .
