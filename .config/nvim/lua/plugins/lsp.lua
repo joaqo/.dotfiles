@@ -1,3 +1,4 @@
+-- It may make sense in the future to not be so low level and allow mason to manage my lsp servers, watch this: https://www.youtube.com/watch?v=lpQMeFph1RE
 -- You need a version of node installed with nvm (`nvm install node`) or you get access errors when trying to install global packages with npm, after that do:
 -- npm install -g pyright
 -- npm install -g typescript-language-server typescrip

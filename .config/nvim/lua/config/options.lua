@@ -1,3 +1,5 @@
+-- Based on: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
+
 vim.g.mapleader = " "
 -- vim.g.maplocalleader = " "
 
@@ -6,7 +8,6 @@ opt.clipboard = "unnamedplus"
 opt.completeopt = "menu,menuone,noselect"
 opt.confirm = true
 -- opt.cursorline = true
-opt.expandtab = true
 -- opt.formatoptions = "jcroqlnt" -- tcqj
 opt.ignorecase = true
 -- opt.inccommand = "nosplit"
@@ -14,8 +15,12 @@ opt.pumblend = 10 -- Popup blend
 opt.pumheight = 10 -- Maximum number of entries in a popup
 opt.relativenumber = true
 opt.scrolloff = 4 -- Lines of context
+opt.expandtab = true
 opt.shiftround = true
-opt.shiftwidth = 2
+opt.shiftwidth = 4
+opt.tabstop = 4
+opt.softtabstop = 4
+
 opt.shortmess:append { W = true, I = true, c = true }
 opt.showmode = false
 opt.sidescrolloff = 8 -- Columns of context
@@ -24,9 +29,8 @@ opt.smartcase = true -- Don't ignore case with capitals
 opt.smartindent = true -- Insert indents automatically
 opt.splitbelow = true -- Put new windows below current
 opt.splitright = true -- Put new windows right of current
-opt.tabstop = 2 -- Number of spaces tabs count for
 -- opt.termguicolors = true -- True color support
-opt.undofile = true
+-- opt.undofile = true  -- Not sure I actually want this
 opt.undolevels = 10000
 opt.wildmode = "longest:full,full" -- Command-line completion mode
 opt.wrap = false -- Disable line wrap
