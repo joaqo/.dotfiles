@@ -32,3 +32,7 @@ map({"n", "v"}, "L", "$")
 
 -- Bind p in visual mode to paste without overriding the current register
 map("v", "p", "pgvy")
+
+-- Terminal
+map({ "n", "t" }, "<C-\\>", ToggleTerminal, {desc = "Toggle Terminal"})
+map("t", "<C-i>", "<c-\\><c-n>", {desc = "Enter Normal Mode"})
