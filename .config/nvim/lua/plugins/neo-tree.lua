@@ -43,6 +43,7 @@ return {
         {text = "H", texthl = "DiagnosticSignHint"})
 
       require("neo-tree").setup({
+        close_if_last_window = true,
         default_component_configs = {
           icon = {
             folder_closed = ">",
