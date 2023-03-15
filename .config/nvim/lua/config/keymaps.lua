@@ -25,25 +25,21 @@ end
 -- map("n", "<Left>", "<cmd>vertical resize -2<cr>", { desc = "Decrease window width" })
 -- map("n", "<Right>", "<cmd>vertical resize +2<cr>", { desc = "Increase window width" })
 
--- Clear search with <esc>
-map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and clear hlsearch" })
 
 -- The keys ^ and $ are unergonomic
 map({"n", "v"}, "H", "^")
 map({"n", "v"}, "L", "$")
 
-vim.cmd("nnoremap <Space> :")  -- Using the map function made it not show `:` correctly on first press
-
-map({"n", "v"}, ",", ";", { desc = "Repeat last motion", noremap = true })
-
--- Bind p in visual mode to paste without overriding the current register
-map("v", "p", "pgvy")
 
 -- Terminal
 map({ "n", "t" }, "<C-\\>", ToggleTerminal, {desc = "Toggle Terminal"})
 map("t", "<C-x>", "<c-\\><c-n>", {desc = "Enter Normal Mode"})
-map("t", "<C-M>", "<c-\\><c-n><C-W>p", {desc = "Go back to last pane"})
+map("t", "<C-k>", "<c-\\><c-n><C-W>p", {desc = "Go back to last pane"})
 
--- Doesn't work because iTerm2 is not mapping C-; correctly, google it
--- https://www.google.com/search?client=safari&rls=en&q=ctrl+%3B+iterm&ie=UTF-8&oe=UTF-8
+-- Misc
 map("n", "<C-M>", "<C-^>", { desc = "Go to last opened file", noremap = true })
+map("v", "p", "pgvy", { desc = "Bind p in visual mode to paste without overriding the current register" } )
+map({"n", "v"}, ",", ";", { desc = "Repeat last motion", noremap = true })
+map({"n", "v"}, "<leader>b", "<cmd>enew<cr>", { desc = "Create and open a new buffer" })
+map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and clear hlsearch" })
+vim.cmd("nnoremap <Space> :")  -- Using the map function made it not show `:` correctly on first press
