@@ -8,7 +8,7 @@ return {
       "MunifTanjim/nui.nvim",
     },
     keys = {
-      { "\\", "<cmd>Neotree toggle<cr>", desc = "Toggle Neotree" },
+      { "\\", "<cmd>Neotree toggle reveal<cr>", desc = "Toggle Neotree and reveal current file" },
     },
     config = function(_, opts)
       -- Set colors of git symbols

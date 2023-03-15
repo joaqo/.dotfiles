@@ -1,7 +1,7 @@
 -- Based on: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
 
-vim.g.mapleader = " "
--- vim.g.maplocalleader = " "
+vim.g.mapleader = ";"
+-- vim.g.maplocalleader = ";"
 
 local opt = vim.opt
 opt.clipboard = "unnamedplus"
@@ -15,11 +15,13 @@ opt.pumblend = 10 -- Popup blend
 opt.pumheight = 10 -- Maximum number of entries in a popup
 opt.relativenumber = true
 opt.scrolloff = 4 -- Lines of context
+
+-- Tab
 opt.expandtab = true
 opt.shiftround = true
-opt.shiftwidth = 4
-opt.tabstop = 4
-opt.softtabstop = 4
+opt.shiftwidth = 2
+opt.tabstop = 2
+opt.softtabstop = 2
 
 opt.shortmess:append { W = true, I = true, c = true }
 opt.showmode = false
