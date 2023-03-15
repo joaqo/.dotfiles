@@ -32,7 +32,8 @@ map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and clear hlsea
 map({"n", "v"}, "H", "^")
 map({"n", "v"}, "L", "$")
 
-map({"n", "v"}, " ", ":", { desc = "Run command with spacebar" })
+vim.cmd("nnoremap <Space> :")  -- Using the map function made it not show `:` correctly on first press
+
 map({"n", "v"}, ",", ";", { desc = "Repeat last motion", noremap = true })
 
 -- Bind p in visual mode to paste without overriding the current register
