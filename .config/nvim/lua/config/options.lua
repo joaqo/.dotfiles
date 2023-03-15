@@ -11,7 +11,6 @@ opt.confirm = true
 -- opt.formatoptions = "jcroqlnt" -- tcqj
 opt.ignorecase = true
 -- opt.inccommand = "nosplit"
-opt.pumblend = 10 -- Popup blend
 opt.pumheight = 10 -- Maximum number of entries in a popup
 opt.relativenumber = true
 opt.scrolloff = 4 -- Lines of context
