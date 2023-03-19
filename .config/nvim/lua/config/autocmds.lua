@@ -8,6 +8,9 @@ vim.api.nvim_create_autocmd({ "TermClose" }, {
   command = "bdelete! " .. vim.fn.expand("<abuf>"),
 })
 
+-- Automatically enter insert mode when entering a terminal buffer
+vim.cmd("autocmd BufWinEnter,WinEnter term://* startinsert")
+
 -- Check if we need to reload the file when it changed
 -- vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
 --   group = augroup("checktime"),
