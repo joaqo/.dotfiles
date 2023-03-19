@@ -13,7 +13,7 @@ return {
         vim.o.background = "dark"
         vim.cmd.colorscheme("gruvbox")
         vim.cmd("hi Normal ctermbg=black | hi StatusLine ctermbg=red ctermfg=black | hi SignColumn ctermbg=black")
-        vim.cmd("hi Search ctermfg=white ctermbg=darkgrey | hi IncSearch ctermbg=cyan ctermfg=darkgrey | hi CurSearch ctermbg=cyan ctermfg=darkgrey")
+        vim.cmd("hi Search ctermfg=white ctermbg=darkgrey | hi IncSearch ctermbg=red ctermfg=white | hi CurSearch ctermbg=red ctermfg=white")
     end
   },
   {
