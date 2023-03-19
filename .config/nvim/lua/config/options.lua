@@ -5,7 +5,7 @@ vim.g.mapleader = ";"
 
 local opt = vim.opt
 opt.clipboard = "unnamedplus"
-opt.completeopt = "menu,menuone,noselect"
+opt.completeopt = "menu,preview,menuone,noselect"  -- Overriden by `completeopt` in `plugins/cmp.lua`, but left here just in case
 opt.confirm = true
 -- opt.cursorline = true
 -- opt.formatoptions = "jcroqlnt" -- tcqj
