@@ -24,7 +24,8 @@ export PATH="$HOME/.bin/google-cloud-sdk/bin:$PATH"
 export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/gcloud/application_default_credentials.json"
 
 # Save history after each command (to share history between windows)
-export PROMPT_COMMAND='history -a'
+# Also update session name to iTerm after each command (because its `pwd`)
+export PROMPT_COMMAND='history -a; echo -ne "\033]0;${PWD##*/}\007"'
 
 # Expand size of bash history and dont save duplicate commands
 export HISTSIZE=80000
