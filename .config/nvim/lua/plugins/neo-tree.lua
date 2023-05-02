@@ -20,14 +20,15 @@ return {
       vim.cmd("hi NeoTreeGitModified ctermbg=black ctermfg=darkcyan")
       vim.cmd("hi NeoTreeGitUntracked ctermbg=black ctermfg=yellow")
 
+      -- Set colors of file/folders
       -- Highlights taken from here: https://github.com/nvim-neo-tree/neo-tree.nvim/blob/v2.x/doc/neo-tree.txt#L1144
       vim.cmd("hi NeoTreeFileIcon ctermbg=black ctermfg=blue")
       vim.cmd("hi NeoTreeDirectoryIcon ctermbg=black ctermfg=darkblue")
       vim.cmd("hi NeoTreeDirectoryName ctermbg=black ctermfg=magenta")
       vim.cmd("hi NeoTreeCursorLine ctermbg=black")
-      vim.cmd("hi NeoTreeDotfile ctermfg=darkgrey")
+      vim.cmd("hi NeoTreeDotfile ctermfg=lightgrey")
       vim.cmd("hi NeoTreeGitIgnored ctermfg=darkgrey")
-      vim.cmd("hi NeoTreeHiddenByName ctermfg=darkgrey")
+      vim.cmd("hi NeoTreeHiddenByName ctermfg=lightgrey")
 
       -- Unless you are still migrating, remove the deprecated commands from v1.x
       vim.cmd([[ let g:neo_tree_remove_legacy_commands = 1 ]])
@@ -72,7 +73,7 @@ return {
               renamed   = "r",-- this can only be used in the git_status source
               -- Status type
               untracked = "?",
-              ignored   = "i",
+              ignored   = "", -- Don't show
               unstaged  = "u",
               staged    = "s",
               conflict  = "c",
