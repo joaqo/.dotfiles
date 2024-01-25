@@ -30,6 +30,7 @@ function ToggleTerminal()
 	if gotoid(te_win_id) == 1 then
 		hideTerminal()
 	else
+    vim.cmd("Neotree close")
 		openTerminal()
 	end
 end
