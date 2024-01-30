@@ -13,19 +13,19 @@ return {
     config = function(_, opts)
       -- Set colors of git symbols
       -- Used this for color name reference: https://vi.stackexchange.com/q/13458
-      vim.cmd("hi NeoTreeGitAdded ctermbg=black ctermfg=green")
-      vim.cmd("hi NeoTreeGitConflict ctermbg=black ctermfg=brown")
-      vim.cmd("hi NeoTreeGitDeleted ctermbg=black ctermfg=red")
-      vim.cmd("hi NeoTreeGitIgnored ctermbg=black ctermfg=gray")
-      vim.cmd("hi NeoTreeGitModified ctermbg=black ctermfg=darkcyan")
-      vim.cmd("hi NeoTreeGitUntracked ctermbg=black ctermfg=yellow")
+      vim.cmd("hi NeoTreeGitAdded ctermbg=none ctermfg=green")
+      vim.cmd("hi NeoTreeGitConflict ctermbg=none ctermfg=brown")
+      vim.cmd("hi NeoTreeGitDeleted ctermbg=none ctermfg=red")
+      vim.cmd("hi NeoTreeGitIgnored ctermbg=none ctermfg=gray")
+      vim.cmd("hi NeoTreeGitModified ctermbg=none ctermfg=darkcyan")
+      vim.cmd("hi NeoTreeGitUntracked ctermbg=none ctermfg=yellow")
 
       -- Set colors of file/folders
       -- Highlights taken from here: https://github.com/nvim-neo-tree/neo-tree.nvim/blob/v2.x/doc/neo-tree.txt#L1144
-      vim.cmd("hi NeoTreeFileIcon ctermbg=black ctermfg=blue")
-      vim.cmd("hi NeoTreeDirectoryIcon ctermbg=black ctermfg=darkblue")
-      vim.cmd("hi NeoTreeDirectoryName ctermbg=black ctermfg=magenta")
-      vim.cmd("hi NeoTreeCursorLine ctermbg=black")
+      vim.cmd("hi NeoTreeFileIcon ctermbg=none ctermfg=blue")
+      vim.cmd("hi NeoTreeDirectoryIcon ctermbg=none ctermfg=darkblue")
+      vim.cmd("hi NeoTreeDirectoryName ctermbg=none ctermfg=magenta")
+      vim.cmd("hi NeoTreeCursorLine ctermbg=none")
       vim.cmd("hi NeoTreeDotfile ctermfg=lightgrey")
       vim.cmd("hi NeoTreeGitIgnored ctermfg=darkgrey")
       vim.cmd("hi NeoTreeHiddenByName ctermfg=lightgrey")
