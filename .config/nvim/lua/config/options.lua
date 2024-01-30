@@ -13,6 +13,7 @@ opt.ignorecase = true
 -- opt.inccommand = "nosplit"
 opt.pumheight = 10 -- Maximum number of entries in a popup
 opt.relativenumber = true
+opt.number = true
 opt.scrolloff = 4 -- Lines of context
 
 -- Tab
