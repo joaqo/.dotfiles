@@ -16,6 +16,7 @@ return {
         vim.cmd("hi Search ctermfg=white ctermbg=darkgrey | hi IncSearch ctermbg=red ctermfg=white | hi CurSearch ctermbg=red ctermfg=white")
         -- Set `gitsigns` plugin colors. Here for all color names: https://github.com/lewis6991/gitsigns.nvim/blob/f388995990aba04cfdc7c3ab870c33e280601109/doc/gitsigns.txt#L937
         vim.cmd("hi GitSignsAdd ctermbg=none ctermfg=darkcyan | hi GitSignsChange ctermbg=none ctermfg=green | hi GitSignsDelete ctermbg=none ctermfg=red | hi GitSignsChangedelete ctermbg=none ctermfg=brown | hi GitSignsTopdelete ctermbg=none ctermfg=red | hi GitSignsUntracked ctermbg=none ctermfg=lightgray")
+        vim.cmd("hi NormalFloat ctermbg=235")
     end
   },
   {

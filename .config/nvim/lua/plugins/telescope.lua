@@ -2,6 +2,11 @@
 -- Requires install for file searching: brew install ripgrep
 -- Official example configs: https://github.com/nvim-telescope/telescope.nvim/wiki/Configuration-Recipes#mapping-esc-to-quit-in-insert-mode
 
+-- How to split
+-- <C-x> go to file selection as a split   
+-- <C-v> go to file selection as a vsplit   
+-- <C-t> go to a file in a new tab
+
 return {
   {
     "nvim-telescope/telescope.nvim",
@@ -14,7 +19,7 @@ return {
       { "<leader>:", "<cmd>Telescope command_history<cr>", desc = "Command History" },
       { "<leader>f", "<cmd>Telescope find_files<cr>", desc = "Find Files (root dir)" },
       { "<leader>d",'<cmd>lua require("telescope.builtin").find_files{ cwd = require("telescope.utils").buffer_dir() }<cr>', desc = "Find Files (current dir)" },
-      { "<leader>of", "<cmd>Telescope oldfiles<cr>", desc = "Recent" },
+      { "<leader>m", "<cmd>Telescope oldfiles<cr>", desc = "File history" },
       { "<leader>gc", "<cmd>Telescope git_commits<CR>", desc = "commits" },
       { "<leader>gs", "<cmd>Telescope git_status<CR>", desc = "status" },
       { "<leader>sa", "<cmd>Telescope autocommands<cr>", desc = "Auto Commands" },
