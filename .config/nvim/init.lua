@@ -10,6 +10,7 @@
 --
 -- Consider Make tmux and vim use <C-x> for exit insert mode, and tmux to use v to select text
 
+require("config.linting")
 require("config.terminal")
 require("config.options")
 require("config.lazy")

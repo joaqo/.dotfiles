@@ -11,6 +11,12 @@ vim.api.nvim_create_autocmd({ "TermClose" }, {
 -- Automatically enter insert mode when entering a terminal buffer
 vim.cmd("autocmd BufWinEnter,WinEnter term://* startinsert")
 
+-- Run linting on saving file in js
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = {"*.ts", "*.tsx", "*.js", "*.jsx"},
+  callback = RunLinter,
+})
+
 -- Check if we need to reload the file when it changed
 -- vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
 --   group = augroup("checktime"),
