@@ -44,5 +44,11 @@ map({"n", "v"}, ",", ";", { desc = "Repeat last motion", noremap = true })
 map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and clear hlsearch" })
 vim.cmd("nnoremap <Space> :")  -- Using the map function made it not show `:` correctly on first press
 
+-- Quickfix list
+map('n', '[q', ':cprevious\n')
+map('n', ']q', ':cnext\n')
+map('n', '[Q', ':rfirst\n')
+map('n', ']Q', ':clast\n')
+map('n', '<leader>q', ':cclose\n')
 
 -- vim.keymap.set('n', '<leader>f', vim.lsp.buf.format)

@@ -2,7 +2,8 @@
 -- Requires install for file searching: brew install ripgrep
 -- Official example configs: https://github.com/nvim-telescope/telescope.nvim/wiki/Configuration-Recipes#mapping-esc-to-quit-in-insert-mode
 
--- How to split
+-- Hotkeys inside telescope search
+-- <C-q> open in quickfix list
 -- <C-x> go to file selection as a split   
 -- <C-v> go to file selection as a vsplit   
 -- <C-t> go to a file in a new tab
