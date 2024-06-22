@@ -38,11 +38,13 @@ return {
       { "<leader>uC", "<cmd>Telescope colorscheme<cr>", desc = "Colorscheme with preview" },
     },
     config = function(_, opts)
+      local actions = require('telescope.actions')
       require("telescope").setup({
         defaults = {
           mappings = {
             i = {
-              ["<esc>"] = require("telescope.actions").close
+              ["<esc>"] = actions.close,
+              ["<C-q>"] = actions.smart_send_to_qflist + actions.open_qflist
             },
           },
         },
