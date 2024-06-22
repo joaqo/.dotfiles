@@ -22,6 +22,7 @@ export PATH="$HOME/.poetry/bin:$PATH"
 # Add google cloud (gcloud) to path
 export PATH="$HOME/.bin/google-cloud-sdk/bin:$PATH"
 export GOOGLE_APPLICATION_CREDENTIALS="$HOME/.config/gcloud/application_default_credentials.json"
+export CLOUDSDK_PYTHON=$(which python3.11)
 
 # Save history after each command (to share history between windows)
 # Also update session name to iTerm after each command (because its `pwd`)
