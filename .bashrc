@@ -87,7 +87,7 @@ alias process="ps -feww | grep"
 alias mux=tmuxinator
 alias v="nvim"
 alias vim="nvim"
-alias vc="cd ~/.dotfiles/.config/nvim/lua; vim"
+alias vc="cd ~/.dotfiles/.config/nvim/lua; nvim"
 alias grep="grep --color"
 alias dash="cd $HOME/dashboard-feyn/; wo dashboard; jupyter notebook main.ipynb"
 
