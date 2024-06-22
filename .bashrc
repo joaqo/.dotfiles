@@ -52,9 +52,6 @@ export EDITOR='nvim'
 # Not sure what this is, maybe for man and such?
 export VISUAL='nvim'
 
-# Load FZF
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
-
 # Si no le agregaba la -t no me encontraba los .env que estuvieran
 # a mas de dos directorios de distancia recursiva, what??!!
 # Only in my computer cause it requires ag to be installed.
@@ -219,6 +216,10 @@ fshow() {
 if [ -f ~/.bashrclocal ]; then
   . ~/.bashrclocal
 fi
+
+
+# Load FZF (this line should be placed near the end of this file because we need to load up $PATH prior or it wont find `fzf`)
+eval "$(fzf --bash)"
 
 export PATH=~/.npm-global/bin:$PATH
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
