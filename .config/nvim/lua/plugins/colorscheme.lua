@@ -10,13 +10,21 @@ return {
     "morhetz/gruvbox",
     lazy = false,
     config = function(lazy_plugin, opts)
-        vim.cmd.colorscheme("gruvbox")
-        vim.cmd("hi Normal ctermbg=none | hi StatusLine ctermfg=darkgrey | hi SignColumn ctermbg=none")
-        -- Set searching colors
-        vim.cmd("hi Search ctermfg=white ctermbg=darkgrey | hi IncSearch ctermbg=red ctermfg=white | hi CurSearch ctermbg=red ctermfg=white")
-        -- Set `gitsigns` plugin colors. Here for all color names: https://github.com/lewis6991/gitsigns.nvim/blob/f388995990aba04cfdc7c3ab870c33e280601109/doc/gitsigns.txt#L937
-        vim.cmd("hi GitSignsAdd ctermbg=none ctermfg=darkcyan | hi GitSignsChange ctermbg=none ctermfg=green | hi GitSignsDelete ctermbg=none ctermfg=red | hi GitSignsChangedelete ctermbg=none ctermfg=brown | hi GitSignsTopdelete ctermbg=none ctermfg=red | hi GitSignsUntracked ctermbg=none ctermfg=lightgray")
-        vim.cmd("hi NormalFloat ctermbg=235")
+      -- Sets true colors, 24 bits I think.
+      -- Setting termguicolors affects how you should set color overrides through your configs.
+      -- If you set termguicolors to true use guifg and guibg, if you set it to false you should use ctermfg and ctermbg.
+      vim.opt.termguicolors = true
+
+      -- Set theme
+      vim.cmd.colorscheme("gruvbox")
+
+      -- Set color overrides
+      vim.cmd("hi Normal guibg=none | hi StatusLine guifg=darkgrey | hi SignColumn guibg=none")
+      -- Set searching colors
+      vim.cmd("hi Search guifg=white guibg=darkgrey | hi IncSearch guibg=red guifg=white | hi CurSearch guibg=red guifg=white")
+      -- Set `gitsigns` plugin colors. Here for all color names: https://github.com/lewis6991/gitsigns.nvim/blob/f388995990aba04cfdc7c3ab870c33e280601109/doc/gitsigns.txt#L937
+      vim.cmd("hi GitSignsAdd guibg=none guifg=darkcyan | hi GitSignsChange guibg=none guifg=green | hi GitSignsDelete guibg=none guifg=red | hi GitSignsChangedelete guibg=none guifg=brown | hi GitSignsTopdelete guibg=none guifg=red | hi GitSignsUntracked guibg=none guifg=lightgray")
+      vim.cmd("hi NormalFloat guibg=235")
     end
   },
   {
