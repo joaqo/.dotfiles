@@ -12,7 +12,6 @@ return {
   {
     "nvim-telescope/telescope.nvim",
     cmd = "Telescope",
-    tag = "0.1.1",
     dependencies = { 'nvim-lua/plenary.nvim' },
     keys = {
       { "<leader>,", "<cmd>Telescope buffers show_all_buffers=true<cr>", desc = "Switch Buffer" },

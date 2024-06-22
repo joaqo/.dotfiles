@@ -1,7 +1,7 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    version = false, -- last release is way too old and doesn't work on Windows
+    version = "v0.9.2",
     build = ":TSUpdate",
     event = { "BufReadPost", "BufNewFile" },
     config = function(_, opts)
@@ -15,7 +15,7 @@ return {
       ensure_installed = {
         "bash",
         "c",
-        "help",
+        "vimdoc",
         "html",
         "javascript",
         "json",
