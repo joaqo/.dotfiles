@@ -1,5 +1,8 @@
--- Inspired by: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/keymaps.lua
 -- To know which keys to map run in vim `:help map-which-keys`
+-- Or look at this list: https://vim.fandom.com/wiki/Unused_keys
+--
+-- GOOD KEYS FREE FOR REMAPPING:
+-- ",": Already remapped to "<C-h>"
 
 local function map(mode, lhs, rhs, opts)
   local keys = require("lazy.core.handler").handlers.keys
@@ -11,6 +14,35 @@ local function map(mode, lhs, rhs, opts)
     vim.keymap.set(mode, lhs, rhs, opts)
   end
 end
+
+-- The keys ^ and $ are unergonomic
+map({"n", "v"}, "H", "^")
+map({"n", "v"}, "L", "$")
+
+-- Terminal
+map({ "n", "t" }, "<C-\\>", ToggleTerminal, {desc = "Toggle Terminal"})
+map("t", "<C-x>", "<c-\\><c-n>", {desc = "Enter Normal Mode"})
+map("t", "<C-k>", "<c-\\><c-n><C-W>p", {desc = "Go back to last pane"})
+
+-- Motions
+map({"n", "v"}, "<C-h>", ",", { desc = "Repeat last motion", noremap = true })
+map({"n", "v"}, "<C-l>", ";", { desc = "Repeat last motion", noremap = true })
+
+-- Quickfix list
+map('n', '[q', ':cprevious\n')
+map('n', ']q', ':cnext\n')
+map('n', '[Q', ':rfirst\n')
+map('n', ']Q', ':clast\n')
+map('n', '<leader>q', ':cclose\n')
+
+-- Misc
+map("n", "<leader>n", "<C-^>", { desc = "Go to last opened file", noremap = true })
+map("v", "p", "pgvy", { desc = "Bind p in visual mode to paste without overriding the current register" } )
+map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and clear hlsearch" })
+
+-- Space remap (using the map function made it not show `:` correctly on first press)
+vim.cmd("nnoremap <Space> :")
+vim.cmd("vnoremap <Space> :")
 
 -- -- Removed because nvim-tmux-naviation controls this now
 -- -- Move to window using the <ctrl> hjkl keys
@@ -24,34 +56,3 @@ end
 -- map("n", "<Down>", "<cmd>resize -2<cr>", { desc = "Decrease window height" })
 -- map("n", "<Left>", "<cmd>vertical resize -2<cr>", { desc = "Decrease window width" })
 -- map("n", "<Right>", "<cmd>vertical resize +2<cr>", { desc = "Increase window width" })
-
-
--- The keys ^ and $ are unergonomic
-map({"n", "v"}, "H", "^")
-map({"n", "v"}, "L", "$")
-
-
--- Terminal
-map({ "n", "t" }, "<C-\\>", ToggleTerminal, {desc = "Toggle Terminal"})
-map("t", "<C-x>", "<c-\\><c-n>", {desc = "Enter Normal Mode"})
-map("t", "<C-k>", "<c-\\><c-n><C-W>p", {desc = "Go back to last pane"})
-
--- Misc
-map("n", "<leader>n", "<C-^>", { desc = "Go to last opened file", noremap = true })
-map("v", "p", "pgvy", { desc = "Bind p in visual mode to paste without overriding the current register" } )
-map({"n", "v"}, ",", ";", { desc = "Repeat last motion", noremap = true })
-map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and clear hlsearch" })
-
--- Space remap
--- Using the map function made it not show `:` correctly on first press
-vim.cmd("nnoremap <Space> :")
-vim.cmd("vnoremap <Space> :")
-
--- Quickfix list
-map('n', '[q', ':cprevious\n')
-map('n', ']q', ':cnext\n')
-map('n', '[Q', ':rfirst\n')
-map('n', ']Q', ':clast\n')
-map('n', '<leader>q', ':cclose\n')
-
--- vim.keymap.set('n', '<leader>f', vim.lsp.buf.format)

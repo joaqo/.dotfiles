@@ -1,4 +1,3 @@
--- Inspired by: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/plugins/editor.lua
 -- Requires install for file searching: brew install ripgrep
 -- Official example configs: https://github.com/nvim-telescope/telescope.nvim/wiki/Configuration-Recipes#mapping-esc-to-quit-in-insert-mode
 
