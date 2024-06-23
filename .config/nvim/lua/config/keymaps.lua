@@ -37,7 +37,6 @@ map("t", "<C-x>", "<c-\\><c-n>", {desc = "Enter Normal Mode"})
 map("t", "<C-k>", "<c-\\><c-n><C-W>p", {desc = "Go back to last pane"})
 
 -- Misc
-map('n', '<leader>l', RunLinter)
 map("n", "<leader>n", "<C-^>", { desc = "Go to last opened file", noremap = true })
 map("v", "p", "pgvy", { desc = "Bind p in visual mode to paste without overriding the current register" } )
 map({"n", "v"}, ",", ";", { desc = "Repeat last motion", noremap = true })
