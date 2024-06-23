@@ -22,13 +22,13 @@ return {
 
       -- Set colors of file/folders
       -- Highlights taken from here: https://github.com/nvim-neo-tree/neo-tree.nvim/blob/v2.x/doc/neo-tree.txt#L1144
-      vim.cmd("hi NeoTreeFileIcon guibg=none guifg=blue")
-      vim.cmd("hi NeoTreeDirectoryIcon guibg=none guifg=darkblue")
-      vim.cmd("hi NeoTreeDirectoryName guibg=none guifg=magenta")
+      vim.cmd("hi NeoTreeFileIcon guibg=none guifg=#AF6F81")
+      vim.cmd("hi NeoTreeDirectoryIcon guibg=none guifg=#AF6F81")
+      vim.cmd("hi NeoTreeDirectoryName guibg=none guifg=#AF6F81")
       vim.cmd("hi NeoTreeCursorLine guibg=none")
-      vim.cmd("hi NeoTreeDotfile guifg=lightgrey")
-      vim.cmd("hi NeoTreeGitIgnored guifg=darkgrey")
-      vim.cmd("hi NeoTreeHiddenByName guifg=lightgrey")
+      vim.cmd("hi NeoTreeDotfile guifg=#928374")
+      vim.cmd("hi NeoTreeGitIgnored guifg=#5E5348")
+      vim.cmd("hi NeoTreeHiddenByName guifg=#928374")
 
       -- Unless you are still migrating, remove the deprecated commands from v1.x
       vim.cmd([[ let g:neo_tree_remove_legacy_commands = 1 ]])
