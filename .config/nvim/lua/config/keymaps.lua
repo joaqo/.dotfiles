@@ -42,7 +42,11 @@ map("n", "<leader>n", "<C-^>", { desc = "Go to last opened file", noremap = true
 map("v", "p", "pgvy", { desc = "Bind p in visual mode to paste without overriding the current register" } )
 map({"n", "v"}, ",", ";", { desc = "Repeat last motion", noremap = true })
 map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and clear hlsearch" })
-vim.cmd("nnoremap <Space> :")  -- Using the map function made it not show `:` correctly on first press
+
+-- Space remap
+-- Using the map function made it not show `:` correctly on first press
+vim.cmd("nnoremap <Space> :")
+vim.cmd("vnoremap <Space> :")
 
 -- Quickfix list
 map('n', '[q', ':cprevious\n')
