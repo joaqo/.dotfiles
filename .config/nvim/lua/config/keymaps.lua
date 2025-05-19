@@ -25,8 +25,8 @@ map("t", "<C-x>", "<c-\\><c-n>", {desc = "Enter Normal Mode"})
 map("t", "<C-k>", "<c-\\><c-n><C-W>p", {desc = "Go back to last pane"})
 
 -- Motions
-map({"n", "v"}, "<C-h>", ",", { desc = "Repeat last motion", noremap = true })
-map({"n", "v"}, "<C-l>", ";", { desc = "Repeat last motion", noremap = true })
+map({"n", "v"}, "(", ",", { desc = "Repeat last motion reversed", noremap = true })
+map({"n", "v"}, ")", ";", { desc = "Repeat last motion", noremap = true })
 
 -- Quickfix list
 map('n', '[q', ':cprevious\n')
@@ -43,6 +43,9 @@ map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and clear hlsea
 -- Space remap (using the map function made it not show `:` correctly on first press)
 vim.cmd("nnoremap <Space> :")
 vim.cmd("vnoremap <Space> :")
+
+-- React Comment
+map("n", "<leader>v", "o{/*  */}<esc>hhhi", { desc = "Add React comment", noremap = true })
 
 -- -- Removed because nvim-tmux-naviation controls this now
 -- -- Move to window using the <ctrl> hjkl keys
