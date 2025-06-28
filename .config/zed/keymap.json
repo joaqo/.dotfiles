@@ -1,0 +1,115 @@
+// Zed keymap
+//
+// For information on binding keys, see the Zed
+// documentation: https://zed.dev/docs/key-bindings
+//
+// To see the default key bindings run `zed: open default keymap`
+// from the command palette.
+[
+  // Tabs switcher
+  {
+    "context": "Workspace",
+    "use_key_equivalents": true,
+    "bindings": {
+      "cmd-u": "tab_switcher::Toggle",
+      "cmd-shift-u": ["tab_switcher::Toggle", { "select_last": true }]
+    }
+  },
+  {
+    "context": "Editor", // Had to, to overwrite the default which is undo
+    "bindings": {
+      "cmd-u": "tab_switcher::Toggle",
+      "cmd-shift-u": ["tab_switcher::Toggle", { "select_last": true }]
+    }
+  },
+  {
+    "context": "TabSwitcher",
+    "bindings": {
+      "cmd-shift-u": "menu::SelectPrevious"
+    }
+  },
+
+  // Vim moves
+  {
+    "context": "Editor && (vim_mode == normal || vim_mode == visual)",
+    "bindings": {
+      "H": ["workspace::SendKeystrokes", "^"],
+      "L": "vim::EndOfLine"
+    }
+  },
+  {
+    "context": "vim_mode == normal",
+    "bindings": {
+      "shift-y": ["workspace::SendKeystrokes", "y $"],
+      "space": "command_palette::Toggle"
+    }
+  },
+
+  // Make buffer size changes persistent
+  {
+    "bindings": {
+      "cmd-=": [
+        "zed::IncreaseBufferFontSize",
+        {
+          "persist": true
+        }
+      ]
+    }
+  },
+  {
+    "bindings": {
+      "cmd--": [
+        "zed::DecreaseBufferFontSize",
+        {
+          "persist": true
+        }
+      ]
+    }
+  },
+
+  // Focus editor & file explorer
+  {
+    "context": "(Editor && mode == full)",
+    "bindings": {
+      "cmd-e": "workspace::CloseAllDocks"
+    }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "cmd-e": "workspace::CloseAllDocks"
+    }
+  },
+  {
+    "context": "!ContextEditor > (Editor && mode == full)",
+    "bindings": {
+      "cmd-shift-e": "editor::ToggleFocus",
+      "alt-e": "pane::RevealInProjectPanel"
+    }
+  },
+  {
+    "context": "AgentPanel",
+    "bindings": {
+      "cmd-shift-e": "project_panel::ToggleFocus"
+    }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "cmd-shift-e": "project_panel::ToggleFocus"
+    }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "cmd-r": "git::Diff",
+      "cmd-shift-r": "git_panel::ToggleFocus"
+    }
+  },
+  {
+    "context": "(Workspace && !Terminal)",
+    "bindings": {
+      "cmd-shift-r": "git_panel::ToggleFocus"
+    }
+  }
+]

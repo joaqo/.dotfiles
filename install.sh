@@ -20,3 +20,4 @@ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 
 cd ~/.config
 ln -s -f ~/.dotfiles/.config/nvim .
+ln -s -f ~/.dotfiles/.config/zed .
