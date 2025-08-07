@@ -6,26 +6,36 @@
 // To see the default key bindings run `zed: open default keymap`
 // from the command palette.
 [
-  // Tabs switcher
+  // Globals
+  {
+    "bindings": {
+      "cmd-i": "tab_switcher::Toggle",
+      "cmd-e": "workspace::CloseAllDocks",
+      "cmd-shift-e": "editor::ToggleFocus",
+      "cmd-r": "git_panel::ToggleFocus",
+      "cmd-shift-r": "git::Diff",
+      "cmd-=": ["zed::IncreaseBufferFontSize", { "persist": true }],
+      "cmd--": ["zed::DecreaseBufferFontSize", { "persist": true }]
+    }
+  },
+
+  // Tab switcher edge cases
   {
     "context": "Workspace",
-    "use_key_equivalents": true,
     "bindings": {
-      "cmd-u": "tab_switcher::Toggle",
-      "cmd-shift-u": ["tab_switcher::Toggle", { "select_last": true }]
+      "cmd-shift-i": ["tab_switcher::Toggle", { "select_last": true }]
     }
   },
   {
-    "context": "Editor", // Had to, to overwrite the default which is undo
+    "context": "Editor",
     "bindings": {
-      "cmd-u": "tab_switcher::Toggle",
-      "cmd-shift-u": ["tab_switcher::Toggle", { "select_last": true }]
+      "cmd-shift-i": "tab_switcher::Toggle"
     }
   },
   {
     "context": "TabSwitcher",
     "bindings": {
-      "cmd-shift-u": "menu::SelectPrevious"
+      "cmd-shift-i": "menu::SelectPrevious"
     }
   },
 
@@ -42,74 +52,6 @@
     "bindings": {
       "shift-y": ["workspace::SendKeystrokes", "y $"],
       "space": "command_palette::Toggle"
-    }
-  },
-
-  // Make buffer size changes persistent
-  {
-    "bindings": {
-      "cmd-=": [
-        "zed::IncreaseBufferFontSize",
-        {
-          "persist": true
-        }
-      ]
-    }
-  },
-  {
-    "bindings": {
-      "cmd--": [
-        "zed::DecreaseBufferFontSize",
-        {
-          "persist": true
-        }
-      ]
-    }
-  },
-
-  // Focus editor & file explorer
-  {
-    "context": "(Editor && mode == full)",
-    "bindings": {
-      "cmd-e": "workspace::CloseAllDocks"
-    }
-  },
-  {
-    "context": "Workspace",
-    "bindings": {
-      "cmd-e": "workspace::CloseAllDocks"
-    }
-  },
-  {
-    "context": "!ContextEditor > (Editor && mode == full)",
-    "bindings": {
-      "cmd-shift-e": "editor::ToggleFocus",
-      "alt-e": "pane::RevealInProjectPanel"
-    }
-  },
-  {
-    "context": "AgentPanel",
-    "bindings": {
-      "cmd-shift-e": "project_panel::ToggleFocus"
-    }
-  },
-  {
-    "context": "Workspace",
-    "bindings": {
-      "cmd-shift-e": "project_panel::ToggleFocus"
-    }
-  },
-  {
-    "context": "Workspace",
-    "bindings": {
-      "cmd-r": "git::Diff",
-      "cmd-shift-r": "git_panel::ToggleFocus"
-    }
-  },
-  {
-    "context": "(Workspace && !Terminal)",
-    "bindings": {
-      "cmd-shift-r": "git_panel::ToggleFocus"
     }
   }
 ]
