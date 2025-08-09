@@ -53,5 +53,19 @@
       "shift-y": ["workspace::SendKeystrokes", "y $"],
       "space": "command_palette::Toggle"
     }
+  },
+
+  // Close opened panels
+  {
+    "context": "GitPanel",
+    "bindings": {
+      "cmd-r": "workspace::ToggleLeftDock"
+    }
+  },
+  {
+    "context": "AgentPanel",
+    "bindings": {
+      "cmd-?": "workspace::ToggleRightDock"
+    }
   }
 ]
