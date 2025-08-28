@@ -12,6 +12,8 @@
       "cmd-i": "tab_switcher::Toggle",
       "cmd-e": "workspace::CloseAllDocks",
       "cmd-shift-e": "editor::ToggleFocus",
+      "cmd-shift-j": "terminal_panel::ToggleFocus",
+      "alt-e": "pane::RevealInProjectPanel",
       "cmd-r": "git_panel::ToggleFocus",
       "cmd-shift-r": "git::Diff",
       "cmd-=": ["zed::IncreaseBufferFontSize", { "persist": true }],
@@ -44,7 +46,9 @@
     "context": "Editor && (vim_mode == normal || vim_mode == visual)",
     "bindings": {
       "H": ["workspace::SendKeystrokes", "^"],
-      "L": "vim::EndOfLine"
+      "L": "vim::EndOfLine",
+      "j": ["vim::Down", { "display_lines": true }],
+      "k": ["vim::Up", { "display_lines": true }]
     }
   },
   {
@@ -66,6 +70,12 @@
     "context": "AgentPanel",
     "bindings": {
       "cmd-?": "workspace::ToggleRightDock"
+    }
+  },
+  {
+    "context": "ProjectPanel",
+    "bindings": {
+      "alt-e": "workspace::ToggleLeftDock"
     }
   }
 ]

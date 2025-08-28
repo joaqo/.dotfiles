@@ -1,12 +1,7 @@
-// Zed settings
-//
-// For information on how to configure Zed, see the Zed
-// documentation: https://zed.dev/docs/configuring-zed
-//
-// To see all of Zed's default settings without changing your
-// custom settings, run `zed: open default settings` from the
-// command palette (cmd-shift-p / ctrl-shift-p)
 {
+  "project_panel": {
+    "dock": "left"
+  },
   "agent_font_size": 17.0,
   "edit_predictions": {
     "mode": "eager",
@@ -36,14 +31,33 @@
     "edit_prediction_provider": "zed"
   },
   "toolbar": {
-    "breadcrumbs": true,
-    "quick_actions": true
+    "code_actions": true,
+    "quick_actions": false,
+    "breadcrumbs": false
   },
   "tab_bar": {
     "show": false
   },
+  "title_bar": {
+    "show_branch_icon": false,
+    "show_branch_name": false,
+    "show_menus": false,
+    "show_project_items": false,
+    "show_onboarding_banner": false,
+    "show_user_picture": false,
+    "show_sign_in": false
+  },
+  "inline_code_actions": false,
   "terminal": {
-    "font_family": "Monaco"
+    "font_family": "Monaco",
+    "alternate_scroll": "on",
+    "cursor_shape": "block",
+    "detect_venv": {
+      "on": {
+        "directories": [".venv", "venv"],
+        "activate_script": "default"
+      }
+    }
   },
   "agent": {
     "always_allow_tool_actions": true,
@@ -53,8 +67,8 @@
     },
     "model_parameters": [],
     "default_model": {
-      "provider": "zed.dev",
-      "model": "claude-sonnet-4"
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-latest"
     }
   },
   "autosave": "on_focus_change",
