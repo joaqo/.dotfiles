@@ -60,7 +60,7 @@
 
   // Close opened panels
   {
-    "context": "CommitEditor > Editor",
+    "context": "(CommitEditor > Editor) || GitPanel",
     "bindings": {
       "cmd-r": "workspace::ToggleLeftDock"
     }
