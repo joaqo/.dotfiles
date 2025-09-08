@@ -67,8 +67,8 @@
     },
     "model_parameters": [],
     "default_model": {
-      "provider": "anthropic",
-      "model": "claude-sonnet-4-latest"
+      "provider": "zed.dev",
+      "model": "claude-sonnet-4"
     }
   },
   "autosave": "on_focus_change",
