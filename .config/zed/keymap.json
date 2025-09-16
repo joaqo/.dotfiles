@@ -13,8 +13,8 @@
       "cmd-e": "workspace::CloseAllDocks",
       "cmd-shift-e": "editor::ToggleFocus",
       "cmd-shift-j": "terminal_panel::ToggleFocus",
-      "cmd-r": "git_panel::ToggleFocus",
-      "cmd-shift-r": "git::Diff",
+      "cmd-shift-r": "git_panel::ToggleFocus",
+      "cmd-r": "git::Diff",
       "cmd-=": ["zed::IncreaseBufferFontSize", { "persist": true }],
       "cmd--": ["zed::DecreaseBufferFontSize", { "persist": true }]
     }
@@ -62,7 +62,7 @@
   {
     "context": "(CommitEditor > Editor) || GitPanel",
     "bindings": {
-      "cmd-r": "workspace::ToggleLeftDock"
+      "cmd-shift-r": "git_panel::Close"
     }
   },
   {

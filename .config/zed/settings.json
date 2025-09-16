@@ -1,6 +1,9 @@
 {
+  "git_panel": {
+    "dock": "right"
+  },
   "project_panel": {
-    "dock": "left"
+    "dock": "right"
   },
   "agent_font_size": 17.0,
   "edit_predictions": {
@@ -33,17 +36,17 @@
   "toolbar": {
     "code_actions": true,
     "quick_actions": false,
-    "breadcrumbs": false
+    "breadcrumbs": true
   },
   "tab_bar": {
     "show": false
   },
   "title_bar": {
-    "show_branch_icon": false,
-    "show_branch_name": false,
+    "show_branch_icon": true,
+    "show_branch_name": true,
     "show_menus": false,
-    "show_project_items": false,
-    "show_onboarding_banner": false,
+    "show_project_items": true,
+    "show_onboarding_banner": true,
     "show_user_picture": false,
     "show_sign_in": false
   },
@@ -57,6 +60,9 @@
         "directories": [".venv", "venv"],
         "activate_script": "default"
       }
+    },
+    "toolbar": {
+      "breadcrumbs": false
     }
   },
   "agent": {
@@ -67,8 +73,8 @@
     },
     "model_parameters": [],
     "default_model": {
-      "provider": "zed.dev",
-      "model": "claude-sonnet-4"
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-latest"
     }
   },
   "autosave": "on_focus_change",
@@ -86,7 +92,7 @@
   "buffer_font_size": 13.0,
   "theme": {
     "mode": "system",
-    "light": "macOS Classic Light",
+    "light": "One Light",
     "dark": "Ayu Dark"
   },
   "languages": {
