@@ -1,9 +1,15 @@
 {
+  "agent_servers": {
+    "claude": {
+      "default_mode": "bypassPermissions"
+    }
+  },
   "git_panel": {
     "dock": "right"
   },
   "project_panel": {
-    "dock": "right"
+    "dock": "right",
+    "starts_open": false
   },
   "agent_font_size": 17.0,
   "edit_predictions": {
@@ -20,13 +26,7 @@
       "source": "custom",
       "enabled": true,
       "command": "npx",
-      "args": [
-        "-y",
-        "firebase-tools@latest",
-        "experimental:mcp",
-        "--dir",
-        "/Users/joaqo/mellow/backend/firebase"
-      ],
+      "args": ["-y", "firebase-tools@latest", "experimental:mcp", "--dir", "/Users/joaqo/mellow/backend/firebase"],
       "env": {}
     }
   },
@@ -53,23 +53,26 @@
   "inline_code_actions": false,
   "terminal": {
     "font_family": "Monaco",
-    "alternate_scroll": "on",
+    "alternate_scroll": "off",
     "cursor_shape": "block",
     "detect_venv": {
       "on": {
-        "directories": [".venv", "venv"],
+        "directories": [".venv"],
         "activate_script": "default"
       }
     },
     "toolbar": {
       "breadcrumbs": false
-    }
+    },
+    "copy_on_select": true,
+    "keep_selection_on_copy": false,
+    "option_as_meta": true
   },
   "agent": {
     "always_allow_tool_actions": true,
     "inline_assistant_model": {
-      "provider": "zed.dev",
-      "model": "claude-sonnet-4"
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-latest"
     },
     "model_parameters": [],
     "default_model": {
@@ -105,5 +108,17 @@
         }
       ]
     }
+  },
+  "use_smartcase_search": true,
+  "vertical_scroll_margin": 8,
+  "use_autoclose": true,
+  "jsx_tag_auto_close": { "enabled": false },
+  "preferred_line_length": 120,
+  "relative_line_numbers": true,
+  "resize_all_panels_in_dock": ["left", "right", "bottom"],
+  "when_closing_with_no_tabs": "keep_window_open",
+  "gutter": { "line_numbers": false },
+  "indent_guides": {
+    "enabled": false
   }
 }
