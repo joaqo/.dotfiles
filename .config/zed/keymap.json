@@ -16,7 +16,8 @@
       "cmd-shift-r": "git_panel::ToggleFocus",
       "cmd-r": "git::Diff",
       "cmd-=": ["zed::IncreaseBufferFontSize", { "persist": true }],
-      "cmd--": ["zed::DecreaseBufferFontSize", { "persist": true }]
+      "cmd--": ["zed::DecreaseBufferFontSize", { "persist": true }],
+      "cmd-o": "task::Spawn"
     }
   },
 
@@ -69,6 +70,12 @@
     "context": "AgentPanel",
     "bindings": {
       "cmd-?": "workspace::ToggleRightDock"
+    }
+  },
+  {
+    "context": "TabSwitcher",
+    "bindings": {
+      "cmd-w": "tab_switcher::CloseSelectedItem"
     }
   }
 ]
