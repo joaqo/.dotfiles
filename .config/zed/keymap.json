@@ -17,7 +17,9 @@
       "cmd-r": "git::Diff",
       "cmd-=": ["zed::IncreaseBufferFontSize", { "persist": true }],
       "cmd--": ["zed::DecreaseBufferFontSize", { "persist": true }],
-      "cmd-o": "task::Spawn"
+      "cmd-o": "task::Spawn",
+      "cmd-ctrl-enter": "repl::Run",
+      "cmd-l": "project_panel::ToggleFocus"
     }
   },
 
@@ -76,6 +78,29 @@
     "context": "TabSwitcher",
     "bindings": {
       "cmd-w": "tab_switcher::CloseSelectedItem"
+    }
+  },
+  {
+    "context": "ProjectPanel",
+    "bindings": {
+      "cmd-l": "workspace::ToggleRightDock"
+    }
+  },
+  {
+    "context": "GitDiff > Editor",
+    "bindings": {
+      "cmd-r": "pane::CloseActiveItem"
+    }
+  },
+
+  // Open new split file
+  {
+    "context": "(VimControl || (!Editor && !Terminal))",
+    "bindings": {
+      "ctrl-w shift-n": "workspace::NewFileSplitHorizontal",
+      "ctrl-w n": "workspace::NewFileSplitVertical",
+      "ctrl-w v": "pane::SplitAndMoveRight",
+      "ctrl-w s": "pane::SplitAndMoveDown"
     }
   }
 ]

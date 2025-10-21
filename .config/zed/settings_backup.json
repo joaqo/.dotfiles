@@ -11,7 +11,7 @@
     "dock": "right",
     "starts_open": false
   },
-  "agent_ui_font_size": 17.0,
+  "agent_font_size": 17.0,
   "edit_predictions": {
     "mode": "eager",
     "copilot": {
