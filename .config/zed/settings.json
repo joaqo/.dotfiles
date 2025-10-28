@@ -1,4 +1,5 @@
 {
+  "use_system_prompts": false,
   "agent_servers": {
     "claude": {
       "default_mode": "bypassPermissions"
