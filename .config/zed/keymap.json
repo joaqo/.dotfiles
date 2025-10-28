@@ -13,8 +13,7 @@
       "cmd-e": "workspace::CloseAllDocks",
       "cmd-shift-e": "editor::ToggleFocus",
       "cmd-shift-j": "terminal_panel::ToggleFocus",
-      "cmd-shift-r": "git_panel::ToggleFocus",
-      "cmd-r": "git::Diff",
+      "cmd-r": ["action::Sequence", ["git::Diff", "git_panel::ToggleFocus"]],
       "cmd-=": ["zed::IncreaseBufferFontSize", { "persist": true }],
       "cmd--": ["zed::DecreaseBufferFontSize", { "persist": true }],
       "cmd-o": "task::Spawn",
@@ -43,7 +42,7 @@
     }
   },
 
-  // Vim moves
+  // Vim
   {
     "context": "Editor && (vim_mode == normal || vim_mode == visual)",
     "bindings": {
@@ -60,14 +59,14 @@
       "space": "command_palette::Toggle"
     }
   },
-
-  // Close opened panels
   {
-    "context": "(CommitEditor > Editor) || GitPanel",
+    "context": "Editor && vim_mode == visual && !VimWaiting && !VimObject",
     "bindings": {
-      "cmd-shift-r": "git_panel::Close"
+      "p": ["vim::Paste", { "preserve_clipboard": true }]
     }
   },
+
+  // Close opened panels
   {
     "context": "AgentPanel",
     "bindings": {
@@ -90,6 +89,12 @@
     "context": "GitDiff > Editor",
     "bindings": {
       "cmd-r": "pane::CloseActiveItem"
+    }
+  },
+  {
+    "context": "(CommitEditor > Editor) || GitPanel",
+    "bindings": {
+      "cmd-r": ["workspace::SendKeystrokes", "cmd-w cmd-w"]
     }
   },
 
