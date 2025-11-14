@@ -1,9 +1,7 @@
 {
   "use_system_prompts": false,
   "agent_servers": {
-    "claude": {
-      "default_mode": "bypassPermissions"
-    }
+    "claude": { "default_mode": "bypassPermissions" }
   },
   "git_panel": {
     "dock": "right"
@@ -53,15 +51,8 @@
   },
   "inline_code_actions": false,
   "terminal": {
-    "font_family": "Monaco",
     "alternate_scroll": "off",
-    "cursor_shape": "block",
-    "detect_venv": {
-      "on": {
-        "directories": [".venv"],
-        "activate_script": "default"
-      }
-    },
+    "detect_venv": "off",
     "toolbar": {
       "breadcrumbs": false
     },

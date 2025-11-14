@@ -92,6 +92,7 @@ alias vim="nvim"
 alias vc="cd ~/.dotfiles/.config/nvim/lua; nvim"
 alias grep="grep --color"
 alias dash="cd $HOME/dashboard-feyn/; wo dashboard; jupyter notebook main.ipynb"
+alias c="claude --dangerously-skip-permissions"
 
 # ls with colors
 if [ $is_macos ]; then
@@ -185,6 +186,10 @@ eval "$(fzf --bash)"
 export PATH=~/.npm-global/bin:$PATH
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
 export ANDROID_HOME=$HOME/Library/Android/sdk && export PATH=$PATH:$ANDROID_HOME/emulator && export PATH=$PATH:$ANDROID_HOME/platform-tools
+
+lo() {
+  unbuffer "$@" 2>&1 | tee >(sed -u -e 's/\x1b\[[0-9;]*[a-zA-Z]//g' -e 's/\r/\n/g' > "$TMPDIR/command-output.log")
+}
 
 export NVM_DIR="$HOME/.nvm"
 # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
