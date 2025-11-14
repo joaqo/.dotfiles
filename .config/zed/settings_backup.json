@@ -1,8 +1,7 @@
 {
+  "use_system_prompts": false,
   "agent_servers": {
-    "claude": {
-      "default_mode": "bypassPermissions"
-    }
+    "claude": { "default_mode": "bypassPermissions" }
   },
   "git_panel": {
     "dock": "right"
@@ -11,7 +10,7 @@
     "dock": "right",
     "starts_open": false
   },
-  "agent_font_size": 17.0,
+  "agent_ui_font_size": 17.0,
   "edit_predictions": {
     "mode": "eager",
     "copilot": {
@@ -52,15 +51,8 @@
   },
   "inline_code_actions": false,
   "terminal": {
-    "font_family": "Monaco",
     "alternate_scroll": "off",
-    "cursor_shape": "block",
-    "detect_venv": {
-      "on": {
-        "directories": [".venv"],
-        "activate_script": "default"
-      }
-    },
+    "detect_venv": "off",
     "toolbar": {
       "breadcrumbs": false
     },
@@ -72,7 +64,7 @@
     "always_allow_tool_actions": true,
     "inline_assistant_model": {
       "provider": "anthropic",
-      "model": "claude-sonnet-4-latest"
+      "model": "claude-sonnet-4-5-latest"
     },
     "model_parameters": [],
     "default_model": {
@@ -95,7 +87,7 @@
   "buffer_font_size": 13.0,
   "theme": {
     "mode": "system",
-    "light": "Vercel Light",
+    "light": "macOS Classic Light",
     "dark": "Ayu Dark"
   },
   "languages": {
