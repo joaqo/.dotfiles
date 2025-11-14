@@ -187,8 +187,12 @@ export PATH=~/.npm-global/bin:$PATH
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
 export ANDROID_HOME=$HOME/Library/Android/sdk && export PATH=$PATH:$ANDROID_HOME/emulator && export PATH=$PATH:$ANDROID_HOME/platform-tools
 
+# Usage: lo mycommand echo "Hello World"
+# This will create a log file at $TMPDIR/mycommand.log
 lo() {
-  unbuffer "$@" 2>&1 | tee >(sed -u -e 's/\x1b\[[0-9;]*[a-zA-Z]//g' -e 's/\r/\n/g' > "$TMPDIR/command-output.log")
+  local name="$1"
+  shift
+  unbuffer -p "$@" 2>&1 | tee >(sed -u -e 's/\x1b\[[0-9;]*[a-zA-Z]//g' -e 's/\r/\n/g' > "$TMPDIR/${name}.log")
 }
 
 export NVM_DIR="$HOME/.nvm"
