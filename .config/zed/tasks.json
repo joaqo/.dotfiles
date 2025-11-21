@@ -28,5 +28,20 @@
     "show_command": false,
     "allow_concurrent_runs": true,
     "use_new_terminal": true
+  },
+  {
+    "label": "Worktree Add",
+    "command": "worktree-add",
+    "hide": "on_success"
+  },
+  {
+    "label": "Worktree Merge",
+    "command": "worktree-merge",
+    "hide": "on_success"
+  },
+  {
+    "label": "Worktree Remove",
+    "command": "worktree-remove",
+    "hide": "on_success"
   }
 ]

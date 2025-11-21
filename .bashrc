@@ -195,6 +195,24 @@ lo() {
   unbuffer -p "$@" 2>&1 | tee >(sed -u -e 's/\x1b\[[0-9;]*[a-zA-Z]//g' -e 's/\r/\n/g' > "$TMPDIR/${name}.log")
 }
 
+# Git worktree management
+worktree-add() {
+  read -p "Enter worktree name: " name
+  git worktree add worktrees/$name && zed worktrees/$name
+}
+
+worktree-rebase() {
+  git worktree list
+  read -p "Enter worktree name to rebase: " name
+  git rebase main $name && git branch -d $name && git worktree remove worktrees/$name
+}
+
+worktree-remove() {
+  git worktree list
+  read -p "Enter worktree name to remove: " name
+  git worktree remove worktrees/$name && git branch -d $name
+}
+
 export NVM_DIR="$HOME/.nvm"
 # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 # [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
