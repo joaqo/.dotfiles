@@ -1,4 +1,11 @@
 {
+  "sticky_scroll": {
+    "enabled": true
+  },
+  "session": {
+    "restore_unsaved_buffers": true
+  },
+  "restore_on_startup": "last_session",
   "use_system_prompts": false,
   "agent_servers": {
     "claude": { "default_mode": "bypassPermissions" }
