@@ -202,16 +202,126 @@ worktree-add() {
 }
 
 worktree-rebase() {
-  git worktree list
-  read -p "Enter worktree name to rebase: " name
-  git rebase main $name && git branch -d $name && git worktree remove worktrees/$name
+  # Colors
+  local RED='\033[0;31m'
+  local GREEN='\033[0;32m'
+  local YELLOW='\033[0;33m'
+  local NC='\033[0m' # No Color
+
+  if [ $# -eq 0 ]; then
+    local branches=($(git worktree list | grep -o '\[.*\]' | tr -d '[]' | grep -v '^main$'))
+
+    # Use fzf if available, otherwise use select menu
+    if command -v fzf &> /dev/null; then
+      name=$(printf '%s\n' "${branches[@]}" | fzf --height=40% --reverse --prompt="Select worktree to rebase: ")
+      [ -z "$name" ] && return 0  # User cancelled
+    else
+      echo -e "${YELLOW}Select worktree to rebase:${NC}"
+      select name in "${branches[@]}"; do
+        [ -n "$name" ] && break
+      done
+    fi
+  else
+    name=$1
+  fi
+
+  # Path to the primary (original) worktree
+  root=$(git worktree list --porcelain | awk '/^worktree / {print $2; exit}')
+
+  # Path to the worktree that has branch "$name" checked out
+  wt=$(git worktree list --porcelain | awk -v b="refs/heads/$name" '
+    /^worktree / { w=$2 }
+    /^branch / && $2==b { print w; exit }
+  ')
+
+  if [ -z "$wt" ]; then
+    echo -e "${RED}✗ No worktree found for branch '$name'${NC}"
+    return 1
+  fi
+
+  # Check for uncommitted changes
+  if ! git -C "$wt" diff-index --quiet HEAD --; then
+    echo -e "${RED}✗ Worktree has uncommitted changes${NC}"
+    echo -e "${YELLOW}Commit or stash changes before rebasing${NC}"
+    return 1
+  fi
+
+  # Rebase the worktree's branch onto main
+  echo -e "${YELLOW}Rebasing $name onto main...${NC}"
+  if ! git -C "$wt" rebase main; then
+    echo -e "${RED}✗ Rebase failed${NC}"
+    echo -e "${YELLOW}To resolve:${NC}"
+    echo -e "  cd $wt"
+    echo -e "  # Fix conflicts, then:"
+    echo -e "  git rebase --continue"
+    echo -e "  # Or abort:"
+    echo -e "  git rebase --abort"
+    return 1
+  fi
+  echo -e "${GREEN}✓ Rebased onto main${NC}"
+
+  # Fast-forward main in the primary worktree
+  echo -e "${YELLOW}Switching to main...${NC}"
+  if ! git -C "$root" switch main; then
+    echo -e "${RED}✗ Failed to switch to main${NC}"
+    echo -e "${YELLOW}Check if main branch exists or has uncommitted changes${NC}"
+    return 1
+  fi
+
+  echo -e "${YELLOW}Merging $name into main...${NC}"
+  if ! git -C "$root" merge --ff-only "$name"; then
+    echo -e "${RED}✗ Fast-forward merge failed${NC}"
+    echo -e "${YELLOW}This usually means main has diverged. The rebase succeeded but merge failed.${NC}"
+    echo -e "${YELLOW}You may need to manually merge or rebase differently.${NC}"
+    return 1
+  fi
+  echo -e "${GREEN}✓ Merged into main${NC}"
+
+  # Remove worktree + branch
+  echo -e "${YELLOW}Removing worktree...${NC}"
+  if ! git worktree remove "$wt"; then
+    echo -e "${RED}✗ Failed to remove worktree${NC}"
+    echo -e "${YELLOW}You may need to remove it manually:${NC}"
+    echo -e "  git worktree remove $wt --force"
+    return 1
+  fi
+
+  if ! git -C "$root" branch -d "$name"; then
+    echo -e "${YELLOW}⚠ Branch '$name' could not be deleted (may have unmerged changes)${NC}"
+    echo -e "${YELLOW}Use 'git branch -D $name' to force delete${NC}"
+  fi
+
+  echo -e "${GREEN}✓ Cleaned up${NC}"
 }
 
 worktree-remove() {
-  git worktree list
-  read -p "Enter worktree name to remove: " name
+  if [ $# -eq 0 ]; then
+    local branches=($(git worktree list | grep -o '\[.*\]' | tr -d '[]' | grep -v '^main$'))
+
+    # Use fzf if available, otherwise use select menu
+    if command -v fzf &> /dev/null; then
+      name=$(printf '%s\n' "${branches[@]}" | fzf --height=40% --reverse --prompt="Select worktree to remove: ")
+      [ -z "$name" ] && return 0  # User cancelled
+    else
+      echo "Select worktree to remove:"
+      select name in "${branches[@]}"; do
+        [ -n "$name" ] && break
+      done
+    fi
+  else
+    name=$1
+  fi
   git worktree remove worktrees/$name && git branch -d $name
 }
+
+_worktree_complete() {
+  local lis cur
+  lis=$(git worktree list 2>/dev/null | grep -o '\[.*\]' | tr -d '[]' | grep -v '^main$')
+  cur=${COMP_WORDS[COMP_CWORD]}
+  COMPREPLY=( $(compgen -W "$lis" -- "$cur") )
+}
+complete -F _worktree_complete worktree-rebase
+complete -F _worktree_complete worktree-remove
 
 export NVM_DIR="$HOME/.nvm"
 # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm

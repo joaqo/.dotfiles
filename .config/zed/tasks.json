@@ -30,8 +30,8 @@
     "use_new_terminal": true
   },
   {
-    "label": "Worktree Merge",
-    "command": "worktree-merge",
+    "label": "Worktree Rebase",
+    "command": "worktree-rebase",
     "hide": "on_success"
   },
   {
