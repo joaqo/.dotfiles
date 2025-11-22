@@ -14,7 +14,7 @@
     "dock": "right"
   },
   "project_panel": {
-    "dock": "right",
+    "dock": "left",
     "starts_open": false
   },
   "agent_ui_font_size": 17.0,

@@ -82,7 +82,7 @@
   {
     "context": "ProjectPanel",
     "bindings": {
-      "cmd-l": "workspace::ToggleRightDock"
+      "cmd-l": "workspace::ToggleLeftDock"
     }
   },
   {
