@@ -38,5 +38,10 @@
     "label": "Worktree Remove",
     "command": "worktree-remove",
     "hide": "on_success"
+  },
+  {
+    "label": "Worktree Open",
+    "command": "worktree-open",
+    "hide": "on_success"
   }
 ]

@@ -124,7 +124,7 @@ export PIPENV_SKIP_LOCK=True
 # Supports autocomplete, renamed from workon to wo as I type this a lot
 wo() {
   if [ $# -eq 0 ]; then
-      source ${WORKON_HOME}${PWD##*/}/bin/activate 
+      source ${WORKON_HOME}${PWD##*/}/bin/activate
   else
       source ${WORKON_HOME}/$1/bin/activate
   fi
@@ -311,17 +311,37 @@ worktree-remove() {
   else
     name=$1
   fi
+
+  # Confirm before removing
+  read -p "Are you sure you want to remove worktree '$name'? [y/N] " -n 1 -r
+  echo
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    echo "Cancelled."
+    return 0
+  fi
+
   git worktree remove worktrees/$name && git branch -d $name
 }
 
-_worktree_complete() {
-  local lis cur
-  lis=$(git worktree list 2>/dev/null | grep -o '\[.*\]' | tr -d '[]' | grep -v '^main$')
-  cur=${COMP_WORDS[COMP_CWORD]}
-  COMPREPLY=( $(compgen -W "$lis" -- "$cur") )
+worktree-open() {
+  if [ $# -eq 0 ]; then
+    local branches=($(git worktree list | grep -o '\[.*\]' | tr -d '[]' | grep -v '^main$'))
+
+    # Use fzf if available, otherwise use select menu
+    if command -v fzf &> /dev/null; then
+      name=$(printf '%s\n' "${branches[@]}" | fzf --height=40% --reverse --prompt="Select worktree to open: ")
+      [ -z "$name" ] && return 0  # User cancelled
+    else
+      echo "Select worktree to open:"
+      select name in "${branches[@]}"; do
+        [ -n "$name" ] && break
+      done
+    fi
+  else
+    name=$1
+  fi
+  zed worktrees/$name
 }
-complete -F _worktree_complete worktree-rebase
-complete -F _worktree_complete worktree-remove
 
 export NVM_DIR="$HOME/.nvm"
 # [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
