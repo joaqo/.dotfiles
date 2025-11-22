@@ -112,45 +112,6 @@ PATH=$PATH:~/.local/bin  # Ubuntu bins
 # https://github.com/Homebrew/homebrew-php/issues/4527#issuecomment-346483994
 PATH=$PATH:/usr/local/sbin
 
-# Add pyenv to path
-PATH=~/.pyenv/shims:$PATH
-PATH=~/.pyenv/bin:$PATH
-
-# Pipenv looks for this to integrate with pyenv
-export PYENV_ROOT=~/.pyenv/
-export PIPENV_SKIP_LOCK=True
-
-# Activate current folder's pipenv virtualenv or activate an explicit virtualenv name,
-# Supports autocomplete, renamed from workon to wo as I type this a lot
-wo() {
-  if [ $# -eq 0 ]; then
-      source ${WORKON_HOME}${PWD##*/}/bin/activate
-  else
-      source ${WORKON_HOME}/$1/bin/activate
-  fi
-}
-_workon() {
-  local lis cur
-  lis=$(ls $WORKON_HOME)
-  cur=${COMP_WORDS[COMP_CWORD]}
-  COMPREPLY=( $(compgen -W "$lis" -- "$cur") )
-}
-# Making a new virtualenv
-mkvenv() {
-  if [ $# -eq 0 ]; then  # The $# variable stores the number of input arguments the script was passed
-    echo "No arguments supplied"
-  else
-    python3 -m venv ${WORKON_HOME}/"$1"
-    wo "$1"
-    pip install --upgrade pip
-  fi
-}
-
-# Get json from api
-httpj() {
-http --pretty=format $1 | nvim - -c 'set syntax=json' -c 'set foldmethod=syntax'
-}
-
 # Highlight folders on ls
 LS_COLORS=$LS_COLORS:'di=0;35:' ; export LS_COLORS
 
