@@ -15,6 +15,9 @@ export WORKON_HOME=~/.virtualenvs
 export POETRY_VIRTUALENVS_PATH=$WORKON_HOME
 export PATH="$HOME/.bin:$PATH"
 
+# Worktree directory
+export WORKTREE_DIR=~/worktrees
+
 # Add poetry to path. The poetry installation script adds this to
 # your .profile file, I just moved it here.
 export PATH="$HOME/.poetry/bin:$PATH"
@@ -159,7 +162,7 @@ lo() {
 # Git worktree management
 worktree-add() {
   read -p "Enter worktree name: " name
-  git worktree add worktrees/$name && zed worktrees/$name
+  git worktree add $WORKTREE_DIR/$name && zed $WORKTREE_DIR/$name
 }
 
 worktree-rebase() {
@@ -174,7 +177,7 @@ worktree-rebase() {
 
     # Use fzf if available, otherwise use select menu
     if command -v fzf &> /dev/null; then
-      name=$(printf '%s\n' "${branches[@]}" | fzf --height=40% --reverse --prompt="Select worktree to rebase: ")
+      name=$(printf '%s\n' "${branches[@]}" | fzf --height=40% --reverse --no-info --prompt="Select worktree to rebase: ")
       [ -z "$name" ] && return 0  # User cancelled
     else
       echo -e "${YELLOW}Select worktree to rebase:${NC}"
@@ -256,12 +259,19 @@ worktree-rebase() {
 }
 
 worktree-remove() {
+  # Colors
+  local RED='\033[0;31m'
+  local YELLOW='\033[0;33m'
+  local GREEN='\033[0;32m'
+  local BOLD_BLACK='\033[1;30m'
+  local NC='\033[0m' # No Color
+
   if [ $# -eq 0 ]; then
     local branches=($(git worktree list | grep -o '\[.*\]' | tr -d '[]' | grep -v '^main$'))
 
     # Use fzf if available, otherwise use select menu
     if command -v fzf &> /dev/null; then
-      name=$(printf '%s\n' "${branches[@]}" | fzf --height=40% --reverse --prompt="Select worktree to remove: ")
+      name=$(printf '%s\n' "${branches[@]}" | fzf --height=40% --reverse --no-info --prompt="Select worktree to remove: ")
       [ -z "$name" ] && return 0  # User cancelled
     else
       echo "Select worktree to remove:"
@@ -274,14 +284,15 @@ worktree-remove() {
   fi
 
   # Confirm before removing
-  read -p "Are you sure you want to remove worktree '$name'? [y/N] " -n 1 -r
+  echo -e "${RED}⚠  Will delete worktree and branch ${BOLD_BLACK}$name${NC}"
+  read -p "Delete? [y/N] " -n 1 -r
   echo
   if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     echo "Cancelled."
     return 0
   fi
 
-  git worktree remove worktrees/$name && git branch -d $name
+  git worktree remove $WORKTREE_DIR/$name --force && git branch -d $name --force
 }
 
 worktree-open() {
@@ -290,7 +301,7 @@ worktree-open() {
 
     # Use fzf if available, otherwise use select menu
     if command -v fzf &> /dev/null; then
-      name=$(printf '%s\n' "${branches[@]}" | fzf --height=40% --reverse --prompt="Select worktree to open: ")
+      name=$(printf '%s\n' "${branches[@]}" | fzf --height=40% --reverse --no-info --prompt="Select worktree to open: ")
       [ -z "$name" ] && return 0  # User cancelled
     else
       echo "Select worktree to open:"
@@ -301,7 +312,7 @@ worktree-open() {
   else
     name=$1
   fi
-  zed worktrees/$name
+  zed $WORKTREE_DIR/$name
 }
 
 export NVM_DIR="$HOME/.nvm"
