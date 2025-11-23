@@ -32,16 +32,22 @@
   {
     "label": "Worktree Rebase",
     "command": "worktree-rebase",
-    "hide": "on_success"
+    "hide": "on_success",
+    "allow_concurrent_runs": true,
+    "use_new_terminal": true
   },
   {
     "label": "Worktree Remove",
     "command": "worktree-remove",
-    "hide": "on_success"
+    "hide": "on_success",
+    "allow_concurrent_runs": true,
+    "use_new_terminal": true
   },
   {
     "label": "Worktree Open",
     "command": "worktree-open",
-    "hide": "on_success"
+    "hide": "on_success",
+    "allow_concurrent_runs": true,
+    "use_new_terminal": true
   }
 ]
