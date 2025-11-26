@@ -156,7 +156,36 @@ export ANDROID_HOME=$HOME/Library/Android/sdk && export PATH=$PATH:$ANDROID_HOME
 lo() {
   local name="$1"
   shift
-  unbuffer -p "$@" 2>&1 | tee >(sed -u -e 's/\x1b\[[0-9;]*[a-zA-Z]//g' -e 's/\r/\n/g' > "$TMPDIR/${name}.log")
+  local logfile="${TMPDIR%/}/${name}.log"
+  rm -f "$logfile"
+  echo -e "Logging to: \033[0;32m$logfile\033[0m"
+  unbuffer -p "$@" 2>&1 | tee >(sed -u -e 's/\x1b\[[0-9;]*[a-zA-Z]//g' -e 's/\r/\n/g' > "$logfile")
+}
+
+# Run a command and show a notification when it finishes
+notify() {
+  local cmd_name="$1"
+  local cmd_args="${*:2}"
+  local start_time=$(date +%s.%N)
+  "$@"
+  local exit_code=$?
+  local end_time=$(date +%s.%N)
+  local duration=$(printf "%.1f" $(echo "$end_time - $start_time" | bc))
+
+  if [ $exit_code -eq 0 ]; then
+    local title="$cmd_name"
+    local status="Completed in ${duration}s"
+  else
+    local title="$cmd_name Failed!"
+    local status="Failed (exit $exit_code) after ${duration}s"
+  fi
+
+  if [ -n "$cmd_args" ]; then
+    terminal-notifier -title "$title" -subtitle "$cmd_args" -message "$status"
+  else
+    terminal-notifier -title "$title" -message "$status"
+  fi
+  return $exit_code
 }
 
 # Git worktree management
