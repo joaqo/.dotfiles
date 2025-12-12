@@ -84,8 +84,7 @@ alias gsb="git status -sb"
 alias gd="clear; git diff"
 alias g="git"
 alias l="ls -lhFG"
-alias i="ipython"
-alias b="bpython"
+alias i="uvx ipython"
 alias t="tmux a"
 alias pipdefs="pip install ipdb bpython ipython flake8 pretty_errors"
 alias process="ps -feww | grep"
@@ -96,6 +95,8 @@ alias vc="cd ~/.dotfiles/.config/nvim/lua; nvim"
 alias grep="grep --color"
 alias dash="cd $HOME/dashboard-feyn/; wo dashboard; jupyter notebook main.ipynb"
 alias c="claude --dangerously-skip-permissions"
+alias p="uvx python"
+alias u="uv run"
 
 # ls with colors
 if [ $is_macos ]; then
