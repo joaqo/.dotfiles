@@ -29,10 +29,17 @@
   },
   "context_servers": {
     "firebase": {
-      "source": "custom",
       "enabled": true,
       "command": "npx",
-      "args": ["-y", "firebase-tools@latest", "experimental:mcp", "--dir", "/Users/joaqo/mellow/backend/firebase"],
+      "args": [
+        "-y",
+        "firebase-tools@latest",
+        "mcp",
+        "--dir",
+        "/Users/joaqo/mellow/backend/firebase",
+        "--only",
+        "auth,firestore,storage"
+      ],
       "env": {}
     }
   },

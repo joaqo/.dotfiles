@@ -7,7 +7,7 @@
     "dock": "right"
   },
   "project_panel": {
-    "dock": "right",
+    "dock": "left",
     "starts_open": false
   },
   "agent_ui_font_size": 17.0,
@@ -25,7 +25,13 @@
       "source": "custom",
       "enabled": true,
       "command": "npx",
-      "args": ["-y", "firebase-tools@latest", "experimental:mcp", "--dir", "/Users/joaqo/mellow/backend/firebase"],
+      "args": [
+        "-y",
+        "firebase-tools@latest",
+        "mcp",
+        "--dir",
+        "/Users/joaqo/mellow/backend/firebase"
+      ],
       "env": {}
     }
   },
