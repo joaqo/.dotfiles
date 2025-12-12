@@ -1,4 +1,11 @@
 {
+  "sticky_scroll": {
+    "enabled": true
+  },
+  "session": {
+    "restore_unsaved_buffers": true
+  },
+  "restore_on_startup": "last_session",
   "use_system_prompts": false,
   "agent_servers": {
     "claude": { "default_mode": "bypassPermissions" }
@@ -93,7 +100,7 @@
   "buffer_font_size": 13.0,
   "theme": {
     "mode": "system",
-    "light": "macOS Classic Light",
+    "light": "Vercel Light",
     "dark": "Ayu Dark"
   },
   "languages": {
@@ -112,7 +119,7 @@
   "use_autoclose": true,
   "jsx_tag_auto_close": { "enabled": false },
   "preferred_line_length": 120,
-  "relative_line_numbers": true,
+  "relative_line_numbers": "enabled",
   "resize_all_panels_in_dock": ["left", "right", "bottom"],
   "when_closing_with_no_tabs": "keep_window_open",
   "gutter": {

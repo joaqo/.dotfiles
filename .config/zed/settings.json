@@ -8,7 +8,9 @@
   "restore_on_startup": "last_session",
   "use_system_prompts": false,
   "agent_servers": {
-    "claude": { "default_mode": "bypassPermissions" }
+    "claude": {
+      "default_mode": "bypassPermissions"
+    }
   },
   "git_panel": {
     "dock": "right"
@@ -110,7 +112,9 @@
       "format_on_save": "off",
       "formatter": [
         {
-          "language_server": { "name": "ruff" }
+          "language_server": {
+            "name": "ruff"
+          }
         }
       ]
     }
@@ -118,7 +122,9 @@
   "use_smartcase_search": true,
   "vertical_scroll_margin": 8,
   "use_autoclose": true,
-  "jsx_tag_auto_close": { "enabled": false },
+  "jsx_tag_auto_close": {
+    "enabled": false
+  },
   "preferred_line_length": 120,
   "relative_line_numbers": "enabled",
   "resize_all_panels_in_dock": ["left", "right", "bottom"],
@@ -131,5 +137,6 @@
   "indent_guides": {
     "enabled": false
   },
-  "use_system_path_prompts": false
+  "use_system_path_prompts": false,
+  "colorize_brackets": true
 }
