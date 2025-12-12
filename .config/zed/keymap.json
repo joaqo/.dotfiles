@@ -18,7 +18,8 @@
       "cmd--": ["zed::DecreaseBufferFontSize", { "persist": true }],
       "cmd-o": "task::Spawn",
       "cmd-ctrl-enter": "repl::Run",
-      "cmd-l": "project_panel::ToggleFocus"
+      "cmd-l": "project_panel::ToggleFocus",
+      "cmd-shift-o": ["task::Rerun", { "reevaluate_context": true }]
     }
   },
 
@@ -70,7 +71,7 @@
   {
     "context": "AgentPanel",
     "bindings": {
-      "cmd-?": "workspace::ToggleRightDock"
+      "cmd-k": "workspace::ToggleRightDock"
     }
   },
   {
@@ -106,6 +107,32 @@
       "ctrl-w n": "workspace::NewFileSplitVertical",
       "ctrl-w v": "pane::SplitAndMoveRight",
       "ctrl-w s": "pane::SplitAndMoveDown"
+    }
+  },
+
+  // Open agent pane
+  {
+    "context": "Workspace || Terminal", // Terminal context to override zed default
+    "bindings": {
+      "cmd-k": "agent::ToggleFocus"
+    }
+  },
+  {
+    "context": "Workspace",
+    "bindings": {
+      "cmd-?": null
+    }
+  },
+  {
+    "context": "BufferSearchBar",
+    "bindings": {
+      "ctrl-cmd-o": "outline::Toggle"
+    }
+  },
+  {
+    "context": "(Editor && mode == full)",
+    "bindings": {
+      "ctrl-cmd-o": "outline::Toggle"
     }
   }
 ]
