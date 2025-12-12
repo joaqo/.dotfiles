@@ -159,6 +159,7 @@ lo() {
   shift
   local logfile="${TMPDIR%/}/${name}.log"
   rm -f "$logfile"
+  echo -e "Started: \033[0;33m$(date)\033[0m"
   echo -e "Logging to: \033[0;32m$logfile\033[0m"
   unbuffer -p "$@" 2>&1 | tee >(sed -u -e 's/\x1b\[[0-9;]*[a-zA-Z]//g' -e 's/\r/\n/g' > "$logfile")
 }
