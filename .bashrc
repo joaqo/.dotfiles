@@ -154,14 +154,33 @@ export ANDROID_HOME=$HOME/Library/Android/sdk && export PATH=$PATH:$ANDROID_HOME
 
 # Usage: lo mycommand echo "Hello World"
 # This will create a log file at $TMPDIR/mycommand.log
+# Usage: lo mycommand echo "Hello World"
+# This will create a log file at $TMPDIR/mycommand.log
 lo() {
   local name="$1"
   shift
+  
+  # Detect worktree: if basename differs from "mellow", append it as suffix
+  local repo_name
+  repo_name=$(git rev-parse --show-toplevel 2>/dev/null | xargs basename)
+  if [[ -n "$repo_name" && "$repo_name" != "mellow" ]]; then
+    name="${name}-${repo_name}"
+  fi
+  
+  # Determine process tag (worktree name or "main")
+  local tag="lo:main"
+  if [[ -n "$repo_name" && "$repo_name" != "mellow" ]]; then
+    tag="lo:$repo_name"
+  fi
+  
   local logfile="${TMPDIR%/}/${name}.log"
   rm -f "$logfile"
-  echo -e "Started: \033[0;33m$(date)\033[0m"
+  if [[ -n "$repo_name" && "$repo_name" != "mellow" ]]; then
+    echo -e "Workspace: \033[0;35m$repo_name\033[0m"
+  fi
+  echo -e "Started: \033[0;33m$(date '+%a %b %d %H:%M:%S')\033[0m"
   echo -e "Logging to: \033[0;32m$logfile\033[0m"
-  unbuffer -p "$@" 2>&1 | tee >(sed -u -e 's/\x1b\[[0-9;]*[a-zA-Z]//g' -e 's/\r/\n/g' > "$logfile")
+  unbuffer -p bash -c 'exec -a "$1" "${@:2}"' _ "$tag" "$@" 2>&1 | tee >(sed -u -e 's/\x1b\[[0-9;]*[a-zA-Z]//g' -e 's/\r/\n/g' > "$logfile")
 }
 
 # Run a command and show a notification when it finishes
@@ -298,7 +317,19 @@ worktree-remove() {
   local NC='\033[0m' # No Color
 
   if [ $# -eq 0 ]; then
-    local branches=($(git worktree list | grep -o '\[.*\]' | tr -d '[]' | grep -v '^main$'))
+    local branches=($(
+      git worktree list --porcelain \
+      | awk '
+          /^worktree / {
+            wt++
+            next
+          }
+          wt > 1 && /^branch / {
+            sub("refs/heads/", "", $2)
+            print $2
+          }
+        '
+    ))
 
     # Use fzf if available, otherwise use select menu
     if command -v fzf &> /dev/null; then
@@ -323,7 +354,16 @@ worktree-remove() {
     return 0
   fi
 
-  git worktree remove $WORKTREE_DIR/$name --force && git branch -d $name --force
+  local wt_path
+  wt_path=$(git worktree list --porcelain | awk -v b="refs/heads/$name" '
+    /^worktree / { w=$2 }
+    /^branch / && $2==b { print w; exit }
+  ')
+  if [ -z "$wt_path" ]; then
+    echo -e "${RED}✗ No worktree found for branch '$name'${NC}"
+    return 1
+  fi
+  git worktree remove "$wt_path" --force && git branch -d $name --force
 }
 
 worktree-open() {
