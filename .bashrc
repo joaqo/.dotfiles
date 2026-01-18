@@ -13,7 +13,6 @@ cuda-env 11.0
 
 export WORKON_HOME=~/.virtualenvs
 export POETRY_VIRTUALENVS_PATH=$WORKON_HOME
-export PATH="$HOME/.bin:$PATH"
 
 # Worktree directory
 export WORKTREE_DIR=~/worktrees

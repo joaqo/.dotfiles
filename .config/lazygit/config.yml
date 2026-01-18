@@ -1,0 +1,6 @@
+customCommands:
+  - key: "C"
+    context: "files"
+    description: "AI commit message"
+    command: "autocommit"
+    output: terminal

@@ -1,8 +1,16 @@
 # Run me from your home folder
 
-mkdir -p ~/.bin
-curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh > "$HOME/.bin/git-prompt.sh"
-curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash > "$HOME/.bin/git-completion.bash"
+mkdir -p ~/.local/bin
+
+# Download git tools
+curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh > "$HOME/.local/bin/git-prompt.sh"
+curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash > "$HOME/.local/bin/git-completion.bash"
+
+# Symlink custom scripts from dotfiles/bin to ~/.local/bin
+for script in ~/.dotfiles/bin/*; do
+  ln -sf "$script" ~/.local/bin/
+done
+
 ln -s -f .dotfiles/.bashrc .
 ln -s -f .dotfiles/.profile .
 ln -s -f .dotfiles/.gitconfig .
@@ -21,6 +29,9 @@ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 cd ~/.config
 ln -s -f ~/.dotfiles/.config/nvim .
 ln -s -f ~/.dotfiles/.config/zed .
+
+mkdir -p "$HOME/Library/Application Support/lazygit"
+ln -s -f ~/.dotfiles/.config/lazygit/config.yml "$HOME/Library/Application Support/lazygit/"
 
 #Language servers
 pnpm add -g typescript-language-server tailwindcss-language-server vscode-langservers-extracted

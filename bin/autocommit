@@ -1,0 +1,8 @@
+#!/bin/bash
+cd "$(git rev-parse --show-toplevel)" || exit 1
+
+PROMPT='Generate a concise git commit message for these staged changes. Output ONLY the raw commit message with no markdown, no code blocks, no backticks, no explanations. Use conventional commit format.'
+
+echo "Generating commit message..."
+git diff --staged | claude -p "$PROMPT" --model haiku --output-format text 2>/dev/null > /tmp/commit_msg
+git commit -e -F /tmp/commit_msg
