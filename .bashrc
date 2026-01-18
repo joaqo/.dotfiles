@@ -29,7 +29,7 @@ export CLOUDSDK_PYTHON=$(which python3.11)
 
 # Save history after each command (to share history between windows)
 # Also update session name to iTerm after each command (because its `pwd`)
-export PROMPT_COMMAND='history -a; echo -ne "\033]0;${PWD##*/}\007"'
+export PROMPT_COMMAND='history -a'
 
 # Expand size of bash history and dont save duplicate commands
 export HISTSIZE=80000
