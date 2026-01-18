@@ -21,3 +21,7 @@ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 cd ~/.config
 ln -s -f ~/.dotfiles/.config/nvim .
 ln -s -f ~/.dotfiles/.config/zed .
+
+#Language servers
+pnpm add -g typescript-language-server tailwindcss-language-server vscode-langservers-extracted
+brew install ripgrep
