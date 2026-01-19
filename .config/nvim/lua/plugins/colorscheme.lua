@@ -8,25 +8,25 @@ return {
     lazy = false,
     priority = 1000,
     opts = {
-      transparent_mode = true,
+      transparent_mode = true,  -- Gives us our completely black background from iTerm2
       italic = {
         strings = false,
         comments = false,
         operators = false,
         folds = false,
       },
-      -- overrides = {
-      --   Search = { fg = "#F7E19E", bg = "black" },
-      --   IncSearch = { fg = "white", bg = "#FB4934" },
-      --   CurSearch = { fg = "white", bg = "#FB4934" },
-      --   GitSignsAdd = { bg = "NONE", fg = "darkcyan" },
-      --   GitSignsChange = { bg = "NONE", fg = "green" },
-      --   GitSignsDelete = { bg = "NONE", fg = "red" },
-      --   GitSignsChangedelete = { bg = "NONE", fg = "brown" },
-      --   GitSignsTopdelete = { bg = "NONE", fg = "red" },
-      --   GitSignsUntracked = { bg = "NONE", fg = "lightgray" },
-      --   NormalFloat = { bg = "#292825" },
-      -- },
+      overrides = {
+        NormalFloat = { bg = "#32302f" },
+        -- Search = { fg = "#F7E19E", bg = "black" },
+        -- IncSearch = { fg = "white", bg = "#FB4934" },
+        -- CurSearch = { fg = "white", bg = "#FB4934" },
+        -- GitSignsAdd = { bg = "NONE", fg = "darkcyan" },
+        -- GitSignsChange = { bg = "NONE", fg = "green" },
+        -- GitSignsDelete = { bg = "NONE", fg = "red" },
+        -- GitSignsChangedelete = { bg = "NONE", fg = "brown" },
+        -- GitSignsTopdelete = { bg = "NONE", fg = "red" },
+        -- GitSignsUntracked = { bg = "NONE", fg = "lightgray" },
+      },
     },
     config = function(_, opts)
       vim.opt.termguicolors = true
