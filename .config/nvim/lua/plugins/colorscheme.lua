@@ -25,6 +25,8 @@ return {
       -- Set `gitsigns` plugin colors. Here for all color names: https://github.com/lewis6991/gitsigns.nvim/blob/f388995990aba04cfdc7c3ab870c33e280601109/doc/gitsigns.txt#L937
       vim.cmd("hi GitSignsAdd guibg=none guifg=darkcyan | hi GitSignsChange guibg=none guifg=green | hi GitSignsDelete guibg=none guifg=red | hi GitSignsChangedelete guibg=none guifg=brown | hi GitSignsTopdelete guibg=none guifg=red | hi GitSignsUntracked guibg=none guifg=lightgray")
       vim.cmd("hi NormalFloat guibg=#292825")
+      -- Treesitter diff highlights (for gitcommit)
+      vim.cmd("hi @text.diff.add guifg=#b8bb26 | hi @text.diff.delete guifg=#fb4934")
     end
   },
   {

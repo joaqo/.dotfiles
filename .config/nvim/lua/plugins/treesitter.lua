@@ -15,6 +15,8 @@ return {
       ensure_installed = {
         "bash",
         "c",
+        "diff",
+        "gitcommit",
         "vimdoc",
         "html",
         "javascript",
