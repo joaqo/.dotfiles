@@ -11,7 +11,7 @@ return {
   {
     "nvim-telescope/telescope.nvim",
     cmd = "Telescope",
-    dependencies = { 'nvim-lua/plenary.nvim' },
+    dependencies = { 'nvim-lua/plenary.nvim', 'nvim-treesitter/nvim-treesitter' },
     keys = {
       { "<leader>,", "<cmd>Telescope buffers show_all_buffers=true<cr>", desc = "Switch Buffer" },
       { "<leader>/", "<cmd>Telescope live_grep<cr>", desc = "Find in Files (Grep)" },
@@ -46,11 +46,12 @@ return {
             },
           },
         },
-        -- pickers = {
-        --   git_status = {
-        --     theme = "cursor",
-        --   }
-        -- }
+        pickers = {
+          find_files = {
+            hidden = true,
+            file_ignore_patterns = { "^%.git/" },
+          },
+        }
       })
     end
   }
