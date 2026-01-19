@@ -33,6 +33,9 @@ ln -s -f ~/.dotfiles/.config/zed .
 mkdir -p "$HOME/Library/Application Support/lazygit"
 ln -s -f ~/.dotfiles/.config/lazygit/config.yml "$HOME/Library/Application Support/lazygit/"
 
+mkdir -p ~/.claude
+ln -s -f ~/.dotfiles/.claude/CLAUDE.md ~/.claude/
+
 #Language servers
 pnpm add -g typescript-language-server tailwindcss-language-server vscode-langservers-extracted
 brew install ripgrep
