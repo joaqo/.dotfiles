@@ -29,10 +29,6 @@ map({"n", "v"}, "(", ",", { desc = "Repeat last motion reversed", noremap = true
 map({"n", "v"}, ")", ";", { desc = "Repeat last motion", noremap = true })
 
 -- Quickfix list
-map('n', '[q', ':cprevious\n')
-map('n', ']q', ':cnext\n')
-map('n', '[Q', ':rfirst\n')
-map('n', ']Q', ':clast\n')
 map('n', '<leader>q', ':cclose\n')
 
 -- Misc
