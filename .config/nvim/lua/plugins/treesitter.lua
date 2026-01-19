@@ -1,7 +1,6 @@
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    version = "v0.9.2",
     build = ":TSUpdate",
     event = { "BufReadPost", "BufNewFile" },
     config = function(_, opts)
@@ -12,7 +11,6 @@ return {
         enable = true,
         disable = { "python" }
       },
-      context_commentstring = { enable = true, enable_autocmd = false },
       ensure_installed = {
         "bash",
         "c",
