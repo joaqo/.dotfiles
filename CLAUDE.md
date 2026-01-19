@@ -1,6 +1,10 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This repository was created to version control my dotfiles. It also helps in installing my dotfiles when I migrate to a new computer.
+
+It just symlinks the dotfiles in this repository to their appropiate locations on my OS on install. It also installs a few programs.
+
+When you finish making a change and you're sure you've been successful, propose a commit message to me and wait for my approval to commit it.
 
 ## Setup
 
