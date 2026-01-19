@@ -11,6 +11,14 @@ vim.api.nvim_create_autocmd({ "TermClose" }, {
 -- Automatically enter insert mode when entering a terminal buffer
 vim.cmd("autocmd BufWinEnter,WinEnter term://* startinsert")
 
+-- Show diagnostic on hover
+vim.api.nvim_create_autocmd("CursorHold", {
+  group = augroup("diagnostic_float"),
+  callback = function()
+    vim.diagnostic.open_float(nil, { focus = false })
+  end,
+})
+
 -- Check if we need to reload the file when it changed
 -- vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
 --   group = augroup("checktime"),
