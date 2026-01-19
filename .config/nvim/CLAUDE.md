@@ -37,9 +37,10 @@ Load order: terminal → options → lazy (loads plugins/) → keymaps → autoc
 | `<leader>,` | Switch buffer |
 | `gd` | Go to definition |
 | `K` | Hover docs |
-| `gr` | References |
-| `<leader>ca` | Code action |
-| `<leader>rn` | Rename |
+| `grr` | References |
+| `gra` | Code action |
+| `grn` | Rename |
+| `gri` | Implementation |
 | `<leader>gf` | LSP format |
 | `<leader>F` | Neoformat |
 | `]h`/`[h` | Next/prev git hunk |
