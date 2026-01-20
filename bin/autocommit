@@ -6,7 +6,7 @@ if git diff --staged --quiet; then
   exit 1
 fi
 
-PROMPT='Generate a concise git commit message for these staged changes. Output ONLY the raw commit message with no markdown, no code blocks, no backticks, no explanations. Use conventional commit format.'
+PROMPT='Generate a concise git commit message for these staged changes. Output ONLY the raw commit message with no markdown, no code blocks, no backticks, no explanations, no co-authored-by lines, no attribution. Use conventional commit format.'
 
 echo "Generating commit message..."
 git diff --staged | claude -p "$PROMPT" --model haiku --output-format text 2>/dev/null > /tmp/commit_msg
