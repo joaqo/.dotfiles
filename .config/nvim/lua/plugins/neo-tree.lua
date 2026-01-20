@@ -95,7 +95,7 @@ return {
             },
             ["<2-LeftMouse>"] = "open",
             ["<cr>"] = "open",
-            ["<esc>"] = "revert_preview",
+            ["<esc>"] = "close_window",
             ["P"] = { "toggle_preview", config = { use_float = true } },
             ["l"] = "focus_preview",
             ["S"] = "open_split",
