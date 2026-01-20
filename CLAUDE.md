@@ -4,7 +4,9 @@ This repository was created to version control my dotfiles. It also helps in ins
 
 It just symlinks the dotfiles in this repository to their appropiate locations on my OS on install. It also installs a few programs.
 
-When you finish making a change and you're sure you've been successful, propose a commit message to me and wait for my approval to commit it.
+When you finish making a change and you're sure you've been successful, show git diff and propose a commit message to me and wait for my approval to commit it.
+
+If there's other irrelevant changes in the commit diff be aware of that and propose different commits for the different changes, with git diffs for each.
 
 ## Setup
 
