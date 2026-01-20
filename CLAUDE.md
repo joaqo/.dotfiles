@@ -23,6 +23,7 @@ Symlinks dotfiles to ~, installs vim-plug, fzf, language servers (pnpm), and con
 - `.config/nvim/` - neovim config (lazy.nvim), plugins in `lua/plugins/`, core in `lua/config/`
 - `.config/zed/` - zed editor settings (claude integration, vim mode)
 - `.config/lazygit/` - lazygit custom commands
+- `.config/tmuxinator/` - tmuxinator project configs
 - `bin/` - custom scripts (autocommit uses claude haiku for commit msgs)
 
 ## Style
