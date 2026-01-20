@@ -50,13 +50,8 @@ windows:
       panes:
         - nvim
         - claude
-  - claude:
-      layout: tiled
-      panes:
-        - claude
-        - claude
-  - bash: clear
   - git: lazygit
+  - bash: clear
   - servers:
       layout: tiled
       panes:
