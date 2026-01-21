@@ -362,6 +362,12 @@ worktree-delete() {
     echo -e "${RED}✗ No worktree found for branch '$name'${NC}"
     return 1
   fi
+
+  # If inside the worktree being deleted, cd out first
+  if [[ "$PWD" == "$wt_path"* ]]; then
+    cd "$HOME/mellow" || cd "$HOME"
+  fi
+
   git worktree remove "$wt_path" --force && git branch -d $name --force
 }
 
