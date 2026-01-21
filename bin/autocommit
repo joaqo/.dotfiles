@@ -2,8 +2,12 @@
 cd "$(git rev-parse --show-toplevel)" || exit 1
 
 if git diff --staged --quiet; then
-  echo "Error: You have not staged any files!" >&2
-  exit 1
+  echo "Nothing staged. Staging all changes..."
+  git add --all
+  if git diff --staged --quiet; then
+    echo "No changes to commit." >&2
+    exit 1
+  fi
 fi
 
 PROMPT='Generate a concise git commit message for these staged changes. Output ONLY the raw commit message with no markdown, no code blocks, no backticks, no explanations, no co-authored-by lines, no attribution. Use conventional commit format.'
