@@ -53,7 +53,7 @@ windows:
   - git: lazygit
   - bash: clear
   - servers:
-      layout: tiled
+      layout: even-vertical
       panes:
         - cd frontend; cd mobile; clear
         - cd frontend; cd web; clear

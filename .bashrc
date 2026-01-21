@@ -211,7 +211,7 @@ notify() {
 # Git worktree management
 worktree-add() {
   read -p "Enter worktree name: " name
-  git worktree add $WORKTREE_DIR/$name && zed $WORKTREE_DIR/$name
+  git worktree add $WORKTREE_DIR/$name
 }
 
 worktree-rebase() {
@@ -307,7 +307,7 @@ worktree-rebase() {
   echo -e "${GREEN}✓ Cleaned up${NC}"
 }
 
-worktree-remove() {
+worktree-delete() {
   # Colors
   local RED='\033[0;31m'
   local YELLOW='\033[0;33m'
