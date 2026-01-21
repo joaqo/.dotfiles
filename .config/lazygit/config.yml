@@ -1,3 +1,8 @@
+keybinding:
+  commits:
+    moveDownCommit: 'J'
+    moveUpCommit: 'K'
+
 customCommands:
   - key: "C"
     context: "files"
