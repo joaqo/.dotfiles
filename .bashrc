@@ -293,6 +293,12 @@ worktree-rebase() {
 
   # Remove worktree + branch
   echo -e "${YELLOW}Removing worktree...${NC}"
+
+  # If inside the worktree being deleted, cd out first
+  if [[ "$PWD" == "$wt"* ]]; then
+    cd "$HOME/mellow" || cd "$HOME"
+  fi
+
   if ! git worktree remove "$wt"; then
     echo -e "${RED}✗ Failed to remove worktree${NC}"
     echo -e "${YELLOW}You may need to remove it manually:${NC}"
