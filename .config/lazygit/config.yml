@@ -1,3 +1,5 @@
+promptToReturnFromSubprocess: false
+
 keybinding:
   commits:
     moveDownCommit: 'J'
