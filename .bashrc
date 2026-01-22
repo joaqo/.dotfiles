@@ -96,6 +96,7 @@ alias dash="cd $HOME/dashboard-feyn/; wo dashboard; jupyter notebook main.ipynb"
 alias c="claude --dangerously-skip-permissions"
 alias p="uvx python"
 alias u="uv run"
+alias lg="lazygit"
 
 # ls with colors
 if [ $is_macos ]; then
