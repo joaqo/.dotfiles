@@ -15,6 +15,7 @@ opt.pumheight = 10 -- Maximum number of entries in a popup
 opt.relativenumber = true
 opt.number = true
 opt.scrolloff = 4 -- Lines of context
+opt.mousescroll = 'ver:2,hor:6'
 opt.swapfile = false
 opt.updatetime = 300 -- Faster CursorHold for diagnostic hover
 
