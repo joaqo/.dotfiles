@@ -35,6 +35,7 @@ map('n', '<leader>q', ':cclose\n')
 map("n", "<leader>n", "<C-^>", { desc = "Go to last opened file", noremap = true })
 map("v", "p", "pgvy", { desc = "Bind p in visual mode to paste without overriding the current register" } )
 map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and clear hlsearch" })
+map("n", "<leader>cp", function() vim.fn.setreg("+", vim.fn.expand("%:p")) end, { desc = "Copy file path to clipboard" })
 
 -- Space remap (using the map function made it not show `:` correctly on first press)
 vim.cmd("nnoremap <Space> :")
