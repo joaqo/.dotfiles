@@ -12,7 +12,7 @@ In all interactions and commit messages, be extremely concise and sacrifice gram
 - Secondary editor: Zed (vim mode, Claude + Firebase MCP)
 
 ## Dotfiles
-Dotfiles versioned in `~/.dotfiles/` project and symlinked to home. When I ask you to modify something about my workflow or, how something on my workflow works, go to the directories listed below, so you can see exactly what my os (macOS) is seeing. 
+Dotfiles versioned in `~/.dotfiles/` project and symlinked to home. When I ask you to modify something about my workflow, check `~/.dotfiles/` to see my actual config files. 
 
 # Notion
 When I tell you to create tasks, create it in Notion. If I don't specify any of these task properties, default to:
