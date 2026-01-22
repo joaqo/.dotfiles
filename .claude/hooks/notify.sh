@@ -32,7 +32,6 @@ fi
 
 /opt/homebrew/bin/terminal-notifier \
   -title "Claude Code" \
-  -subtitle "$repo" \
   -message "$last_message" \
   -sound Hero \
   -execute "$HOME/.local/bin/focus-iterm-session '$ITERM_SESSION_ID'"
