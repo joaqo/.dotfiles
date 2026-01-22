@@ -39,4 +39,4 @@ fi
   -title "Claude Code" \
   -message "$last_message" \
   -sound Hero \
-  -execute "$HOME/.local/bin/focus-iterm-session '$ITERM_SESSION_ID'"
+  -execute "$HOME/.dotfiles/bin/focus-iterm-session '$ITERM_SESSION_ID'"

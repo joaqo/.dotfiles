@@ -6,11 +6,6 @@ mkdir -p ~/.local/bin
 curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-prompt.sh > "$HOME/.local/bin/git-prompt.sh"
 curl https://raw.githubusercontent.com/git/git/master/contrib/completion/git-completion.bash > "$HOME/.local/bin/git-completion.bash"
 
-# Symlink custom scripts from dotfiles/bin to ~/.local/bin
-for script in ~/.dotfiles/bin/*; do
-  ln -sf "$script" ~/.local/bin/
-done
-
 ln -s -f .dotfiles/.bashrc .
 ln -s -f .dotfiles/.profile .
 ln -s -f .dotfiles/.gitconfig .

@@ -111,6 +111,7 @@ export PYTHONBREAKPOINT=ipdb.set_trace
 # Add local bins to path
 PATH=$PATH:~/code/bin  # Personal bins
 PATH=$PATH:~/.local/bin  # Ubuntu bins
+PATH=$PATH:~/.dotfiles/bin  # Dotfiles bins
 
 # Fixes the following problem with brew
 # https://github.com/Homebrew/homebrew-php/issues/4527#issuecomment-346483994

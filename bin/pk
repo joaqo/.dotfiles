@@ -1,0 +1,62 @@
+#!/bin/bash
+# pk - interactive process killer using fzf
+
+# Parse args
+ALL=false
+[[ "$1" == "--all" || "$1" == "-a" ]] && ALL=true
+
+# Build ps command - simple columns: PID, CPU, MEM, START, COMMAND
+if $ALL; then
+  PS_CMD="ps ax -o pid,pcpu,pmem,start,command"
+else
+  PS_CMD="ps x -o pid,pcpu,pmem,start,command"
+fi
+
+# Colorize output: PID=cyan, CPU/MEM=yellow, CMD=gray
+colorize() {
+  awk 'NR==1 {print "\033[1;37m" $0 "\033[0m"; next}
+  {
+    pid=$1; cpu=$2; mem=$3; start=$4
+    $1=$2=$3=$4=""
+    cmd=substr($0,5)
+    # Truncate cmd to 60 chars
+    if (length(cmd) > 60) cmd = substr(cmd,1,57) "..."
+    printf "\033[36m%7s\033[0m \033[33m%5s %5s\033[0m \033[37m%8s\033[0m \033[90m%-60s\033[0m\n", pid, cpu, mem, start, cmd
+  }'
+}
+
+# Preview script
+PREVIEW='
+  pid={1}
+  echo -e "\033[1;36m=== Process Details ===\033[0m"
+  ps -p $pid -o pid,user,%cpu,%mem,start,command 2>/dev/null
+  echo ""
+  echo -e "\033[1;36m=== Open Ports ===\033[0m"
+  lsof -i -P -n 2>/dev/null | grep "^[^ ]*[ ]*$pid " || echo "No open ports"
+'
+
+# Run fzf
+selected=$($PS_CMD | colorize | \
+  fzf --ansi \
+      --multi \
+      --height=100% \
+      --header="enter: kill | ctrl-k: force kill | tab: multi-select" \
+      --expect=ctrl-k \
+      --preview="$PREVIEW" \
+      --preview-window=right:40%:wrap \
+      --header-lines=1)
+
+# Parse output
+key=$(echo "$selected" | head -1)
+pids=$(echo "$selected" | tail -n +2 | awk '{print $1}')
+
+[[ -z "$pids" ]] && exit 0
+
+# Kill with appropriate signal
+if [[ "$key" == "ctrl-k" ]]; then
+  echo "$pids" | xargs kill -9
+  echo "Force killed: $pids"
+else
+  echo "$pids" | xargs kill
+  echo "Killed: $pids"
+fi
