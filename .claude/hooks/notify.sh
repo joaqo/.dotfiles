@@ -22,6 +22,11 @@ EOF
 repo=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "")
 
 input=$(cat)
+
+# Skip idle_prompt notifications (Stop hook already handles "done" notifications)
+notification_type=$(echo "$input" | /usr/bin/jq -r '.notification_type // empty')
+[[ "$notification_type" == "idle_prompt" ]] && exit 0
+
 transcript_path=$(echo "$input" | /usr/bin/jq -r '.transcript_path')
 
 last_message="Done"
