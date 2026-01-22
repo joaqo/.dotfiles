@@ -2,6 +2,9 @@ My name is Joaquín Alori, I am a developer from Uruguay, working on several pro
 The biggest project I'm working on now is Mellow, and this is the one I'll usually be refering to if I don't specify.
 In all interactions and commit messages, be extremely concise and sacrifice grammar for the sake of concision.
 
+## Projects
+- Mellow: Food ecommerce app (~/mellow/)
+
 ## Workflow
 - Editor: nvim
 - Terminal: tmux
