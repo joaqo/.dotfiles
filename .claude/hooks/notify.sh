@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Skip if headless (-p flag in parent claude process)
+parent_args=$(ps -p $PPID -o args= 2>/dev/null)
+[[ "$parent_args" =~ " -p " || "$parent_args" =~ " --print " ]] && exit 0
+
 # Skip if this iTerm session is focused
 session_id="${ITERM_SESSION_ID#*:}"
 is_focused=$(osascript <<EOF
