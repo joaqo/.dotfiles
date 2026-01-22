@@ -1,4 +1,20 @@
 #!/bin/bash
+
+# Skip if this iTerm session is focused
+session_id="${ITERM_SESSION_ID#*:}"
+is_focused=$(osascript <<EOF
+tell application "System Events"
+    if frontmost of application process "iTerm2" is false then return "no"
+end tell
+tell application "iTerm"
+    set currentSession to current session of current tab of current window
+    if unique id of currentSession is "$session_id" then return "yes"
+end tell
+return "no"
+EOF
+)
+[[ "$is_focused" == "yes" ]] && exit 0
+
 repo=$(basename "$(git rev-parse --show-toplevel 2>/dev/null)" 2>/dev/null || echo "")
 
 input=$(cat)
