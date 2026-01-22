@@ -5,41 +5,67 @@
 ALL=false
 [[ "$1" == "--all" || "$1" == "-a" ]] && ALL=true
 
-# Build ps command - simple columns: PID, CPU, MEM, START, COMMAND
+# Build ps command: PID, CPU, MEM, START, ARGS (full command for searching)
 if $ALL; then
-  PS_CMD="ps ax -o pid,pcpu,pmem,start,command"
+  PS_CMD="ps ax -o pid,pcpu,pmem,start,args"
 else
-  PS_CMD="ps x -o pid,pcpu,pmem,start,command"
+  PS_CMD="ps x -o pid,pcpu,pmem,start,args"
 fi
 
-# Colorize output: PID=cyan, CPU/MEM=yellow, CMD=gray
+# Format: fixed-width columns, args at end gets naturally clipped
 colorize() {
-  awk 'NR==1 {print "\033[1;37m" $0 "\033[0m"; next}
+  awk 'NR==1 {printf "\033[1;37m%7s %5s %5s %8s  %-20s %s\033[0m\n", "PID", "%CPU", "%MEM", "START", "NAME", "COMMAND"; next}
   {
     pid=$1; cpu=$2; mem=$3; start=$4
-    $1=$2=$3=$4=""
-    cmd=substr($0,5)
-    # Truncate cmd to 60 chars
-    if (length(cmd) > 60) cmd = substr(cmd,1,57) "..."
-    printf "\033[36m%7s\033[0m \033[33m%5s %5s\033[0m \033[37m%8s\033[0m \033[90m%-60s\033[0m\n", pid, cpu, mem, start, cmd
+    # Extract basename
+    n = split($5, parts, "/")
+    name = parts[n]
+    # Full args (fields 5+)
+    args=""
+    for(i=5;i<=NF;i++) args = args $i " "
+    printf "\033[36m%7s\033[0m \033[33m%5s %5s\033[0m \033[37m%8s\033[0m  \033[97m%-20s\033[0m \033[90m%s\033[0m\n", pid, cpu, mem, start, name, args
   }'
 }
 
 # Preview script
 PREVIEW='
   pid={1}
-  echo -e "\033[1;36m=== Process Details ===\033[0m"
-  ps -p $pid -o pid,user,%cpu,%mem,start,command 2>/dev/null
+  info=$(ps -p $pid -o user,%cpu,%mem,start,command 2>/dev/null | tail -1)
+  user=$(echo "$info" | awk "{print \$1}")
+  cpu=$(echo "$info" | awk "{print \$2}")
+  mem=$(echo "$info" | awk "{print \$3}")
+  start=$(echo "$info" | awk "{print \$4}")
+  cmd=$(echo "$info" | awk "{for(i=5;i<=NF;i++) printf \"%s \", \$i; print \"\"}")
+
+  echo -e "\033[1;36mPID\033[0m"
+  echo "$pid"
   echo ""
-  echo -e "\033[1;36m=== Open Ports ===\033[0m"
-  lsof -i -P -n 2>/dev/null | grep "^[^ ]*[ ]*$pid " || echo "No open ports"
+  echo -e "\033[1;36mUser\033[0m"
+  echo "$user"
+  echo ""
+  echo -e "\033[1;36mCPU %\033[0m"
+  echo "$cpu"
+  echo ""
+  echo -e "\033[1;36mMemory %\033[0m"
+  echo "$mem"
+  echo ""
+  echo -e "\033[1;36mStarted\033[0m"
+  echo "$start"
+  echo ""
+  echo -e "\033[1;36mCommand\033[0m"
+  echo "$cmd"
+  echo ""
+  echo -e "\033[1;36mOpen Ports\033[0m"
+  lsof -i -P -n 2>/dev/null | grep "^[^ ]*[ ]*$pid " | awk "{print \$9}" || echo "None"
 '
 
 # Run fzf
 selected=$($PS_CMD | colorize | \
   fzf --ansi \
       --multi \
-      --height=100% \
+      --layout=reverse \
+      --height=40% \
+      --no-hscroll \
       --header="enter: kill | ctrl-k: force kill | tab: multi-select" \
       --expect=ctrl-k \
       --preview="$PREVIEW" \
