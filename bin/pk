@@ -5,26 +5,72 @@
 ALL=false
 [[ "$1" == "--all" || "$1" == "-a" ]] && ALL=true
 
-# Build ps command: PID, CPU, MEM, START, ARGS (full command for searching)
+# Build ps command: PID, CPU, MEM, START, ARGS
 if $ALL; then
   PS_CMD="ps ax -o pid,pcpu,pmem,start,args"
 else
   PS_CMD="ps x -o pid,pcpu,pmem,start,args"
 fi
 
-# Format: fixed-width columns, args at end gets naturally clipped
+# Colorize and extract smart name
 colorize() {
-  awk 'NR==1 {printf "\033[1;37m%7s %5s %5s %8s  %-20s %s\033[0m\n", "PID", "%CPU", "%MEM", "START", "NAME", "COMMAND"; next}
-  {
-    pid=$1; cpu=$2; mem=$3; start=$4
-    # Extract basename
+  awk '
+NR==1 {
+  printf "\033[1;37m%7s %5s %5s %8s  %-25s %s\033[0m\n", "PID", "%CPU", "%MEM", "START", "NAME", "COMMAND"
+  next
+}
+{
+  pid=$1; cpu=$2; mem=$3; start=$4
+
+  # Full args for display
+  args=""
+  for(i=5;i<=NF;i++) args = args $i " "
+
+  # Smart name: skip shells/interpreters, find real command
+  name = ""
+  for(i=5; i<=NF; i++) {
+    n = split($i, parts, "/")
+    base = parts[n]
+
+    # Skip shells and interpreters
+    skip = 0
+    if (base == "sh") skip = 1
+    if (base == "bash") skip = 1
+    if (base == "zsh") skip = 1
+    if (base == "fish") skip = 1
+    if (base == "node") skip = 1
+    if (base == "python") skip = 1
+    if (base == "python3") skip = 1
+    if (base == "ruby") skip = 1
+    if (base == "perl") skip = 1
+    if (base == "tclsh") skip = 1
+    if (base == "unbuffer") skip = 1
+    if (base == "expect") skip = 1
+    if (base == "env") skip = 1
+    if (substr($i, 1, 1) == "-") skip = 1
+
+    if (skip == 1) continue
+
+    # Found real command - take basename plus remaining args
+    for(j=i; j<=NF; j++) {
+      nn = split($j, pp, "/")
+      name = name pp[nn] " "
+    }
+    break
+  }
+
+  # Fallback to basename of first arg
+  if (name == "") {
     n = split($5, parts, "/")
     name = parts[n]
-    # Full args (fields 5+)
-    args=""
-    for(i=5;i<=NF;i++) args = args $i " "
-    printf "\033[36m%7s\033[0m \033[33m%5s %5s\033[0m \033[37m%8s\033[0m  \033[97m%-20s\033[0m \033[90m%s\033[0m\n", pid, cpu, mem, start, name, args
-  }'
+  }
+
+  # Trim trailing space
+  gsub(/ +$/, "", name)
+
+  printf "\033[36m%7s\033[0m \033[33m%5s %5s\033[0m \033[37m%8s\033[0m  \033[97m%-25s\033[0m \033[90m%s\033[0m\n", pid, cpu, mem, start, name, args
+}
+'
 }
 
 # Preview script
