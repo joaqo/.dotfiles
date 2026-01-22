@@ -36,6 +36,8 @@ ln -s -f ~/.dotfiles/.config/lazygit/config.yml "$HOME/Library/Application Suppo
 
 mkdir -p ~/.claude
 ln -s -f ~/.dotfiles/.claude/CLAUDE.md ~/.claude/
+ln -s -f ~/.dotfiles/.claude/settings.json ~/.claude/
+ln -s -f ~/.dotfiles/.claude/hooks ~/.claude/
 
 #Language servers
 pnpm add -g typescript-language-server tailwindcss-language-server vscode-langservers-extracted

@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "defaultMode": "bypassPermissions"
+  },
+  "enabledPlugins": {
+    "typescript-lsp@claude-plugins-official": true,
+    "Notion@claude-plugins-official": true
+  },
+  "alwaysThinkingEnabled": true,
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/notify.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
