@@ -28,6 +28,10 @@ map("t", "<C-k>", "<c-\\><c-n><C-W>p", {desc = "Go back to last pane"})
 map({"n", "v"}, "(", ",", { desc = "Repeat last motion reversed", noremap = true })
 map({"n", "v"}, ")", ";", { desc = "Repeat last motion", noremap = true })
 
+-- Move by visual line (better for wrapped text)
+map({"n", "v"}, "j", "gj", { noremap = true })
+map({"n", "v"}, "k", "gk", { noremap = true })
+
 -- Quickfix list
 map('n', '<leader>q', ':cclose\n')
 

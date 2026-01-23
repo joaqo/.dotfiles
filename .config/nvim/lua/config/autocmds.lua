@@ -32,3 +32,13 @@ vim.api.nvim_create_autocmd("CursorHold", {
 --     vim.highlight.on_yank()
 --   end,
 -- })
+
+-- Enable wrap for prose files
+vim.api.nvim_create_autocmd("FileType", {
+  group = augroup("prose_wrap"),
+  pattern = { "markdown", "text" },
+  callback = function()
+    vim.opt_local.wrap = true
+    vim.opt_local.linebreak = true
+  end,
+})
