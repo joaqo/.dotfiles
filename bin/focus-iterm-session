@@ -8,7 +8,7 @@ tell application "iTerm"
         repeat with t in tabs of w
             repeat with s in sessions of t
                 if unique id of s is "$session_id" then
-                    select w
+                    set index of w to 1
                     select t
                     return
                 end if
