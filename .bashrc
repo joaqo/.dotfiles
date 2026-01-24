@@ -97,6 +97,7 @@ alias c="claude --dangerously-skip-permissions"
 alias p="uvx python"
 alias u="uv run"
 alias lg="lazygit"
+alias s="company"
 
 # ls with colors
 if [ $is_macos ]; then
