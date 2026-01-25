@@ -37,7 +37,7 @@ return {
       -- Server configs
       vim.lsp.config('pyright', {})
 
-      vim.lsp.config('ts_ls', {
+      vim.lsp.config('vtsls', {
         root_markers = { 'pnpm-workspace.yaml', 'tsconfig.json', 'jsconfig.json', '.git' },
       })
 
@@ -46,7 +46,7 @@ return {
       vim.lsp.config('eslint', {})
 
       -- Enable servers
-      vim.lsp.enable({ 'pyright', 'ts_ls', 'tailwindcss', 'eslint' })
+      vim.lsp.enable({ 'pyright', 'vtsls', 'tailwindcss', 'eslint' })
     end
   }
 }
