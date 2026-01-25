@@ -39,7 +39,14 @@ return {
         on_attach = on_attach
       }
       require('lspconfig')['ts_ls'].setup{
-        on_attach = on_attach
+        on_attach = on_attach,
+        root_dir = function(fname)
+          local util = require('lspconfig').util
+          -- Prefer pnpm workspace root, then fall back to tsconfig, then git
+          return util.root_pattern('pnpm-workspace.yaml')(fname)
+            or util.root_pattern('tsconfig.json', 'jsconfig.json')(fname)
+            or util.find_git_ancestor(fname)
+        end,
       }
       require('lspconfig')['tailwindcss'].setup{
         on_attach = on_attach
