@@ -1,7 +1,15 @@
 #!/bin/bash
-# Strip w0t0p0: prefix from ITERM_SESSION_ID
-session_id="${1#*:}"
-osascript <<EOF
+# Focus an iTerm session by ID or tty
+# Usage: focus-iterm-session <session_id_or_tty>
+# If arg contains ":" it's treated as ITERM_SESSION_ID (w0t0p0:GUID)
+# If arg starts with "tty" it's treated as a tty name
+
+arg="$1"
+
+if [[ "$arg" == *":"* ]]; then
+    # ITERM_SESSION_ID format - extract GUID
+    session_id="${arg#*:}"
+    osascript <<EOF
 tell application "iTerm"
     activate
     repeat with w in windows
@@ -10,6 +18,7 @@ tell application "iTerm"
                 if unique id of s is "$session_id" then
                     set index of w to 1
                     select t
+                    select s
                     return
                 end if
             end repeat
@@ -17,3 +26,44 @@ tell application "iTerm"
     end repeat
 end tell
 EOF
+elif [[ "$arg" == tty* || "$arg" == /dev/tty* ]]; then
+    # tty format - search by tty
+    tty_name="$arg"
+    [[ "$tty_name" != /dev/* ]] && tty_name="/dev/$tty_name"
+    osascript <<EOF
+tell application "iTerm"
+    activate
+    repeat with w in windows
+        repeat with t in tabs of w
+            repeat with s in sessions of t
+                if tty of s is "$tty_name" then
+                    set index of w to 1
+                    select t
+                    select s
+                    return
+                end if
+            end repeat
+        end repeat
+    end repeat
+end tell
+EOF
+else
+    # Assume it's a bare GUID
+    osascript <<EOF
+tell application "iTerm"
+    activate
+    repeat with w in windows
+        repeat with t in tabs of w
+            repeat with s in sessions of t
+                if unique id of s is "$arg" then
+                    set index of w to 1
+                    select t
+                    select s
+                    return
+                end if
+            end repeat
+        end repeat
+    end repeat
+end tell
+EOF
+fi
