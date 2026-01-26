@@ -35,7 +35,20 @@ return {
       })
 
       -- Server configs
-      vim.lsp.config('pyright', {})
+      vim.lsp.config('pyright', {
+        root_markers = { 'pyrightconfig.json', 'pyproject.toml', '.python-version' },
+        settings = {
+          python = {
+            analysis = {
+              diagnosticMode = 'workspace',
+            },
+          },
+        },
+      })
+
+      vim.lsp.config('ruff', {
+        root_markers = { 'pyproject.toml', 'ruff.toml', '.python-version' },
+      })
 
       vim.lsp.config('vtsls', {
         root_markers = { 'pnpm-workspace.yaml', 'tsconfig.json', 'jsconfig.json', '.git' },
@@ -46,7 +59,7 @@ return {
       vim.lsp.config('eslint', {})
 
       -- Enable servers
-      vim.lsp.enable({ 'pyright', 'vtsls', 'tailwindcss', 'eslint' })
+      vim.lsp.enable({ 'pyright', 'ruff', 'vtsls', 'tailwindcss', 'eslint' })
     end
   }
 }
