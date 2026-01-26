@@ -99,6 +99,11 @@ alias u="uv run"
 alias lg="lazygit"
 alias s="company"
 
+# Set iTerm window title
+title() {
+  echo -ne "\033]0;$*\007"
+}
+
 # ls with colors
 if [ $is_macos ]; then
     alias ls="ls -G"
