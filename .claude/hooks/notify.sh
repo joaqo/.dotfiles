@@ -43,9 +43,9 @@ if [[ "$iterm_frontmost" == "true" ]]; then
 fi
 
 # Extract last message from transcript
-transcript_path=$(echo "$input" | /usr/bin/jq -r '.transcript_path')
+transcript_path=$(echo "$input" | /usr/bin/jq -r '.transcript_path // empty')
 last_message="Claude responded"
-if [[ -f "$transcript_path" ]]; then
+if [[ -n "$transcript_path" && -f "$transcript_path" ]]; then
     extracted=$(tail -20 "$transcript_path" | /usr/bin/jq -rs '
         [.[] | select(.type == "assistant")] | last | .message.content |
         if type == "array" then [.[] | select(.type == "text") | .text] | join(" ")
