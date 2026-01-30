@@ -52,6 +52,15 @@ return {
 
       vim.lsp.config('vtsls', {
         root_markers = { 'pnpm-workspace.yaml', 'tsconfig.json', 'jsconfig.json', '.git' },
+        settings = {
+          typescript = {
+            tsserver = {
+              experimental = {
+                enableProjectDiagnostics = true,
+              },
+            },
+          },
+        },
       })
 
       vim.lsp.config('tailwindcss', {})
