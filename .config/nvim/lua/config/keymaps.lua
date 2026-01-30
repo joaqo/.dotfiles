@@ -20,7 +20,6 @@ map({"n", "v"}, "H", "^")
 map({"n", "v"}, "L", "$")
 
 -- Terminal
-map({ "n", "t" }, "<C-\\>", ToggleTerminal, {desc = "Toggle Terminal"})
 map("t", "<C-x>", "<c-\\><c-n>", {desc = "Enter Normal Mode"})
 map("t", "<C-k>", "<c-\\><c-n><C-W>p", {desc = "Go back to last pane"})
 
