@@ -39,6 +39,14 @@ map("n", "<leader>n", "<C-^>", { desc = "Go to last opened file", noremap = true
 map("v", "p", "pgvy", { desc = "Bind p in visual mode to paste without overriding the current register" } )
 map({ "i", "n" }, "<esc>", "<cmd>noh<cr><esc>", { desc = "Escape and clear hlsearch" })
 map("n", "<leader>cp", function() vim.fn.setreg("+", vim.fn.expand("%:.")) end, { desc = "Copy file path to clipboard" })
+map("v", "<leader>y", function()
+  local line_start = vim.fn.line("'<")
+  vim.cmd('normal! "xy')
+  local text = vim.fn.getreg("x")
+  local filepath = vim.fn.expand("%:.")
+  local result = "EXTRACTED FROM FILE " .. filepath .. ":" .. line_start .. "\n" .. text
+  vim.fn.setreg("+", result)
+end, { desc = "Copy selection with file header to clipboard" })
 
 -- Space remap (using the map function made it not show `:` correctly on first press)
 vim.cmd("nnoremap <Space> :")
