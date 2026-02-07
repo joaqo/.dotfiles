@@ -15,8 +15,10 @@ return {
     keys = {
       { "<leader>,", "<cmd>Telescope buffers show_all_buffers=true<cr>", desc = "Switch Buffer" },
       { "<leader>/", "<cmd>Telescope live_grep<cr>", desc = "Find in Files (Grep)" },
+      { "<leader>?", "<cmd>Telescope live_grep additional_args={'--no-ignore'}<cr>", desc = "Grep All (incl gitignored)" },
       { "<leader>:", "<cmd>Telescope command_history<cr>", desc = "Command History" },
       { "<leader>f", "<cmd>Telescope find_files<cr>", desc = "Find Files (root dir)" },
+      { "<leader>a", "<cmd>Telescope find_files no_ignore=true<cr>", desc = "Find Files (incl gitignored)" },
       { "<leader>c",'<cmd>lua require("telescope.builtin").find_files{ cwd = require("telescope.utils").buffer_dir() }<cr>', desc = "Find Files (current dir)" },
       { "<leader>m", "<cmd>Telescope oldfiles<cr>", desc = "File history" },
       { "<leader>gc", "<cmd>Telescope git_commits<CR>", desc = "commits" },
