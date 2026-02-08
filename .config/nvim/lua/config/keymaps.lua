@@ -44,7 +44,7 @@ map("v", "<leader>y", function()
   vim.cmd('normal! "xy')
   local text = vim.fn.getreg("x")
   local filepath = vim.fn.expand("%:.")
-  local result = "EXTRACTED FROM FILE " .. filepath .. ":" .. line_start .. "\n" .. text
+  local result = "// " .. filepath .. ":" .. line_start .. "\n" .. text
   vim.fn.setreg("+", result)
 end, { desc = "Copy selection with file header to clipboard" })
 
