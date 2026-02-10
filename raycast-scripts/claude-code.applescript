@@ -17,16 +17,6 @@ on run argv
     set cmdText to "cd ~/mellow && claude " & quoted form of inputText
 
     set itermWasRunning to application "iTerm" is running
-    set itermWasFocused to false
-
-    if itermWasRunning then
-        tell application "System Events"
-            set frontApp to name of first application process whose frontmost is true
-            if frontApp is "iTerm2" then
-                set itermWasFocused to true
-            end if
-        end tell
-    end if
 
     tell application "iTerm"
         if not itermWasRunning then
@@ -44,10 +34,8 @@ on run argv
                 tell current session of newTab
                     write text cmdText
                 end tell
-                -- Switch back to original tab if iTerm was focused
-                if itermWasFocused then
-                    select originalTab
-                end if
+                -- Always switch back to original tab so user isn't disturbed
+                select originalTab
             end tell
         end if
     end tell
