@@ -15,9 +15,3 @@ In all interactions and commit messages, be extremely concise and sacrifice gram
 - Shell: bash
 - Secondary editor: Zed (vim mode, Claude + Firebase MCP)
 - Python: uv
-
-# Notion
-When I tell you to create tasks, create it in Notion. If I don't specify any of these task properties, default to:
-- Status: "Pending"
-- Assignee: Joaquín Alori
-- Due date: (none)
