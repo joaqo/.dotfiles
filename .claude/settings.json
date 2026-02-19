@@ -28,7 +28,9 @@
     "type": "command",
     "command": "input=$(cat); cwd=$(echo \"$input\" | jq -r '.workspace.current_dir'); branch=$(git -C \"$cwd\" branch --show-current 2>/dev/null); ctx=$(echo \"$input\" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1); out=''; [ \"$ctx\" -gt 20 ] && out=\"${ctx}%\"; [ -n \"$branch\" ] && [ \"$branch\" != \"main\" ] && [ \"$branch\" != \"master\" ] && { [ -n \"$out\" ] && out=\"$branch | $out\" || out=\"$branch\"; }; printf '%s' \"$out\""
   },
-  "enabledPlugins": {},
+  "enabledPlugins": {
+    "image-sanitizer@image-sanitizer-marketplace": true
+  },
   "alwaysThinkingEnabled": true,
   "attribution": {
     "commit": "",
