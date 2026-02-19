@@ -7,8 +7,8 @@ return {
     },
     opts = {
       float_opts = {
-        width = function() return math.floor(vim.o.columns * 0.9) end,
-        height = function() return math.floor(vim.o.lines * 0.9) end,
+        width = function() return vim.o.columns end,
+        height = function() return vim.o.lines - 3 end,
       },
       shade_terminals = false,
       on_open = function()
