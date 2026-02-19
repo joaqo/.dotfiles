@@ -35,6 +35,10 @@ ln -s -f ~/.dotfiles/.claude/settings.json ~/.claude/
 ln -s -f ~/.dotfiles/.claude/hooks ~/.claude/
 ln -s -f ~/.dotfiles/.claude/commands ~/.claude/
 
+# Build Swift tools
+cd ~/.dotfiles/scripts/TaskPrompt && swiftc -parse-as-library -o task-prompt -framework AppKit -framework SwiftUI main.swift
+cd ~
+
 #Language servers
 pnpm add -g typescript-language-server tailwindcss-language-server vscode-langservers-extracted
 brew install ripgrep

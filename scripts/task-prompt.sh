@@ -1,7 +1,7 @@
 #!/bin/bash
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-INPUT=$(osascript "$SCRIPT_DIR/task-prompt.applescript" 2>/dev/null)
+INPUT=$("$SCRIPT_DIR/TaskPrompt/task-prompt" 2>/dev/null)
 
 if [ -z "$INPUT" ]; then
     exit 0
