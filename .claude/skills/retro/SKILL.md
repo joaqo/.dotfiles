@@ -22,3 +22,7 @@ Now look at the current solution with fresh eyes. During exploration you likely 
 If the solution would be significantly simpler by rewriting part of it with the knowledge you have now, do it. Delete everything that isn't pulling its weight. If the whole approach was wrong and a targeted fix at the root cause would replace most of what you wrote, propose that rewrite.
 
 If the current solution is already clean, say so and move on.
+
+## 3. CLAUDE.md improvements
+
+Think about the issues you encountered, wrong turns, gotchas, or things that took longer than they should have. Could any of these have been avoided if CLAUDE.md had contained specific instructions or context? If so, suggest concrete additions or modifications to CLAUDE.md that would help future sessions avoid the same pitfalls.
