@@ -30,6 +30,9 @@ ln -s -f ~/.dotfiles/.config/tmuxinator .
 mkdir -p "$HOME/Library/Application Support/lazygit"
 ln -s -f ~/.dotfiles/.config/lazygit/config.yml "$HOME/Library/Application Support/lazygit/"
 
+mkdir -p "$HOME/Library/Application Support/com.mitchellh.ghostty"
+ln -s -f ~/.dotfiles/.config/ghostty/config "$HOME/Library/Application Support/com.mitchellh.ghostty/"
+
 mkdir -p ~/.claude
 ln -s -f ~/.dotfiles/.claude/CLAUDE.md ~/.claude/
 ln -s -f ~/.dotfiles/.claude/settings.json ~/.claude/
