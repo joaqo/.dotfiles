@@ -18,6 +18,7 @@ Now look at the current solution with fresh eyes. During exploration you likely 
 - Over-engineered solutions when a simpler one would work now that you understand the root cause
 - Redundant logic that could be collapsed
 - Code that worked around the problem instead of fixing it directly
+- Refactoring opportunities
 
 If the solution would be significantly simpler by rewriting part of it with the knowledge you have now, do it. Delete everything that isn't pulling its weight. If the whole approach was wrong and a targeted fix at the root cause would replace most of what you wrote, propose that rewrite.
 
