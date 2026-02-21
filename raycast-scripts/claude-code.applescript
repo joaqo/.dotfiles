@@ -14,7 +14,15 @@
 
 on run argv
     set inputText to item 1 of argv
-    set cmdText to "cd ~/mellow && claude " & quoted form of inputText
+
+    -- Write to temp file via AppleScript file I/O (no shell involvement).
+    -- $(cat) output inside double quotes is not re-expanded by the shell.
+    set tempFile to POSIX file "/tmp/claude-prompt.txt"
+    set fileRef to open for access tempFile with write permission
+    set eof of fileRef to 0
+    write inputText to fileRef as «class utf8»
+    close access fileRef
+    set cmdText to "cd ~/mellow && claude \"$(cat /tmp/claude-prompt.txt)\""
 
     set itermWasRunning to application "iTerm" is running
 
