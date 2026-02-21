@@ -35,16 +35,22 @@ on run argv
                 write text cmdText
             end tell
         else
-            -- iTerm running, create new tab
-            tell current window
-                set originalTab to current tab
-                set newTab to (create tab with default profile)
-                tell current session of newTab
+            -- iTerm running — check if a window exists
+            if (count of windows) is 0 then
+                create window with default profile
+                tell current session of current window
                     write text cmdText
                 end tell
-                -- Always switch back to original tab so user isn't disturbed
-                select originalTab
-            end tell
+            else
+                tell current window
+                    set originalTab to current tab
+                    set newTab to (create tab with default profile)
+                    tell current session of newTab
+                        write text cmdText
+                    end tell
+                    select originalTab
+                end tell
+            end if
         end if
     end tell
 
