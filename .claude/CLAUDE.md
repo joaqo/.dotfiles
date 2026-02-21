@@ -13,5 +13,4 @@ In all interactions and commit messages, be extremely concise and sacrifice gram
 - Editor: nvim
 - Terminal: tmux
 - Shell: bash
-- Secondary editor: Zed (vim mode, Claude + Firebase MCP)
 - Python: uv
