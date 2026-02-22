@@ -13,7 +13,7 @@ struct TaskPromptApp {
         app.setActivationPolicy(.accessory)
 
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 550, height: 340),
+            contentRect: NSRect(x: 0, y: 0, width: 550, height: 300),
             styleMask: [.titled, .closable],
             backing: .buffered,
             defer: false
@@ -234,18 +234,9 @@ struct PromptView: View {
 
                 Spacer()
 
-                Text("\u{23CE} large \u{00B7} \u{2318}\u{23CE} small")
+                Text("\u{2318}1/2/3 toggles \u{00B7} \u{23CE} large \u{00B7} \u{2318}\u{23CE} small")
                     .font(.system(size: 11))
                     .foregroundColor(.secondary)
-            }
-
-            HStack {
-                Spacer()
-                Button("Cancel") { vm.cancel() }
-                    .keyboardShortcut(.cancelAction)
-                Button("Small") { vm.submit(mode: .small) }
-                Button("Large") { vm.submit(mode: .large) }
-                    .keyboardShortcut(.defaultAction)
             }
         }
         .padding(16)
@@ -326,6 +317,12 @@ class SubmittableNSTextView: NSTextView {
     weak var submitHandler: SubmitHandler?
 
     override func keyDown(with event: NSEvent) {
+        // Escape to cancel
+        if event.keyCode == 53 {
+            NSApplication.shared.terminate(nil)
+            return
+        }
+
         let isReturn = event.keyCode == 36
         let isShift = event.modifierFlags.contains(.shift)
         let isCmd = event.modifierFlags.contains(.command)
