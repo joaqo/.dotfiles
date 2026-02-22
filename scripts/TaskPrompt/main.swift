@@ -92,39 +92,110 @@ class ViewModel: ObservableObject {
         NSApplication.shared.terminate(nil)
     }
 
+    private let paneStateFile = "/tmp/iterm-task-panes.txt"
+
+    private func readPaneState() -> [String] {
+        guard let content = try? String(contentsOfFile: paneStateFile, encoding: .utf8) else { return [] }
+        return content.split(separator: "\n").map(String.init).filter { !$0.isEmpty }
+    }
+
+    private func savePaneState(_ ids: [String]) {
+        try? ids.joined(separator: "\n").write(toFile: paneStateFile, atomically: true, encoding: .utf8)
+    }
+
+    private func runAppleScript(_ source: String) -> String? {
+        guard let script = NSAppleScript(source: source) else { return nil }
+        var error: NSDictionary?
+        let result = script.executeAndReturnError(&error)
+        return result.stringValue
+    }
+
     private func openInITerm(command: String) {
-        // Escape for AppleScript string (backslashes first, then quotes)
-        let escaped = command
+        let esc = command
             .replacingOccurrences(of: "\\", with: "\\\\")
             .replacingOccurrences(of: "\"", with: "\\\"")
 
-        let source = """
-        set cmdText to "\(escaped)"
-        set itermWasRunning to application "iTerm" is running
+        var sessionIds = readPaneState()
+        if sessionIds.count >= 8 { sessionIds = [] }
 
-        tell application "iTerm"
-            if not itermWasRunning then
-                launch
-                delay 0.5
-                tell current session of current window
-                    write text cmdText
-                end tell
-            else
+        let count = sessionIds.count
+        var newId: String? = nil
+
+        if count > 0 {
+            let targetIndex: Int
+            let direction: String
+
+            if count < 4 {
+                // Vertical splits (tree pattern for even widths)
+                // count 1,2: split S1 | count 3: split S2
+                targetIndex = count == 3 ? 1 : 0
+                direction = "vertically"
+            } else {
+                // Horizontal splits: visual L→R order [S1, S3, S2, S4] = indices [0, 2, 1, 3]
+                targetIndex = [0, 2, 1, 3][count - 4]
+                direction = "horizontally"
+            }
+
+            let targetId = sessionIds[targetIndex]
+            newId = runAppleScript("""
+            set cmdText to "\(esc)"
+            tell application "iTerm"
                 tell current window
                     set originalTab to current tab
-                    set newTab to (create tab with default profile)
-                    tell current session of newTab
-                        write text cmdText
-                    end tell
-                    select originalTab
+                    repeat with aTab in tabs
+                        repeat with aSession in sessions of aTab
+                            if id of aSession is "\(targetId)" then
+                                tell aSession
+                                    set newSession to (split \(direction) with default profile)
+                                end tell
+                                tell newSession
+                                    write text cmdText
+                                    set newId to id
+                                end tell
+                                select originalTab
+                                return newId
+                            end if
+                        end repeat
+                    end repeat
                 end tell
-            end if
-        end tell
-        """
+            end tell
+            """)
+        }
 
-        if let script = NSAppleScript(source: source) {
-            var error: NSDictionary?
-            script.executeAndReturnError(&error)
+        // New tab if no panes yet or split failed (session gone)
+        if newId == nil {
+            sessionIds = []
+            newId = runAppleScript("""
+            set cmdText to "\(esc)"
+            set itermWasRunning to application "iTerm" is running
+
+            tell application "iTerm"
+                if not itermWasRunning then
+                    launch
+                    delay 0.5
+                    tell current session of current window
+                        write text cmdText
+                        return id
+                    end tell
+                else
+                    tell current window
+                        set originalTab to current tab
+                        set newTab to (create tab with default profile)
+                        tell current session of newTab
+                            write text cmdText
+                            set newId to id
+                        end tell
+                        select originalTab
+                        return newId
+                    end tell
+                end if
+            end tell
+            """)
+        }
+
+        if let id = newId {
+            sessionIds.append(id)
+            savePaneState(sessionIds)
         }
     }
 }
