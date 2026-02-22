@@ -154,29 +154,57 @@ class ViewModel: ObservableObject {
                     set allSessions to sessions of bestTab
                     set sessionCount to count of allSessions
 
-                    if sessionCount < 4 then
-                        -- Split widest session vertically (add column)
+                    -- Find max rows (full terminal height)
+                    set maxRows to 0
+                    repeat with aSession in allSessions
+                        if rows of aSession > maxRows then
+                            set maxRows to rows of aSession
+                        end if
+                    end repeat
+
+                    -- Count actual columns: full-height sessions are own column,
+                    -- partial-height sessions are stacked (2 per column)
+                    set fullHeightCount to 0
+                    set partialCount to 0
+                    repeat with aSession in allSessions
+                        if rows of aSession ≥ (maxRows - 2) then
+                            set fullHeightCount to fullHeightCount + 1
+                        else
+                            set partialCount to partialCount + 1
+                        end if
+                    end repeat
+                    set columnCount to fullHeightCount + (partialCount + 1) div 2
+
+                    if columnCount < 4 then
+                        -- Add column: split last full-height session vertically
                         set targetSession to item 1 of allSessions
-                        set targetCols to columns of targetSession
                         repeat with aSession in allSessions
-                            if columns of aSession > targetCols then
+                            if rows of aSession ≥ (maxRows - 2) then
                                 set targetSession to aSession
-                                set targetCols to columns of aSession
                             end if
                         end repeat
                         tell targetSession
                             set newSession to (split vertically with default profile)
                         end tell
                     else
-                        -- Split tallest session horizontally (add row)
-                        set targetSession to item 1 of allSessions
-                        set targetRows to rows of targetSession
+                        -- Add row: split first full-height session horizontally
+                        set targetSession to missing value
                         repeat with aSession in allSessions
-                            if rows of aSession > targetRows then
+                            if targetSession is missing value and rows of aSession ≥ (maxRows - 2) then
                                 set targetSession to aSession
-                                set targetRows to rows of aSession
                             end if
                         end repeat
+                        if targetSession is missing value then
+                            -- All columns split, find tallest session
+                            set targetSession to item 1 of allSessions
+                            set targetRows to rows of targetSession
+                            repeat with aSession in allSessions
+                                if rows of aSession ≥ targetRows then
+                                    set targetSession to aSession
+                                    set targetRows to rows of aSession
+                                end if
+                            end repeat
+                        end if
                         tell targetSession
                             set newSession to (split horizontally with default profile)
                         end tell
