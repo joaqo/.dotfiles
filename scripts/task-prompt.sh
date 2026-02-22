@@ -18,7 +18,7 @@ on run argv
     write inputText to fileRef as «class utf8»
     close access fileRef
 
-    set cmdText to "cd ~/mellow && company task run -f /tmp/company-task-prompt.txt"
+    set cmdText to "cd ~/mellow && company task run -f /tmp/company-task-prompt.txt; exit"
     set itermWasRunning to application "iTerm" is running
 
     tell application "iTerm"

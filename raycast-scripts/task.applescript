@@ -20,7 +20,7 @@ on run argv
     set AppleScript's text item delimiters to " "
     set inputText to textItems as text
     set AppleScript's text item delimiters to ""
-    set cmdText to "cd ~/mellow && company task run " & quoted form of inputText
+    set cmdText to "cd ~/mellow && company task run " & quoted form of inputText & "; exit"
 
     set itermWasRunning to application "iTerm" is running
 
