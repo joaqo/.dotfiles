@@ -103,22 +103,10 @@ class ViewModel: ObservableObject {
         NSApplication.shared.terminate(nil)
     }
 
-    private let paneStateFile = "/tmp/iterm-task-panes.txt"
-
-    private func readPaneState() -> [String] {
-        guard let content = try? String(contentsOfFile: paneStateFile, encoding: .utf8) else { return [] }
-        return content.split(separator: "\n").map(String.init).filter { !$0.isEmpty }
-    }
-
-    private func savePaneState(_ ids: [String]) {
-        try? ids.joined(separator: "\n").write(toFile: paneStateFile, atomically: true, encoding: .utf8)
-    }
-
-    private func runAppleScript(_ source: String) -> String? {
-        guard let script = NSAppleScript(source: source) else { return nil }
+    private func runAppleScript(_ source: String) {
+        guard let script = NSAppleScript(source: source) else { return }
         var error: NSDictionary?
-        let result = script.executeAndReturnError(&error)
-        return result.stringValue
+        script.executeAndReturnError(&error)
     }
 
     private func openInITerm(command: String) {
@@ -126,88 +114,89 @@ class ViewModel: ObservableObject {
             .replacingOccurrences(of: "\\", with: "\\\\")
             .replacingOccurrences(of: "\"", with: "\\\"")
 
-        var sessionIds = readPaneState()
-        if sessionIds.count >= 8 { sessionIds = [] }
+        runAppleScript("""
+        set cmdText to "\(esc)"
+        set itermWasRunning to application "iTerm" is running
 
-        let count = sessionIds.count
-        var newId: String? = nil
+        tell application "iTerm"
+            if not itermWasRunning then
+                launch
+                delay 0.5
+                tell current session of current window
+                    write text cmdText
+                end tell
+                return
+            end if
 
-        if count > 0 {
-            let targetIndex: Int
-            let direction: String
+            if not (exists current window) then
+                create window with default profile
+                tell current session of current window
+                    write text cmdText
+                end tell
+                return
+            end if
 
-            if count < 4 {
-                // Vertical splits (tree pattern for even widths)
-                // count 1,2: split S1 | count 3: split S2
-                targetIndex = count == 3 ? 1 : 0
-                direction = "vertically"
-            } else {
-                // Horizontal splits: visual L→R order [S1, S3, S2, S4] = indices [0, 2, 1, 3]
-                targetIndex = [0, 2, 1, 3][count - 4]
-                direction = "horizontally"
-            }
+            tell current window
+                set originalTab to current tab
+                set bestTab to missing value
+                set bestCount to 0
 
-            let targetId = sessionIds[targetIndex]
-            newId = runAppleScript("""
-            set cmdText to "\(esc)"
-            tell application "iTerm"
-                tell current window
-                    set originalTab to current tab
-                    repeat with aTab in tabs
-                        repeat with aSession in sessions of aTab
-                            if id of aSession is "\(targetId)" then
-                                tell aSession
-                                    set newSession to (split \(direction) with default profile)
-                                end tell
-                                tell newSession
-                                    write text cmdText
-                                    set newId to id
-                                end tell
-                                select originalTab
-                                return newId
+                -- Find tab with most sessions still under 8
+                repeat with aTab in tabs
+                    set sessionCount to count of sessions of aTab
+                    if sessionCount < 8 and sessionCount > bestCount then
+                        set bestCount to sessionCount
+                        set bestTab to aTab
+                    end if
+                end repeat
+
+                if bestTab is not missing value and bestCount > 0 then
+                    set allSessions to sessions of bestTab
+                    set sessionCount to count of allSessions
+
+                    if sessionCount < 4 then
+                        -- Split widest session vertically (add column)
+                        set targetSession to item 1 of allSessions
+                        set targetCols to columns of targetSession
+                        repeat with aSession in allSessions
+                            if columns of aSession > targetCols then
+                                set targetSession to aSession
+                                set targetCols to columns of aSession
                             end if
                         end repeat
-                    end repeat
-                end tell
-            end tell
-            """)
-        }
-
-        // New tab if no panes yet or split failed (session gone)
-        if newId == nil {
-            sessionIds = []
-            newId = runAppleScript("""
-            set cmdText to "\(esc)"
-            set itermWasRunning to application "iTerm" is running
-
-            tell application "iTerm"
-                if not itermWasRunning then
-                    launch
-                    delay 0.5
-                    tell current session of current window
-                        write text cmdText
-                        return id
-                    end tell
-                else
-                    tell current window
-                        set originalTab to current tab
-                        set newTab to (create tab with default profile)
-                        tell current session of newTab
-                            write text cmdText
-                            set newId to id
+                        tell targetSession
+                            set newSession to (split vertically with default profile)
                         end tell
-                        select originalTab
-                        return newId
+                    else
+                        -- Split tallest session horizontally (add row)
+                        set targetSession to item 1 of allSessions
+                        set targetRows to rows of targetSession
+                        repeat with aSession in allSessions
+                            if rows of aSession > targetRows then
+                                set targetSession to aSession
+                                set targetRows to rows of aSession
+                            end if
+                        end repeat
+                        tell targetSession
+                            set newSession to (split horizontally with default profile)
+                        end tell
+                    end if
+
+                    tell newSession
+                        write text cmdText
                     end tell
+                    select originalTab
+                else
+                    -- No suitable tab: create new tab
+                    set newTab to (create tab with default profile)
+                    tell current session of newTab
+                        write text cmdText
+                    end tell
+                    select originalTab
                 end if
             end tell
-            """)
-        }
-
-        if let id = newId {
-            sessionIds.append(id)
-            savePaneState(sessionIds)
-        }
+        end tell
+        """)
     }
 }
 
