@@ -4,6 +4,7 @@ import SwiftUI
 enum TaskMode {
     case large
     case small
+    case notion
 }
 
 @main
@@ -80,6 +81,16 @@ class ViewModel: ObservableObject {
             cmd = "cd ~/mellow && company task run -f \(tempPath)"
             if !flagStr.isEmpty { cmd += " \(flagStr)" }
             cmd += "; exit"
+        case .notion:
+            let notionPrompt = "Create a Notion task from the following description. Use the 'company notion add' CLI command. Run 'company notion projects' first to pick the right project. Use --project and --body flags as appropriate.\n\nTask description:\n\(trimmed)"
+            let promptPath = "/tmp/company-notion-prompt.txt"
+            try? notionPrompt.write(toFile: promptPath, atomically: true, encoding: .utf8)
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: "/bin/bash")
+            process.arguments = ["-lc", "cd ~/mellow && cat \(promptPath) | claude -p"]
+            try? process.run()
+            NSApplication.shared.terminate(nil)
+            return
         }
 
         // Launch in iTerm
@@ -210,6 +221,7 @@ struct PromptView: View {
                 text: $vm.text,
                 onSubmitLarge: { vm.submit(mode: .large) },
                 onSubmitSmall: { vm.submit(mode: .small) },
+                onSubmitNotion: { vm.submit(mode: .notion) },
                 onToggle: { index in
                     switch index {
                     case 1: vm.runMobile.toggle()
@@ -234,7 +246,7 @@ struct PromptView: View {
 
                 Spacer()
 
-                Text("\u{2318}1/2/3 toggles \u{00B7} \u{23CE} large \u{00B7} \u{2318}\u{23CE} small")
+                Text("\u{2318}1/2/3 toggles \u{00B7} \u{23CE} large \u{00B7} \u{2318}\u{23CE} small \u{00B7} \u{2325}\u{23CE} notion")
                     .font(.system(size: 11))
                     .foregroundColor(.secondary)
             }
@@ -249,10 +261,11 @@ struct SubmittableTextEditor: NSViewRepresentable {
     @Binding var text: String
     let onSubmitLarge: () -> Void
     let onSubmitSmall: () -> Void
+    let onSubmitNotion: () -> Void
     let onToggle: (Int) -> Void
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(text: $text, onSubmitLarge: onSubmitLarge, onSubmitSmall: onSubmitSmall, onToggle: onToggle)
+        Coordinator(text: $text, onSubmitLarge: onSubmitLarge, onSubmitSmall: onSubmitSmall, onSubmitNotion: onSubmitNotion, onToggle: onToggle)
     }
 
     func makeNSView(context: Context) -> NSScrollView {
@@ -286,13 +299,15 @@ struct SubmittableTextEditor: NSViewRepresentable {
         @Binding var text: String
         let onSubmitLarge: () -> Void
         let onSubmitSmall: () -> Void
+        let onSubmitNotion: () -> Void
         let onToggle: (Int) -> Void
         weak var textView: NSTextView?
 
-        init(text: Binding<String>, onSubmitLarge: @escaping () -> Void, onSubmitSmall: @escaping () -> Void, onToggle: @escaping (Int) -> Void) {
+        init(text: Binding<String>, onSubmitLarge: @escaping () -> Void, onSubmitSmall: @escaping () -> Void, onSubmitNotion: @escaping () -> Void, onToggle: @escaping (Int) -> Void) {
             _text = text
             self.onSubmitLarge = onSubmitLarge
             self.onSubmitSmall = onSubmitSmall
+            self.onSubmitNotion = onSubmitNotion
             self.onToggle = onToggle
         }
 
@@ -303,6 +318,7 @@ struct SubmittableTextEditor: NSViewRepresentable {
 
         func submitLarge() { onSubmitLarge() }
         func submitSmall() { onSubmitSmall() }
+        func submitNotion() { onSubmitNotion() }
         func toggle(_ index: Int) { onToggle(index) }
     }
 }
@@ -310,6 +326,7 @@ struct SubmittableTextEditor: NSViewRepresentable {
 protocol SubmitHandler: AnyObject {
     func submitLarge()
     func submitSmall()
+    func submitNotion()
     func toggle(_ index: Int)
 }
 
@@ -326,9 +343,15 @@ class SubmittableNSTextView: NSTextView {
         let isReturn = event.keyCode == 36
         let isShift = event.modifierFlags.contains(.shift)
         let isCmd = event.modifierFlags.contains(.command)
+        let isOption = event.modifierFlags.contains(.option)
 
         if isReturn && isCmd {
             submitHandler?.submitSmall()
+            return
+        }
+
+        if isReturn && isOption {
+            submitHandler?.submitNotion()
             return
         }
 
