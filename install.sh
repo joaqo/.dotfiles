@@ -43,6 +43,20 @@ ln -s -f ~/.dotfiles/.claude/commands ~/.claude/
 cd ~/.dotfiles/scripts/TaskPrompt && swiftc -parse-as-library -o task-prompt -framework AppKit -framework SwiftUI main.swift
 cd ~
 
+# NvimInITerm — open text/code files in nvim via iTerm
+mkdir -p ~/Applications
+osacompile -o ~/Applications/NvimInITerm.app ~/.dotfiles/scripts/NvimInITerm.applescript
+/usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string com.joaqo.NvimInITerm" ~/Applications/NvimInITerm.app/Contents/Info.plist 2>/dev/null
+codesign --force --deep --sign - ~/Applications/NvimInITerm.app
+/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -f ~/Applications/NvimInITerm.app
+NVIM_BUNDLE="com.joaqo.NvimInITerm"
+for uti in public.plain-text public.utf8-plain-text public.source-code public.shell-script public.python-script public.ruby-script public.perl-script public.php-script public.json public.xml public.yaml public.c-source public.c-header public.c-plus-plus-source public.objective-c-source public.swift-source public.assembly-source com.netscape.javascript-source com.apple.log public.css; do
+    duti -s "$NVIM_BUNDLE" "$uti" all 2>/dev/null
+done
+for ext in ts tsx jsx md mdx toml ini cfg conf env csv sql rs go java kt dart lua zig hs elm ex exs erl svelte vue astro graphql gql proto tf tfvars dockerfile makefile; do
+    duti -s "$NVIM_BUNDLE" ".$ext" all 2>/dev/null
+done
+
 #Language servers
 pnpm add -g typescript-language-server tailwindcss-language-server vscode-langservers-extracted
 brew install ripgrep
