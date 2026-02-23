@@ -49,7 +49,7 @@ struct TaskPromptApp {
 }
 
 class ViewModel: ObservableObject {
-    @Published var text = ""
+    var text = ""
     @Published var runMobile = false
     @Published var runWeb = true
     @Published var setupBackend = false
@@ -235,7 +235,7 @@ struct PromptView: View {
     var body: some View {
         VStack(spacing: 12) {
             SubmittableTextEditor(
-                text: $vm.text,
+                text: .init(get: { vm.text }, set: { vm.text = $0 }),
                 onSubmitLarge: { vm.submit(mode: .large) },
                 onSubmitSmall: { vm.submit(mode: .small) },
                 onSubmitNotion: { vm.submit(mode: .notion) },
