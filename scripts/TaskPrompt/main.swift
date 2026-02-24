@@ -51,7 +51,7 @@ struct TaskPromptApp {
 class ViewModel: ObservableObject {
     var text = ""
     @Published var runMobile = false
-    @Published var runWeb = true
+    @Published var runWeb = false
     @Published var setupBackend = false
     let window: NSWindow
 
