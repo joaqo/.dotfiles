@@ -15,16 +15,22 @@ If there's other irrelevant changes in the commit diff be aware of that and prop
 sh .dotfiles/install.sh
 ```
 
-Symlinks dotfiles to ~, installs vim-plug, fzf, language servers (pnpm), and configures nvim/zed/lazygit.
+Symlinks dotfiles to ~, installs fzf, language servers (pnpm), ripgrep, compiles Swift/AppleScript apps.
 
 ## Structure
 
-- `.bashrc` - shell config, custom functions (worktree mgmt, fzf integration, logging)
+- `.bashrc` - shell config, aliases, custom functions (worktree mgmt, fzf integration, logging, notifications)
+- `.tmux.conf` - tmux config (prefix: Ctrl+Space, vim-tmux nav, lazygit popup)
+- `.gitconfig` - git user config & aliases
 - `.config/nvim/` - neovim config (lazy.nvim), plugins in `lua/plugins/`, core in `lua/config/`
 - `.config/zed/` - zed editor settings (claude integration, vim mode)
 - `.config/lazygit/` - lazygit custom commands (symlinked to ~/Library/Application Support/lazygit/, not ~/.config/)
-- `.config/tmuxinator/` - tmuxinator project configs
-- `bin/` - custom scripts (autocommit uses claude haiku for commit msgs)
+- `.config/tmuxinator/` - tmuxinator project configs (mellow)
+- `.config/ghostty/` - ghostty terminal config (gruvbox dark)
+- `.claude/` - claude code settings & hooks (symlinked)
+- `bin/` - custom scripts: `autocommit` (claude haiku commit msgs), `kp` (fzf process killer), `focus-iterm-session`
+- `scripts/TaskPrompt/` - macOS Swift app for creating Mellow tasks. Floating window, keyboard-driven (Return=large, Cmd+Return=small, Opt+Return=notion). Toggles for mobile/web/backend. Runs commands in iTerm panes with smart layout. Compiled to `task-prompt` binary by install.sh.
+- `scripts/NvimInITerm.applescript` - makes macOS default to nvim+iTerm for code and text files. Compiled to ~/Applications/NvimInITerm.app, registered as default handler for 50+ file types via duti.
 
 ## Style
 
