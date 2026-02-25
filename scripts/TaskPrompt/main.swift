@@ -7,6 +7,12 @@ enum TaskMode {
     case notion
 }
 
+struct TaskImage: Identifiable {
+    let id = UUID()
+    let image: NSImage
+    let path: String
+}
+
 @main
 struct TaskPromptApp {
     static func main() {
@@ -53,19 +59,49 @@ class ViewModel: ObservableObject {
     @Published var runMobile = false
     @Published var runWeb = false
     @Published var setupBackend = false
+    @Published var images: [TaskImage] = []
     let window: NSWindow
+    private var imageCounter = 0
+    private let imageDir = "/tmp/task-images"
 
     init(window: NSWindow) {
         self.window = window
+        try? FileManager.default.removeItem(atPath: imageDir)
+        try? FileManager.default.createDirectory(atPath: imageDir, withIntermediateDirectories: true)
+    }
+
+    func addImage(_ image: NSImage) {
+        imageCounter += 1
+        let path = "\(imageDir)/\(imageCounter).png"
+        if let tiff = image.tiffRepresentation,
+           let rep = NSBitmapImageRep(data: tiff),
+           let png = rep.representation(using: .png, properties: [:]) {
+            try? png.write(to: URL(fileURLWithPath: path))
+            images.append(TaskImage(image: image, path: path))
+        }
+    }
+
+    func removeImage(_ item: TaskImage) {
+        try? FileManager.default.removeItem(atPath: item.path)
+        images.removeAll { $0.id == item.id }
     }
 
     func submit(mode: TaskMode) {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return }
 
+        // Build prompt with embedded image paths
+        var prompt = trimmed
+        if !images.isEmpty {
+            prompt += "\n\n---\nTask images (use the Read tool to view each one):\n"
+            for img in images {
+                prompt += "- \(img.path)\n"
+            }
+        }
+
         // Write prompt to temp file
         let tempPath = "/tmp/company-task-prompt.txt"
-        try? trimmed.write(toFile: tempPath, atomically: true, encoding: .utf8)
+        try? prompt.write(toFile: tempPath, atomically: true, encoding: .utf8)
 
         // Build command
         var cmd: String
@@ -82,7 +118,7 @@ class ViewModel: ObservableObject {
             if !flagStr.isEmpty { cmd += " \(flagStr)" }
             cmd += "; exit"
         case .notion:
-            let notionPrompt = "Create a Notion task from the following description. Use the 'company notion add' CLI command. Run 'company notion projects' first to pick the right project. Use --project and --body flags as appropriate.\n\nTask description:\n\(trimmed)"
+            let notionPrompt = "Create a Notion task from the following description. Use the 'company notion add' CLI command. Run 'company notion projects' first to pick the right project. Use --project and --body flags as appropriate.\n\nTask description:\n\(prompt)"
             let promptPath = "/tmp/company-notion-prompt.txt"
             try? notionPrompt.write(toFile: promptPath, atomically: true, encoding: .utf8)
             let process = Process()
@@ -246,10 +282,38 @@ struct PromptView: View {
                     case 3: vm.setupBackend.toggle()
                     default: break
                     }
-                }
+                },
+                onAddImage: { image in vm.addImage(image) }
             )
                 .font(.system(size: 13, design: .monospaced))
                 .focused($isFocused)
+
+            if !vm.images.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 6) {
+                        ForEach(vm.images) { item in
+                            ZStack(alignment: .topTrailing) {
+                                Image(nsImage: item.image)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 40, height: 40)
+                                    .clipped()
+                                    .cornerRadius(4)
+                                Button(action: { vm.removeImage(item) }) {
+                                    Image(systemName: "xmark.circle.fill")
+                                        .font(.system(size: 12))
+                                        .foregroundColor(.secondary)
+                                }
+                                .buttonStyle(.borderless)
+                                .offset(x: 4, y: -4)
+                            }
+                            .padding(.top, 4)
+                            .padding(.trailing, 4)
+                        }
+                    }
+                }
+                .frame(height: 44)
+            }
 
             HStack(spacing: 16) {
                 HStack(spacing: 12) {
@@ -280,9 +344,10 @@ struct SubmittableTextEditor: NSViewRepresentable {
     let onSubmitSmall: () -> Void
     let onSubmitNotion: () -> Void
     let onToggle: (Int) -> Void
+    let onAddImage: (NSImage) -> Void
 
     func makeCoordinator() -> Coordinator {
-        Coordinator(text: $text, onSubmitLarge: onSubmitLarge, onSubmitSmall: onSubmitSmall, onSubmitNotion: onSubmitNotion, onToggle: onToggle)
+        Coordinator(text: $text, onSubmitLarge: onSubmitLarge, onSubmitSmall: onSubmitSmall, onSubmitNotion: onSubmitNotion, onToggle: onToggle, onAddImage: onAddImage)
     }
 
     func makeNSView(context: Context) -> NSScrollView {
@@ -307,6 +372,8 @@ struct SubmittableTextEditor: NSViewRepresentable {
         scrollView.drawsBackground = false
         textView.drawsBackground = false
         context.coordinator.textView = textView
+        // Register for image drag & drop
+        textView.registerForDraggedTypes([.fileURL, .png, .tiff])
         return scrollView
     }
 
@@ -318,14 +385,16 @@ struct SubmittableTextEditor: NSViewRepresentable {
         let onSubmitSmall: () -> Void
         let onSubmitNotion: () -> Void
         let onToggle: (Int) -> Void
+        let onAddImage: (NSImage) -> Void
         weak var textView: NSTextView?
 
-        init(text: Binding<String>, onSubmitLarge: @escaping () -> Void, onSubmitSmall: @escaping () -> Void, onSubmitNotion: @escaping () -> Void, onToggle: @escaping (Int) -> Void) {
+        init(text: Binding<String>, onSubmitLarge: @escaping () -> Void, onSubmitSmall: @escaping () -> Void, onSubmitNotion: @escaping () -> Void, onToggle: @escaping (Int) -> Void, onAddImage: @escaping (NSImage) -> Void) {
             _text = text
             self.onSubmitLarge = onSubmitLarge
             self.onSubmitSmall = onSubmitSmall
             self.onSubmitNotion = onSubmitNotion
             self.onToggle = onToggle
+            self.onAddImage = onAddImage
         }
 
         func textDidChange(_ notification: Notification) {
@@ -337,6 +406,7 @@ struct SubmittableTextEditor: NSViewRepresentable {
         func submitSmall() { onSubmitSmall() }
         func submitNotion() { onSubmitNotion() }
         func toggle(_ index: Int) { onToggle(index) }
+        func addImage(_ image: NSImage) { onAddImage(image) }
     }
 }
 
@@ -345,10 +415,86 @@ protocol SubmitHandler: AnyObject {
     func submitSmall()
     func submitNotion()
     func toggle(_ index: Int)
+    func addImage(_ image: NSImage)
 }
 
 class SubmittableNSTextView: NSTextView {
     weak var submitHandler: SubmitHandler?
+
+    // Include image types so Paste stays enabled when clipboard has images
+    override var readablePasteboardTypes: [NSPasteboard.PasteboardType] {
+        return super.readablePasteboardTypes + [.png, .tiff]
+    }
+
+    override func paste(_ sender: Any?) {
+        let pb = NSPasteboard.general
+        // Debug: log available pasteboard types
+        let types = pb.types?.map { $0.rawValue }.joined(separator: "\n") ?? "none"
+        try? types.write(toFile: "/tmp/paste-debug.txt", atomically: true, encoding: .utf8)
+
+        // Check for image file URLs first (Finder copies have both URL + icon TIFF;
+        // we want the actual file, not the icon)
+        if let urls = pb.readObjects(forClasses: [NSURL.self], options: [
+            .urlReadingFileURLsOnly: true,
+            .urlReadingContentsConformToTypes: ["public.image"]
+        ]) as? [URL], !urls.isEmpty {
+            for url in urls {
+                if let image = NSImage(contentsOf: url) {
+                    submitHandler?.addImage(image)
+                }
+            }
+            return
+        }
+        // Fall back to raw image data (screenshots, images copied from apps)
+        if NSImage.canInit(with: pb), let image = NSImage(pasteboard: pb) {
+            submitHandler?.addImage(image)
+            return
+        }
+        super.paste(sender)
+    }
+
+    // Drag & drop support for image files
+    private func hasImageDrag(_ sender: NSDraggingInfo) -> Bool {
+        let pb = sender.draggingPasteboard
+        if pb.availableType(from: [.png, .tiff]) != nil { return true }
+        guard let urls = pb.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL] else { return false }
+        let imageExts: Set<String> = ["png", "jpg", "jpeg", "gif", "webp", "tiff", "bmp", "heic"]
+        return !urls.isEmpty && urls.allSatisfy { imageExts.contains($0.pathExtension.lowercased()) }
+    }
+
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        if hasImageDrag(sender) { return .copy }
+        return super.draggingEntered(sender)
+    }
+
+    override func draggingUpdated(_ sender: NSDraggingInfo) -> NSDragOperation {
+        if hasImageDrag(sender) { return .copy }
+        return super.draggingUpdated(sender)
+    }
+
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        let pb = sender.draggingPasteboard
+        // Handle raw image data drops
+        if let data = pb.data(forType: .png) ?? pb.data(forType: .tiff),
+           let image = NSImage(data: data) {
+            submitHandler?.addImage(image)
+            return true
+        }
+        // Handle image file drops
+        if let urls = pb.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL] {
+            let imageExts: Set<String> = ["png", "jpg", "jpeg", "gif", "webp", "tiff", "bmp", "heic"]
+            let imageURLs = urls.filter { imageExts.contains($0.pathExtension.lowercased()) }
+            if !imageURLs.isEmpty {
+                for url in imageURLs {
+                    if let image = NSImage(contentsOf: url) {
+                        submitHandler?.addImage(image)
+                    }
+                }
+                return true
+            }
+        }
+        return super.performDragOperation(sender)
+    }
 
     override func keyDown(with event: NSEvent) {
         // Escape to cancel
@@ -377,9 +523,10 @@ class SubmittableNSTextView: NSTextView {
             return
         }
 
-        // Cmd+1/2/3 toggle checkboxes
+        // Cmd+W close, Cmd+1/2/3 toggle checkboxes
         if isCmd, let chars = event.charactersIgnoringModifiers {
             switch chars {
+            case "w": NSApplication.shared.terminate(nil); return
             case "1": submitHandler?.toggle(1); return
             case "2": submitHandler?.toggle(2); return
             case "3": submitHandler?.toggle(3); return
