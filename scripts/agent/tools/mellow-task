@@ -1,0 +1,59 @@
+#!/bin/bash
+# Create a Mellow dev task via company CLI in an iTerm pane
+# Usage: mellow-task "description" [--mobile] [--web] [--backend] [--small] [--image path]...
+
+set -e
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ITERM_RUN="$SCRIPT_DIR/../lib/iterm-run"
+
+# Parse args
+description=""
+flags=""
+small=""
+images=()
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --mobile|--web|--backend)
+            flags="$flags $1"
+            shift
+            ;;
+        --small)
+            small="--small"
+            shift
+            ;;
+        --image)
+            shift
+            images+=("$1")
+            shift
+            ;;
+        *)
+            if [ -z "$description" ]; then
+                description="$1"
+            fi
+            shift
+            ;;
+    esac
+done
+
+if [ -z "$description" ]; then
+    echo "Usage: mellow-task \"description\" [--mobile] [--web] [--backend] [--small] [--image path]..." >&2
+    exit 1
+fi
+
+# Write prompt to temp file, include image paths if any
+prompt_file="/tmp/company-task-prompt.txt"
+printf '%s' "$description" > "$prompt_file"
+if [ ${#images[@]} -gt 0 ]; then
+    printf '\n\n---\nTask images (use the Read tool to view each one):\n' >> "$prompt_file"
+    for img in "${images[@]}"; do
+        printf -- '- %s\n' "$img" >> "$prompt_file"
+    done
+fi
+
+# Build command
+cmd="cd ~/mellow && company task run $small -f $prompt_file$flags; exit"
+
+"$ITERM_RUN" "$cmd"
+echo "Task started: $description"

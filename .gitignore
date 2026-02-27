@@ -1,4 +1,6 @@
 .DS_Store
 .claude/hooks/notify-debug.log
 .config/zed/prompts/
-scripts/TaskPrompt/task-prompt
+scripts/agent/agent
+scripts/agent/tools/EventKitCLI/eventkit-cli
+scripts/agent/logs/

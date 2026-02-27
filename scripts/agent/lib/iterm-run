@@ -1,0 +1,126 @@
+#!/bin/bash
+# Run a command in a smart-split iTerm pane
+# Usage: iterm-run "cd ~/mellow && company task run -f /tmp/prompt.txt; exit"
+
+set -e
+
+cmd="$1"
+if [ -z "$cmd" ]; then
+    echo "Usage: iterm-run <command>" >&2
+    exit 1
+fi
+
+# Escape for AppleScript string embedding
+escaped=$(printf '%s' "$cmd" | sed 's/\\/\\\\/g; s/"/\\"/g')
+
+osascript <<APPLESCRIPT
+set cmdText to "$escaped"
+set itermWasRunning to application "iTerm" is running
+
+tell application "iTerm"
+    if not itermWasRunning then
+        launch
+        delay 0.5
+        tell current session of current window
+            write text cmdText
+        end tell
+        return
+    end if
+
+    if not (exists current window) then
+        create window with default profile
+        tell current session of current window
+            write text cmdText
+        end tell
+        return
+    end if
+
+    tell current window
+        set originalTab to current tab
+        set bestTab to missing value
+        set bestCount to 0
+
+        -- Find tab with most sessions still under 8
+        repeat with aTab in tabs
+            set sessionCount to count of sessions of aTab
+            if sessionCount < 8 and sessionCount > bestCount then
+                set bestCount to sessionCount
+                set bestTab to aTab
+            end if
+        end repeat
+
+        if bestTab is not missing value and bestCount > 0 then
+            set allSessions to sessions of bestTab
+            set sessionCount to count of allSessions
+
+            -- Find max rows (full terminal height)
+            set maxRows to 0
+            repeat with aSession in allSessions
+                if rows of aSession > maxRows then
+                    set maxRows to rows of aSession
+                end if
+            end repeat
+
+            -- Count actual columns: full-height sessions are own column,
+            -- partial-height sessions are stacked (2 per column)
+            set fullHeightCount to 0
+            set partialCount to 0
+            repeat with aSession in allSessions
+                if rows of aSession ≥ (maxRows - 2) then
+                    set fullHeightCount to fullHeightCount + 1
+                else
+                    set partialCount to partialCount + 1
+                end if
+            end repeat
+            set columnCount to fullHeightCount + (partialCount + 1) div 2
+
+            if columnCount < 4 then
+                -- Add column: split last full-height session vertically
+                set targetSession to item 1 of allSessions
+                repeat with aSession in allSessions
+                    if rows of aSession ≥ (maxRows - 2) then
+                        set targetSession to aSession
+                    end if
+                end repeat
+                tell targetSession
+                    set newSession to (split vertically with default profile)
+                end tell
+            else
+                -- Add row: split first full-height session horizontally
+                set targetSession to missing value
+                repeat with aSession in allSessions
+                    if targetSession is missing value and rows of aSession ≥ (maxRows - 2) then
+                        set targetSession to aSession
+                    end if
+                end repeat
+                if targetSession is missing value then
+                    -- All columns split, find tallest session
+                    set targetSession to item 1 of allSessions
+                    set targetRows to rows of targetSession
+                    repeat with aSession in allSessions
+                        if rows of aSession ≥ targetRows then
+                            set targetSession to aSession
+                            set targetRows to rows of aSession
+                        end if
+                    end repeat
+                end if
+                tell targetSession
+                    set newSession to (split horizontally with default profile)
+                end tell
+            end if
+
+            tell newSession
+                write text cmdText
+            end tell
+            select originalTab
+        else
+            -- No suitable tab: create new tab
+            set newTab to (create tab with default profile)
+            tell current session of newTab
+                write text cmdText
+            end tell
+            select originalTab
+        end if
+    end tell
+end tell
+APPLESCRIPT

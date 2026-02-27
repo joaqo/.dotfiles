@@ -1,0 +1,8 @@
+#!/bin/bash
+# Add an item to Notion via company CLI
+# Usage: mellow-notion "title" [--project "X"] [--body "X"] [--today]
+
+set -e
+
+cd ~/mellow
+exec company notion add "$@"
