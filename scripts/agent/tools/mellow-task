@@ -1,6 +1,6 @@
 #!/bin/bash
 # Create a Mellow dev task via company CLI in an iTerm pane
-# Usage: mellow-task "description" [--mobile] [--web] [--backend] [--small] [--image path]...
+# Usage: mellow-task "description" [--mobile] [--web] [--backend] [--small] [--base branch] [--image path]...
 
 set -e
 
@@ -11,6 +11,7 @@ ITERM_RUN="$SCRIPT_DIR/../lib/iterm-run"
 description=""
 flags=""
 small=""
+base=""
 images=()
 
 while [[ $# -gt 0 ]]; do
@@ -21,6 +22,11 @@ while [[ $# -gt 0 ]]; do
             ;;
         --small)
             small="--small"
+            shift
+            ;;
+        --base)
+            shift
+            base="--base $1"
             shift
             ;;
         --image)
@@ -38,7 +44,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [ -z "$description" ]; then
-    echo "Usage: mellow-task \"description\" [--mobile] [--web] [--backend] [--small] [--image path]..." >&2
+    echo "Usage: mellow-task \"description\" [--mobile] [--web] [--backend] [--small] [--base branch] [--image path]..." >&2
     exit 1
 fi
 
@@ -53,7 +59,7 @@ if [ ${#images[@]} -gt 0 ]; then
 fi
 
 # Build command
-cmd="cd ~/mellow && company task run $small -f $prompt_file$flags; exit"
+cmd="cd ~/mellow && company task run $small $base -f $prompt_file$flags; exit"
 
 "$ITERM_RUN" "$cmd"
 echo "Task started: $description"

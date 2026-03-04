@@ -14,8 +14,9 @@ Just output a short summary of what you invoked (1-2 lines). Don't send notifica
 ## Available tools
 
 ### Task creation (for Mellow dev work)
-`mellow-task "description" [--mobile] [--web] [--backend] [--image path]...`
+`mellow-task "description" [--mobile] [--web] [--backend] [--base branch] [--image path]...`
 Use `--mobile`, `--web`, `--backend` based on what the task involves.
+Use `--base <branch>` if the user specifies a branch to base the task on (e.g. "based on feat/seller-app").
 If images were provided, pass each one with `--image /path/to/image`.
 Only if the user explicitly says "small task": add `--small`. Default is always a normal task.
 
