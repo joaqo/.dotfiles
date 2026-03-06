@@ -104,7 +104,7 @@ class ViewModel: ObservableObject {
         log "=== $(date) ==="
         log "PROMPT: \(escaped)"
         log "---"
-        output=$(claude -p '\(escaped)' --system-prompt "$(cat \(systemPromptPath))" --no-session-persistence 2>&1)
+        output=$(claude -p '\(escaped)' --system-prompt "$(cat \(systemPromptPath))" --tools 'Bash,Read' --permission-mode dontAsk --allowedTools 'Read Bash(*mellow-task *) Bash(*mellow-notion *) Bash(*eventkit-cli *) Bash(osascript *)' --no-session-persistence 2>&1)
         log "$output"
         short=$(echo "$output" | tail -1 | head -c 200)
         /opt/homebrew/bin/terminal-notifier -title "Agent" -message "$short" -sound Hero

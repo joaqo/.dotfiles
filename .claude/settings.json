@@ -36,5 +36,6 @@
     "image-sanitizer@image-sanitizer-marketplace": true
   },
   "alwaysThinkingEnabled": true,
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "effortLevel": "high"
 }
