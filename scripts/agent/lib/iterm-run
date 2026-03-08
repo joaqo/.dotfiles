@@ -15,6 +15,7 @@ escaped=$(printf '%s' "$cmd" | sed 's/\\/\\\\/g; s/"/\\"/g')
 
 osascript <<APPLESCRIPT
 set cmdText to "$escaped"
+set clearLine to (ASCII character 21)
 set itermWasRunning to application "iTerm" is running
 
 tell application "iTerm"
@@ -22,6 +23,7 @@ tell application "iTerm"
         launch
         delay 0.5
         tell current session of current window
+            write text clearLine without newline
             write text cmdText
         end tell
         return
@@ -30,6 +32,7 @@ tell application "iTerm"
     if not (exists current window) then
         create window with default profile
         tell current session of current window
+            write text clearLine without newline
             write text cmdText
         end tell
         return
@@ -110,6 +113,7 @@ tell application "iTerm"
             end if
 
             tell newSession
+                write text clearLine without newline
                 write text cmdText
             end tell
             select originalTab
@@ -117,6 +121,7 @@ tell application "iTerm"
             -- No suitable tab: create new tab
             set newTab to (create tab with default profile)
             tell current session of newTab
+                write text clearLine without newline
                 write text cmdText
             end tell
             select originalTab
