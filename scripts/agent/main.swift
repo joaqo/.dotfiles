@@ -101,13 +101,12 @@ class ViewModel: ObservableObject {
         let logFile = "$HOME/.dotfiles/scripts/agent/logs/agent.log"
         let script = """
         #!/bin/bash -l
-        prompt=$(cat \(promptPath))
-        rm -f \(promptPath)
         log() { echo "$@" >> \(logFile); }
         log "=== $(date) ==="
-        log "PROMPT: $prompt"
+        log "PROMPT: $(cat \(promptPath))"
         log "---"
-        output=$(claude -p "$prompt" --system-prompt "$(cat \(systemPromptPath))" --tools 'Bash,Read' --permission-mode dontAsk --allowedTools 'Read Bash(*mellow-task *) Bash(*mellow-notion *) Bash(*eventkit-cli *) Bash(osascript *)' --no-session-persistence 2>&1)
+        output=$(cat \(promptPath) | claude -p --system-prompt-file \(systemPromptPath) --tools 'Bash,Read' --permission-mode dontAsk --allowedTools 'Read Bash(*mellow-task *) Bash(*mellow-notion *) Bash(*eventkit-cli *) Bash(osascript *)' --no-session-persistence 2>&1)
+        rm -f \(promptPath)
         log "$output"
         short=$(echo "$output" | tail -1 | head -c 200)
         /opt/homebrew/bin/terminal-notifier -title "Agent" -message "$short" -sound Hero
