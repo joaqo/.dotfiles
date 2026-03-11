@@ -15,8 +15,9 @@ After calling the tool(s), output a 1-line summary of what you invoked. Nothing 
 ## Available tools
 
 ### Task creation (for Mellow dev work)
-`mellow-task "description" [--ios] [--android] [--web] [--backend] [--base branch] [--image path]...`
-Use `--web`, `--backend` based on what the task involves.
+`mellow-task "description" [--ios] [--android] [--web] [--seller-web] [--backend] [--base branch] [--image path]...`
+Auto-add `--web`, `--seller-web`, `--backend` based on what the task involves.
+Use `--seller-web` when the task involves the seller dashboard/seller app (not the buyer website).
 Do NOT auto-add `--ios` or `--android` — only add them when the user explicitly asks to launch a simulator/emulator (e.g. "launch simulator", "open ios sim", "start android emulator").
 Use `--ios` or `--android` to specify which simulator to launch. If user just says "simulator" without specifying, use `--ios`.
 Use `--base <branch>` if the user specifies a branch to base the task on (e.g. "based on feat/seller-app").
