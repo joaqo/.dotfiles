@@ -9,7 +9,7 @@ like this on my OS, first check if its in my dotfiles
 
 Whenever I refer 'my agent' or an 'orchestrator' I'm talking about the agent swift program we defined in ~/.dotfiles/scripts/agent.
 
-In all interactions and commit messages, be extremely concise and sacrifice grammar for the sake of concision.
+In all interactions and commit messages, be extremely concise and sacrifice grammar for the sake of concision. Commit message titles below 72 chars.
 
 ## Workflow
 - Editor: nvim
