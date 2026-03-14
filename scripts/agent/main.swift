@@ -97,7 +97,7 @@ class ViewModel: ObservableObject {
 
         let systemPromptPath = "$HOME/.dotfiles/scripts/agent/system-prompt.md"
 
-        // Write a small wrapper script to capture claude output and notify
+        // Write a small wrapper script to capture claude output and notify on failure
         let logFile = "$HOME/.dotfiles/scripts/agent/logs/agent.log"
         let script = """
         #!/bin/bash -l
@@ -105,11 +105,19 @@ class ViewModel: ObservableObject {
         log "=== $(date) ==="
         log "PROMPT: $(cat \(promptPath))"
         log "---"
-        output=$(cat \(promptPath) | claude -p --system-prompt-file \(systemPromptPath) --tools 'Bash,Read' --permission-mode dontAsk --allowedTools 'Read Bash(*mellow-task *) Bash(*mellow-notion *) Bash(*eventkit-cli *) Bash(osascript *)' --no-session-persistence 2>&1)
+        output=$(cat \(promptPath) | claude -p --system-prompt-file \(systemPromptPath) --tools 'Bash,Read' --permission-mode dontAsk --allowedTools 'Read Bash(*mellow-task *) Bash(*mellow-notion *) Bash(*eventkit-cli *) Bash(osascript *)' --output-format json --no-session-persistence 2>&1)
         rm -f \(promptPath)
         log "$output"
-        short=$(echo "$output" | tail -1 | head -c 200)
-        /opt/homebrew/bin/terminal-notifier -title "Agent" -message "$short" -sound Hero
+        # Notify only on failure (no tool called). With --output-format json, the only
+        # signal for tool usage is num_turns: the CLI counts each agentic loop iteration
+        # as a turn. num_turns==1 means claude responded without calling any tool.
+        # num_turns>=2 means at least one tool was called. Not ideal, but the JSON
+        # output doesn't expose tool calls directly.
+        num_turns=$(echo "$output" | /usr/bin/python3 -c "import sys,json; print(json.load(sys.stdin).get('num_turns',0))" 2>/dev/null)
+        if [ "$num_turns" = "1" ] || [ "$num_turns" = "0" ]; then
+            result=$(echo "$output" | /usr/bin/python3 -c "import sys,json; print(json.load(sys.stdin).get('result','')[:200])" 2>/dev/null || echo "Agent failed")
+            /opt/homebrew/bin/terminal-notifier -title "Agent failed" -message "$result" -sound Sosumi
+        fi
         """
         let scriptPath = "/tmp/agent-run.sh"
         try? script.write(toFile: scriptPath, atomically: true, encoding: .utf8)
