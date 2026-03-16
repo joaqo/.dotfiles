@@ -59,7 +59,9 @@ fi
 # Create cmux workspace and run task inside it
 export CMUX_SOCKET_PATH="${CMUX_SOCKET_PATH:-$(cat "$HOME/Library/Application Support/cmux/last-socket-path" 2>/dev/null)}"
 CMUX_BIN="/Applications/cmux.app/Contents/Resources/bin/cmux"
-cmd="cd ~/mellow && company task run $small $branch $base -f $prompt_file; exit"
+COMPANY_BIN="$HOME/mellow/company/src/index.ts"
 
-"$CMUX_BIN" new-workspace --command "$cmd"
+# Create worktree (or use ~/mellow for --small), then open workspace with correct cwd
+task_path=$(cd ~/mellow && bun "$COMPANY_BIN" task create $small $branch $base -f "$prompt_file")
+"$CMUX_BIN" new-workspace --cwd "$task_path" --command "claude \"\$(cat .task-prompt)\"; exit"
 echo "Task started: $description"

@@ -108,15 +108,15 @@ class ViewModel: ObservableObject {
         output=$(cat \(promptPath) | claude -p --system-prompt-file \(systemPromptPath) --tools 'Bash,Read' --permission-mode dontAsk --allowedTools 'Read Bash(*mellow-task *) Bash(*mellow-notion *) Bash(*eventkit-cli *) Bash(osascript *)' --output-format json --no-session-persistence 2>&1)
         rm -f \(promptPath)
         log "$output"
-        # Notify only on failure (no tool called). With --output-format json, the only
-        # signal for tool usage is num_turns: the CLI counts each agentic loop iteration
-        # as a turn. num_turns==1 means claude responded without calling any tool.
-        # num_turns>=2 means at least one tool was called. Not ideal, but the JSON
-        # output doesn't expose tool calls directly.
-        num_turns=$(echo "$output" | /usr/bin/python3 -c "import sys,json; print(json.load(sys.stdin).get('num_turns',0))" 2>/dev/null)
-        if [ "$num_turns" = "1" ] || [ "$num_turns" = "0" ]; then
-            result=$(echo "$output" | /usr/bin/python3 -c "import sys,json; print(json.load(sys.stdin).get('result','')[:200])" 2>/dev/null || echo "Agent failed")
-            /opt/homebrew/bin/terminal-notifier -title "Agent failed" -message "$result" -sound Sosumi
+        # Notify only when a non-task tool was used (notion, eventkit, etc.)
+        # mellow-task opens a visible cmux workspace, no notification needed.
+        # No tool call = agent confused, also no notification (not actionable).
+        result_text=$(echo "$output" | /usr/bin/python3 -c "import sys,json; print(json.load(sys.stdin).get('result','')[:200])" 2>/dev/null || echo "")
+        if [ -n "$result_text" ] && ! echo "$result_text" | grep -qi "mellow-task"; then
+            num_turns=$(echo "$output" | /usr/bin/python3 -c "import sys,json; print(json.load(sys.stdin).get('num_turns',0))" 2>/dev/null)
+            if [ "$num_turns" != "1" ] && [ "$num_turns" != "0" ]; then
+                /opt/homebrew/bin/terminal-notifier -title "Agent" -message "$result_text" -sound default
+            fi
         fi
         """
         let scriptPath = "/tmp/agent-run.sh"
