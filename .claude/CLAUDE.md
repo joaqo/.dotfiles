@@ -13,6 +13,6 @@ In all interactions and commit messages, be extremely concise and sacrifice gram
 
 ## Workflow
 - Editor: nvim
-- Terminal: tmux
+- Terminal: cmux (use /cmux and /cmux-browser skills for terminal and browser automation)
 - Shell: bash
 - Python: uv

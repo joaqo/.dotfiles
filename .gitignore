@@ -4,3 +4,5 @@
 scripts/agent/agent
 scripts/agent/tools/EventKitCLI/eventkit-cli
 scripts/agent/logs/
+.claude/skills/cmux/
+.claude/skills/cmux-browser/

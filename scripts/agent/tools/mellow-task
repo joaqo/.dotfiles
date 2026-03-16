@@ -1,23 +1,21 @@
 #!/bin/bash
-# Create a Mellow dev task via company CLI in an iTerm pane
-# Usage: mellow-task "description" [--ios] [--android] [--web] [--seller-web] [--backend] [--small] [--base branch] [--image path]...
+# Create a Mellow dev task via company CLI in a cmux workspace
+# Usage: mellow-task "description" --branch <name> [--small] [--base branch] [--image path]...
 
 set -e
 
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ITERM_RUN="$SCRIPT_DIR/../lib/iterm-run"
-
 # Parse args
 description=""
-flags=""
+branch=""
 small=""
 base=""
 images=()
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --ios|--android|--web|--seller-web|--backend)
-            flags="$flags $1"
+        --branch)
+            shift
+            branch="--branch $1"
             shift
             ;;
         --small)
@@ -44,7 +42,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [ -z "$description" ]; then
-    echo "Usage: mellow-task \"description\" [--ios] [--android] [--web] [--seller-web] [--backend] [--small] [--base branch] [--image path]..." >&2
+    echo "Usage: mellow-task \"description\" --branch <name> [--small] [--base branch] [--image path]..." >&2
     exit 1
 fi
 
@@ -58,8 +56,10 @@ if [ ${#images[@]} -gt 0 ]; then
     done
 fi
 
-# Build command
-cmd="cd ~/mellow && company task run $small $base -f $prompt_file$flags; exit"
+# Create cmux workspace and run task inside it
+export CMUX_SOCKET_PATH="${CMUX_SOCKET_PATH:-$(cat "$HOME/Library/Application Support/cmux/last-socket-path" 2>/dev/null)}"
+CMUX_BIN="/Applications/cmux.app/Contents/Resources/bin/cmux"
+cmd="cd ~/mellow && company task run $small $branch $base -f $prompt_file; exit"
 
-"$ITERM_RUN" "$cmd"
+"$CMUX_BIN" new-workspace --command "$cmd"
 echo "Task started: $description"
