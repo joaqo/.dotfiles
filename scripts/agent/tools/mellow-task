@@ -15,6 +15,7 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --branch)
             shift
+            branch_name="$1"
             branch="--branch $1"
             shift
             ;;
@@ -63,5 +64,15 @@ COMPANY_BIN="$HOME/mellow/company/src/index.ts"
 
 # Create worktree (or use ~/mellow for --small), then open workspace with correct cwd
 task_path=$(cd ~/mellow && bun "$COMPANY_BIN" task create $small $branch $base -f "$prompt_file")
-"$CMUX_BIN" new-workspace --cwd "$task_path" --command "claude \"\$(cat .task-prompt)\"; exit"
+if [ -n "$small" ] && [ -n "$branch_name" ]; then
+    session_name="MAIN:$branch_name"
+else
+    session_name=$(basename "$task_path")
+fi
+"$CMUX_BIN" new-workspace --cwd "$task_path" --command "claude --name \"$session_name\" \"\$(cat .task-prompt)\"; exit"
+
+# Add a lazygit tab and focus back to the claude tab
+"$CMUX_BIN" new-surface
+"$CMUX_BIN" send "lazygit\n"
+"$CMUX_BIN" tab-action --action rename --title "lazygit"
 echo "Task started: $description"
