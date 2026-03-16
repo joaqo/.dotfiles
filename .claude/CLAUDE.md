@@ -16,3 +16,15 @@ In all interactions and commit messages, be extremely concise and sacrifice gram
 - Terminal: cmux (use /cmux and /cmux-browser skills for terminal and browser automation)
 - Shell: bash
 - Python: uv
+- Dev servers (vite, expo, next, etc): always start in a new cmux tab (not workspace). Create with `cmux new-surface --type terminal --pane <current-pane>`, rename with `cmux rename-tab --surface <ref> "name"`, send command with `cmux send --surface <ref> "command\n"`. Use descriptive names like `vite-dev`, `expo-dev`.
+
+## cmux browser + React
+`cmux browser fill/type` don't trigger React's onChange on controlled inputs (WKWebView limitation). Use `eval` with the native setter workaround:
+```js
+cmux browser <surface> eval "
+const input = document.querySelector('<selector>');
+const s = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
+s.call(input, '<value>');
+input.dispatchEvent(new Event('input', { bubbles: true }));
+"
+```
