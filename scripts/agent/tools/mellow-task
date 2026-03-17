@@ -72,6 +72,11 @@ fi
 ws_output=$("$CMUX_BIN" new-workspace --cwd "$task_path" --command "claude --name \"$session_name\" \"\$(cat .task-prompt)\"; exit")
 ws_ref=$(echo "$ws_output" | grep -o 'workspace:[0-9]*')
 
+# Name the workspace after the branch/worktree
+if [ -n "$ws_ref" ]; then
+    "$CMUX_BIN" rename-workspace --workspace "$ws_ref" "$session_name"
+fi
+
 # Add a lazygit tab in the new workspace, then focus back to claude tab
 ws_flag=()
 if [ -n "$ws_ref" ]; then ws_flag=(--workspace "$ws_ref"); fi
