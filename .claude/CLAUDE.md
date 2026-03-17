@@ -11,14 +11,11 @@ Whenever I refer 'my agent' or an 'orchestrator' I'm talking about the agent swi
 
 In all interactions and commit messages, be extremely concise and sacrifice grammar for the sake of concision. Commit message titles below 72 chars.
 
-## Workflow
-- Editor: nvim
-- Terminal: cmux (use /cmux and /cmux-browser skills for terminal and browser automation)
-- Shell: bash
-- Python: uv
-- Dev servers (vite, expo, next, etc): always start in a new cmux tab (not workspace). Create with `cmux new-surface --type terminal --pane <current-pane>`, rename with `cmux rename-tab --surface <ref> "name"`, send command with `cmux send --surface <ref> "command\n"`. Use descriptive names like `vite-dev`, `expo-dev`.
+## Browser Automation
 
-## cmux browser + React
+All browser automation uses **cmux browser** — never Chrome MCP, Chrome DevTools, or `open` commands. Use `/cmux-browser` skill and `cmux browser` CLI for everything: opening pages, clicking, typing, screenshots, JS eval, waiting.
+
+### cmux browser + React
 `cmux browser fill/type` don't trigger React's onChange on controlled inputs (WKWebView limitation). Use `eval` with the native setter workaround:
 ```js
 cmux browser <surface> eval "
@@ -28,3 +25,10 @@ s.call(input, '<value>');
 input.dispatchEvent(new Event('input', { bubbles: true }));
 "
 ```
+
+## Workflow
+- Editor: nvim
+- Terminal: cmux (use /cmux and /cmux-browser skills for terminal and browser automation)
+- Shell: bash
+- Python: uv
+- Dev servers (vite, expo, next, etc): always start in a new cmux tab (not workspace). Create with `cmux new-surface --type terminal --pane <current-pane>`, rename with `cmux rename-tab --surface <ref> "name"`, send command with `cmux send --surface <ref> "command\n"`. Use descriptive names like `vite-dev`, `expo-dev`.
