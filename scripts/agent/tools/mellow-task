@@ -69,10 +69,20 @@ if [ -n "$small" ] && [ -n "$branch_name" ]; then
 else
     session_name=$(basename "$task_path")
 fi
-"$CMUX_BIN" new-workspace --cwd "$task_path" --command "claude --name \"$session_name\" \"\$(cat .task-prompt)\"; exit"
+ws_output=$("$CMUX_BIN" new-workspace --cwd "$task_path" --command "claude --name \"$session_name\" \"\$(cat .task-prompt)\"; exit")
+ws_ref=$(echo "$ws_output" | grep -o 'workspace:[0-9]*')
 
-# Add a lazygit tab and focus back to the claude tab
-"$CMUX_BIN" new-surface
-"$CMUX_BIN" send "lazygit\n"
-"$CMUX_BIN" tab-action --action rename --title "lazygit"
+# Add a lazygit tab in the new workspace, then focus back to claude tab
+ws_flag=()
+if [ -n "$ws_ref" ]; then ws_flag=(--workspace "$ws_ref"); fi
+lg_output=$("$CMUX_BIN" new-surface "${ws_flag[@]}")
+lg_ref=$(echo "$lg_output" | grep -o 'surface:[0-9]*')
+if [ -n "$lg_ref" ]; then
+    "$CMUX_BIN" send --surface "$lg_ref" "${ws_flag[@]}" "lazygit\n"
+    "$CMUX_BIN" tab-action --action rename --surface "$lg_ref" "${ws_flag[@]}" --title "lazygit"
+    claude_ref=$("$CMUX_BIN" list-pane-surfaces "${ws_flag[@]}" | grep -o 'surface:[0-9]*' | head -1)
+    if [ -n "$claude_ref" ]; then
+        "$CMUX_BIN" move-surface --surface "$claude_ref" "${ws_flag[@]}" --focus true --index 0
+    fi
+fi
 echo "Task started: $description"
