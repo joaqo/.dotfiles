@@ -75,14 +75,25 @@ ws_ref=$(echo "$ws_output" | grep -o 'workspace:[0-9]*')
 # Add a lazygit tab in the new workspace, then focus back to claude tab
 ws_flag=()
 if [ -n "$ws_ref" ]; then ws_flag=(--workspace "$ws_ref"); fi
+# Add lazygit tab
 lg_output=$("$CMUX_BIN" new-surface "${ws_flag[@]}")
 lg_ref=$(echo "$lg_output" | grep -o 'surface:[0-9]*')
 if [ -n "$lg_ref" ]; then
     "$CMUX_BIN" send --surface "$lg_ref" "${ws_flag[@]}" "lazygit\n"
     "$CMUX_BIN" tab-action --action rename --surface "$lg_ref" "${ws_flag[@]}" --title "lazygit"
-    claude_ref=$("$CMUX_BIN" list-pane-surfaces "${ws_flag[@]}" | grep -o 'surface:[0-9]*' | head -1)
-    if [ -n "$claude_ref" ]; then
-        "$CMUX_BIN" move-surface --surface "$claude_ref" "${ws_flag[@]}" --focus true --index 0
-    fi
+fi
+
+# Add nvim tab
+nvim_output=$("$CMUX_BIN" new-surface "${ws_flag[@]}")
+nvim_ref=$(echo "$nvim_output" | grep -o 'surface:[0-9]*')
+if [ -n "$nvim_ref" ]; then
+    "$CMUX_BIN" send --surface "$nvim_ref" "${ws_flag[@]}" "nvim\n"
+    "$CMUX_BIN" tab-action --action rename --surface "$nvim_ref" "${ws_flag[@]}" --title "nvim"
+fi
+
+# Focus claude tab (first surface)
+claude_ref=$("$CMUX_BIN" list-pane-surfaces "${ws_flag[@]}" | grep -o 'surface:[0-9]*' | head -1)
+if [ -n "$claude_ref" ]; then
+    "$CMUX_BIN" move-surface --surface "$claude_ref" "${ws_flag[@]}" --focus true --index 0
 fi
 echo "Task started: $description"
