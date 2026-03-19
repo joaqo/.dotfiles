@@ -15,6 +15,23 @@ In all interactions and commit messages, be extremely concise and sacrifice gram
 
 All browser automation uses **cmux browser** — never Chrome MCP, Chrome DevTools, or `open` commands. Use `/cmux-browser` skill and `cmux browser` CLI for everything: opening pages, clicking, typing, screenshots, JS eval, waiting.
 
+### Mobile-width browser testing
+When testing mobile web UI, resize the cmux browser pane to ~390px width. Do this automatically when the task involves mobile web layout/UI.
+
+```bash
+# 1. Open browser — note source_pane_ref (terminal) from JSON output
+cmux --json browser open <url>
+
+# 2. Expand the TERMINAL pane rightward to shrink the browser pane
+#    resize-pane flags EXPAND the specified pane in that direction.
+#    To shrink the browser (right pane), expand the terminal (left pane) with -R.
+cmux resize-pane --pane <terminal-pane-ref> -R --amount 760
+
+# 3. Verify
+cmux browser <surface> eval "window.innerWidth"
+# Should be ~390. Adjust amount if needed.
+```
+
 ### cmux browser + React
 `cmux browser fill/type` don't trigger React's onChange on controlled inputs (WKWebView limitation). Use `eval` with the native setter workaround:
 ```js
