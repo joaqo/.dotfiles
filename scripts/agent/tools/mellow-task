@@ -1,5 +1,5 @@
 #!/bin/bash
-# Create a Mellow dev task via company CLI in a cmux workspace
+# Create a Mellow dev task via mellow CLI in a cmux workspace
 # Usage: mellow-task "description" --branch <name> [--small] [--base branch] [--image path]...
 
 set -e
@@ -48,7 +48,7 @@ if [ -z "$description" ]; then
 fi
 
 # Write prompt to temp file, include image paths if any
-prompt_file="/tmp/company-task-prompt.txt"
+prompt_file="/tmp/mellow-task-prompt.txt"
 printf '%s' "$description" > "$prompt_file"
 if [ ${#images[@]} -gt 0 ]; then
     printf '\n\n---\nTask images (use the Read tool to view each one):\n' >> "$prompt_file"
@@ -60,7 +60,7 @@ fi
 # Create cmux workspace and run task inside it
 export CMUX_SOCKET_PATH="${CMUX_SOCKET_PATH:-$(cat "$HOME/Library/Application Support/cmux/last-socket-path" 2>/dev/null)}"
 CMUX_BIN="/Applications/cmux.app/Contents/Resources/bin/cmux"
-COMPANY_BIN="$HOME/mellow/company/src/index.ts"
+MELLOW_BIN="$HOME/mellow/cli/src/index.ts"
 
 # Ensure cmux is running — launch it if not
 if ! "$CMUX_BIN" ping >/dev/null 2>&1; then
@@ -78,7 +78,7 @@ if ! "$CMUX_BIN" ping >/dev/null 2>&1; then
 fi
 
 # Create worktree (or use ~/mellow for --small), then open workspace with correct cwd
-task_path=$(cd ~/mellow && bun "$COMPANY_BIN" task create $small $branch $base -f "$prompt_file")
+task_path=$(cd ~/mellow && bun "$MELLOW_BIN" task create $small $branch $base -f "$prompt_file")
 if [ -n "$small" ] && [ -n "$branch_name" ]; then
     session_name="MAIN:$branch_name"
 else

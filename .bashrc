@@ -97,7 +97,7 @@ alias cc="claude --dangerously-skip-permissions"
 alias p="uvx python"
 alias u="uv run"
 alias lg="lazygit"
-alias s="company"
+alias m="mellow"
 
 # Set iTerm window title
 title() {
