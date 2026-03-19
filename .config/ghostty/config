@@ -51,3 +51,4 @@ background = 000
 macos-titlebar-proxy-icon = hidden
 theme = Gruvbox Dark Hard
 macos-titlebar-style = tabs
+confirm-close-surface = false
