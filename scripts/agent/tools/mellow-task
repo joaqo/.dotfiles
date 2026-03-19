@@ -62,6 +62,21 @@ export CMUX_SOCKET_PATH="${CMUX_SOCKET_PATH:-$(cat "$HOME/Library/Application Su
 CMUX_BIN="/Applications/cmux.app/Contents/Resources/bin/cmux"
 COMPANY_BIN="$HOME/mellow/company/src/index.ts"
 
+# Ensure cmux is running — launch it if not
+if ! "$CMUX_BIN" ping >/dev/null 2>&1; then
+    open -a cmux
+    for i in $(seq 1 15); do
+        sleep 1
+        if "$CMUX_BIN" ping >/dev/null 2>&1; then break; fi
+    done
+    # Re-read socket path after fresh launch
+    export CMUX_SOCKET_PATH="$(cat "$HOME/Library/Application Support/cmux/last-socket-path" 2>/dev/null)"
+    if ! "$CMUX_BIN" ping >/dev/null 2>&1; then
+        echo "Error: cmux failed to start after 15s" >&2
+        exit 1
+    fi
+fi
+
 # Create worktree (or use ~/mellow for --small), then open workspace with correct cwd
 task_path=$(cd ~/mellow && bun "$COMPANY_BIN" task create $small $branch $base -f "$prompt_file")
 if [ -n "$small" ] && [ -n "$branch_name" ]; then
