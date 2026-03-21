@@ -21,19 +21,25 @@ All browser automation uses **cmux browser** — never Chrome MCP, Chrome DevToo
 ### Mobile-width browser testing
 When testing mobile web UI, resize the cmux browser pane to ~390px width. Do this automatically when the task involves mobile web layout/UI.
 
+`cmux resize-pane` only supports relative `--amount` (no absolute sizing). Always check current width first and calculate the delta to avoid overshrinking to 0px (which permanently breaks the surface).
+
 ```bash
 # 1. Open browser — note source_pane_ref (terminal) from JSON output
 cmux --json browser open <url>
 
-# 2. Expand the TERMINAL pane rightward to shrink the browser pane
-#    resize-pane flags EXPAND the specified pane in that direction.
-#    To shrink the browser (right pane), expand the terminal (left pane) with -R.
-cmux resize-pane --pane <terminal-pane-ref> -R --amount 760
+# 2. Check current width and calculate delta
+current=$(cmux browser <surface> eval "window.innerWidth")
+delta=$((current - 390))
 
-# 3. Verify
+# 3. Expand the TERMINAL pane rightward to shrink the browser pane
+cmux resize-pane --pane <terminal-pane-ref> -R --amount $delta
+
+# 4. Verify
 cmux browser <surface> eval "window.innerWidth"
-# Should be ~390. Adjust amount if needed.
+# Should be ~390. Adjust if needed.
 ```
+
+For desktop layout testing, don't resize — the default split is already desktop-width.
 
 ### cmux browser + React
 `cmux browser fill/type` don't trigger React's onChange on controlled inputs (WKWebView limitation). Use `eval` to call the onChange handler directly via React's internal `__reactProps`:
