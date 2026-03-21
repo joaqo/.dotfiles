@@ -36,13 +36,12 @@ cmux browser <surface> eval "window.innerWidth"
 ```
 
 ### cmux browser + React
-`cmux browser fill/type` don't trigger React's onChange on controlled inputs (WKWebView limitation). Use `eval` with the native setter workaround:
+`cmux browser fill/type` don't trigger React's onChange on controlled inputs (WKWebView limitation). Use `eval` to call the onChange handler directly via React's internal `__reactProps`:
 ```js
 cmux browser <surface> eval "
-const input = document.querySelector('<selector>');
-const s = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set;
-s.call(input, '<value>');
-input.dispatchEvent(new Event('input', { bubbles: true }));
+var input = document.querySelector('<selector>');
+var pk = Object.getOwnPropertyNames(input).find(function(k){ return k.startsWith('__reactProps'); });
+input[pk].onChange({ target: { value: '<value>' } });
 "
 ```
 
