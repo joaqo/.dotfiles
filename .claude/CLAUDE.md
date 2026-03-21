@@ -15,6 +15,9 @@ In all interactions and commit messages, be extremely concise and sacrifice gram
 
 All browser automation uses **cmux browser** — never Chrome MCP, Chrome DevTools, or `open` commands. Use `/cmux-browser` skill and `cmux browser` CLI for everything: opening pages, clicking, typing, screenshots, JS eval, waiting.
 
+### Never use `select-workspace` for browser commands
+`cmux browser <surface> screenshot/eval/snapshot/get` all work on unfocused workspaces — they target a surface ref, not the focused workspace. Never call `cmux select-workspace` before browser commands. It's a global UI operation that steals the user's focus and disrupts parallel agents.
+
 ### Mobile-width browser testing
 When testing mobile web UI, resize the cmux browser pane to ~390px width. Do this automatically when the task involves mobile web layout/UI.
 
