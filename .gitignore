@@ -6,3 +6,4 @@ scripts/agent/tools/EventKitCLI/eventkit-cli
 scripts/agent/logs/
 .claude/skills/cmux/
 .claude/skills/cmux-browser/
+.claude/skills/cmux-markdown/
