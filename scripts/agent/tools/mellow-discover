@@ -1,0 +1,57 @@
+#!/bin/bash
+# Launch an Instagram discovery session in a cmux workspace
+# Usage: mellow-discover
+
+set -e
+
+export CMUX_SOCKET_PATH="${CMUX_SOCKET_PATH:-$(cat "$HOME/Library/Application Support/cmux/last-socket-path" 2>/dev/null)}"
+CMUX_BIN="/Applications/cmux.app/Contents/Resources/bin/cmux"
+MELLOW_DIR="$HOME/mellow"
+PROMPT_FILE="$MELLOW_DIR/cli/src/modules/discoverer/session-prompt.md"
+
+# Ensure cmux is running
+if ! "$CMUX_BIN" ping >/dev/null 2>&1; then
+    open -a cmux
+    for i in $(seq 1 15); do
+        sleep 1
+        if "$CMUX_BIN" ping >/dev/null 2>&1; then break; fi
+    done
+    export CMUX_SOCKET_PATH="$(cat "$HOME/Library/Application Support/cmux/last-socket-path" 2>/dev/null)"
+    if ! "$CMUX_BIN" ping >/dev/null 2>&1; then
+        echo "Error: cmux failed to start after 15s" >&2
+        exit 1
+    fi
+fi
+
+# Create workspace with terminal
+ws_output=$("$CMUX_BIN" new-workspace --cwd "$MELLOW_DIR")
+ws_ref=$(echo "$ws_output" | grep -o 'workspace:[0-9]*')
+terminal_ref=$("$CMUX_BIN" list-pane-surfaces --workspace "$ws_ref" | grep -o 'surface:[0-9]*' | head -1)
+
+# Rename workspace
+if [ -n "$ws_ref" ]; then
+    "$CMUX_BIN" rename-workspace --workspace "$ws_ref" "discover"
+fi
+
+# Open browser pane to the right with Instagram
+browser_output=$("$CMUX_BIN" browser open "https://www.instagram.com/" --workspace "$ws_ref")
+browser_ref=$(echo "$browser_output" | grep -o 'surface:[0-9]*')
+
+# Wait for Instagram to load
+sleep 5
+
+# Write a small launcher script that claude will run
+# This avoids quote escaping issues with cmux send
+launcher="/tmp/discover-session.sh"
+cat > "$launcher" << EOF
+export SURFACE=$browser_ref
+claude --name "discover" "\$(cat $PROMPT_FILE)"
+EOF
+chmod +x "$launcher"
+
+# Launch in the terminal
+if [ -n "$terminal_ref" ]; then
+    "$CMUX_BIN" send --surface "$terminal_ref" --workspace "$ws_ref" "bash $launcher\n"
+fi
+
+echo "Discovery session started (workspace: $ws_ref, browser: $browser_ref)"

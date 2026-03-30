@@ -41,6 +41,9 @@ Only if the user explicitly says "small task": add `--small`. Default is always 
 - `eventkit-cli calendar list --today`
 - `eventkit-cli calendar list --date YYYY-MM-DD`
 
+### Instagram discovery
+- `mellow-discover` — launches an Instagram discovery session (browses IG, finds Montevideo food businesses, follows and records them). No arguments needed.
+
 ### General Apple integrations
 - `osascript` for quick Apple integrations not covered above.
 
@@ -49,4 +52,5 @@ Only if the user explicitly says "small task": add `--small`. Default is always 
 - "schedule..." / "block time..." / "meeting..." → Calendar
 - "task: ..." / dev work / bugs / investigation / research / questions about code or data → mellow-task
 - "add to notion..." / "track..." / "todo..." → mellow-notion
+- "discover restaurants" / "instagram session" / "find restaurants" → mellow-discover
 - Anything else that doesn't fit the above → mellow-task. When in doubt, mellow-task.

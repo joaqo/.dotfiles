@@ -105,7 +105,7 @@ class ViewModel: ObservableObject {
         log "=== $(date) ==="
         log "PROMPT: $(cat \(promptPath))"
         log "---"
-        output=$(cat \(promptPath) | claude -p --system-prompt-file \(systemPromptPath) --tools 'Bash,Read' --permission-mode dontAsk --allowedTools 'Read Bash(*mellow-task *) Bash(*mellow-notion *) Bash(*eventkit-cli *) Bash(osascript *)' --output-format json --no-session-persistence 2>&1)
+        output=$(cat \(promptPath) | claude -p --system-prompt-file \(systemPromptPath) --tools 'Bash,Read' --permission-mode dontAsk --allowedTools 'Read Bash(*mellow-task *) Bash(*mellow-notion *) Bash(mellow-discover) Bash(*mellow-discover *) Bash(*eventkit-cli *) Bash(osascript *)' --output-format json --no-session-persistence 2>&1)
         rm -f \(promptPath)
         log "$output"
         # Notify only when a non-task tool was used (notion, eventkit, etc.)
