@@ -29,13 +29,12 @@ Symlinks dotfiles to ~, installs fzf, language servers (pnpm), ripgrep, compiles
 - `.config/ghostty/` - ghostty terminal config (gruvbox dark)
 - `.claude/` - claude code settings & hooks (symlinked)
 - `bin/` - custom scripts: `autocommit` (claude haiku commit msgs), `kp` (fzf process killer), `focus-iterm-session`
-- `scripts/agent/` - Agent launcher + tools. GUI sends prompts to `claude -p`, which calls CLI tools, notifies via terminal-notifier.
-  - `main.swift` - floating window GUI, compiled to `agent` binary
+- `scripts/executeTask/` - ExecuteTask launcher + tools. GUI sends prompts through the local `agent` CLI, which calls CLI tools, notifies via terminal-notifier.
+  - `main.swift` - floating window GUI, compiled to `executeTask` binary
   - `system-prompt.md` - system prompt for the agent
   - `tools/mellow-task` - bash, runs mellow task in iTerm pane
   - `tools/mellow-notion` - bash, runs mellow notion add
   - `tools/EventKitCLI/` - Swift CLI for Apple Reminders & Calendar (compiled to `eventkit-cli`)
-  - `lib/iterm-run` - bash, shared iTerm pane AppleScript
 - `scripts/NvimInITerm.applescript` - makes macOS default to nvim+iTerm for code and text files. Compiled to ~/Applications/NvimInITerm.app, registered as default handler for 50+ file types via duti.
 
 ## Style

@@ -49,7 +49,7 @@ windows:
       layout: main-vertical
       panes:
         - nvim
-        - claude
+        - agent open coding
   - git: lazygit
   - bash: clear
   - servers:

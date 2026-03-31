@@ -95,37 +95,41 @@ class ViewModel: ObservableObject {
         let promptPath = "/tmp/agent-prompt-\(UUID().uuidString).txt"
         try? prompt.write(toFile: promptPath, atomically: true, encoding: .utf8)
 
-        let systemPromptPath = "$HOME/.dotfiles/scripts/agent/system-prompt.md"
+        let systemPromptPath = "$HOME/.dotfiles/scripts/executeTask/system-prompt.md"
 
-        // Write a small wrapper script to capture claude output and notify on failure
-        let logFile = "$HOME/.dotfiles/scripts/agent/logs/agent.log"
+        // Write a small wrapper script to capture agent output and notify on failure
+        let logFile = "$HOME/.dotfiles/scripts/executeTask/logs/executeTask.log"
+        let schema = #"{"type":"object","properties":{"result":{"type":"string"}},"required":["result"],"additionalProperties":false}"#
         let script = """
         #!/bin/bash -l
         log() { echo "$@" >> \(logFile); }
         log "=== $(date) ==="
         log "PROMPT: $(cat \(promptPath))"
         log "---"
-        output=$(cat \(promptPath) | claude -p --system-prompt-file \(systemPromptPath) --tools 'Bash,Read' --permission-mode dontAsk --allowedTools 'Read Bash(*mellow-task *) Bash(*mellow-notion *) Bash(mellow-discover) Bash(*mellow-discover *) Bash(*eventkit-cli *) Bash(osascript *)' --output-format json --no-session-persistence 2>&1)
+        output=$("$HOME/agent/agent" exec conversational --system-prompt-file \(systemPromptPath) --schema '\(schema)' --ephemeral < \(promptPath) 2>&1)
+        status=$?
         rm -f \(promptPath)
         log "$output"
-        # Notify only when a non-task tool was used (notion, eventkit, etc.)
-        # mellow-task opens a visible cmux workspace, no notification needed.
-        # No tool call = agent confused, also no notification (not actionable).
+        if [ "$status" -ne 0 ] || [ -z "$output" ]; then
+            message=$(printf '%s' "$output" | tail -n 1 | cut -c1-200)
+            if [ -z "$message" ]; then
+                message="agent exec failed"
+            fi
+            /opt/homebrew/bin/terminal-notifier -title "Agent Failed" -message "$message" -sound default
+            exit "$status"
+        fi
         result_text=$(echo "$output" | /usr/bin/python3 -c "import sys,json; print(json.load(sys.stdin).get('result','')[:200])" 2>/dev/null || echo "")
         if [ -n "$result_text" ] && ! echo "$result_text" | grep -qi "mellow-task"; then
-            num_turns=$(echo "$output" | /usr/bin/python3 -c "import sys,json; print(json.load(sys.stdin).get('num_turns',0))" 2>/dev/null)
-            if [ "$num_turns" != "1" ] && [ "$num_turns" != "0" ]; then
-                /opt/homebrew/bin/terminal-notifier -title "Agent" -message "$result_text" -sound default
-            fi
+            /opt/homebrew/bin/terminal-notifier -title "Agent" -message "$result_text" -sound default
         fi
         """
-        let scriptPath = "/tmp/agent-run.sh"
+        let scriptPath = "/tmp/executeTask-run.sh"
         try? script.write(toFile: scriptPath, atomically: true, encoding: .utf8)
         try? FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: scriptPath)
 
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/bin/bash")
-        process.arguments = ["-c", "nohup /tmp/agent-run.sh >/dev/null 2>&1 &"]
+        process.arguments = ["-c", "nohup /tmp/executeTask-run.sh >/dev/null 2>&1 &"]
         try? process.run()
 
         NSApplication.shared.terminate(nil)

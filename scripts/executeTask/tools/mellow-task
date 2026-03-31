@@ -84,7 +84,7 @@ if [ -n "$small" ] && [ -n "$branch_name" ]; then
 else
     session_name=$(basename "$task_path")
 fi
-ws_output=$("$CMUX_BIN" new-workspace --cwd "$task_path" --command "claude --name \"$session_name\" \"\$(cat .task-prompt)\"")
+ws_output=$("$CMUX_BIN" new-workspace --cwd "$task_path" --command "agent open coding \"\$(cat .task-prompt)\"")
 ws_ref=$(echo "$ws_output" | grep -o 'workspace:[0-9]*')
 
 # Name the workspace after the branch/worktree
@@ -92,7 +92,7 @@ if [ -n "$ws_ref" ]; then
     "$CMUX_BIN" rename-workspace --workspace "$ws_ref" "$session_name"
 fi
 
-# Add a lazygit tab in the new workspace, then focus back to claude tab
+# Add a lazygit tab in the new workspace, then focus back to agent tab
 ws_flag=()
 if [ -n "$ws_ref" ]; then ws_flag=(--workspace "$ws_ref"); fi
 # Add lazygit tab
@@ -111,9 +111,9 @@ if [ -n "$nvim_ref" ]; then
     "$CMUX_BIN" tab-action --action rename --surface "$nvim_ref" "${ws_flag[@]}" --title "nvim"
 fi
 
-# Focus claude tab (first surface)
-claude_ref=$("$CMUX_BIN" list-pane-surfaces "${ws_flag[@]}" | grep -o 'surface:[0-9]*' | head -1)
-if [ -n "$claude_ref" ]; then
-    "$CMUX_BIN" move-surface --surface "$claude_ref" "${ws_flag[@]}" --focus true --index 0
+# Focus agent tab (first surface)
+agent_ref=$("$CMUX_BIN" list-pane-surfaces "${ws_flag[@]}" | grep -o 'surface:[0-9]*' | head -1)
+if [ -n "$agent_ref" ]; then
+    "$CMUX_BIN" move-surface --surface "$agent_ref" "${ws_flag[@]}" --focus true --index 0
 fi
 echo "Task started: $description"

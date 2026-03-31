@@ -40,12 +40,12 @@ browser_ref=$(echo "$browser_output" | grep -o 'surface:[0-9]*')
 # Wait for Instagram to load
 sleep 5
 
-# Write a small launcher script that claude will run
+# Write a small launcher script that the agent tool will run
 # This avoids quote escaping issues with cmux send
 launcher="/tmp/discover-session.sh"
 cat > "$launcher" << EOF
 export SURFACE=$browser_ref
-claude --name "discover" "\$(cat $PROMPT_FILE)"
+agent open conversational "\$(cat $PROMPT_FILE)"
 EOF
 chmod +x "$launcher"
 
