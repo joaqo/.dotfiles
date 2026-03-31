@@ -28,6 +28,7 @@ Symlinks dotfiles to ~, installs fzf, language servers (pnpm), ripgrep, compiles
 - `.config/tmuxinator/` - tmuxinator project configs (mellow)
 - `.config/ghostty/` - ghostty terminal config (gruvbox dark)
 - `.claude/` - claude code settings & hooks (symlinked)
+- `skills/` - shared global custom skills, installed into both Claude Code and Codex CLI via `skills.sh`
 - `bin/` - custom scripts: `autocommit` (claude haiku commit msgs), `kp` (fzf process killer), `focus-iterm-session`
 - `scripts/executeTask/` - ExecuteTask launcher + tools. GUI sends prompts through the local `agent` CLI, which calls CLI tools, notifies via terminal-notifier.
   - `main.swift` - floating window GUI, compiled to `executeTask` binary

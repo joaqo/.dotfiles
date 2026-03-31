@@ -57,3 +57,16 @@ input[pk].onChange({ target: { value: '<value>' } });
 - Shell: bash
 - Python: uv
 - Dev servers (vite, expo, next, etc): always start in a new cmux tab (not workspace). Create with `cmux new-surface --type terminal --pane <current-pane>`, rename with `cmux rename-tab --surface <ref> "name"`, send command with `cmux send --surface <ref> "command\n"`. Use descriptive names like `vite-dev`, `expo-dev`.
+
+## Skills Sync
+
+Global authored skills live in `~/.dotfiles/skills`.
+
+Do not add authored skills under `.claude/skills`, `.codex/skills`, or `.agents/skills`. Those are generated install targets.
+
+When creating or deleting a global skill, run:
+```bash
+npx --yes skills add ~/.dotfiles/skills -g -a claude-code -a codex -y
+```
+
+Editing an existing skill file does not require a resync. Creating, deleting, renaming, or adding/removing files inside a skill directory does.

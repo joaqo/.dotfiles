@@ -4,6 +4,4 @@
 scripts/executeTask/executeTask
 scripts/executeTask/tools/EventKitCLI/eventkit-cli
 scripts/executeTask/logs/
-.claude/skills/cmux/
-.claude/skills/cmux-browser/
-.claude/skills/cmux-markdown/
+skills-lock.json

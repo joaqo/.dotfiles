@@ -37,7 +37,7 @@ mkdir -p ~/.claude
 ln -s -f ~/.dotfiles/.claude/CLAUDE.md ~/.claude/
 ln -s -f ~/.dotfiles/.claude/settings.json ~/.claude/
 ln -s -f ~/.dotfiles/.claude/hooks ~/.claude/
-ln -s -f ~/.dotfiles/.claude/commands ~/.claude/
+npx --yes skills add ~/.dotfiles/skills -g -a claude-code -a codex -y
 
 # Build Swift tools
 cd ~/.dotfiles/scripts/executeTask && swiftc -parse-as-library -o executeTask -framework AppKit -framework SwiftUI main.swift
