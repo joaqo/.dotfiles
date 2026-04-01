@@ -34,9 +34,11 @@ mkdir -p "$HOME/Library/Application Support/com.mitchellh.ghostty"
 ln -s -f ~/.dotfiles/.config/ghostty/config "$HOME/Library/Application Support/com.mitchellh.ghostty/"
 
 mkdir -p ~/.claude
-ln -s -f ~/.dotfiles/.claude/CLAUDE.md ~/.claude/
+ln -s -f ~/.dotfiles/prompts/AGENTS.md ~/.claude/CLAUDE.md
 ln -s -f ~/.dotfiles/.claude/settings.json ~/.claude/
 ln -s -f ~/.dotfiles/.claude/hooks ~/.claude/
+mkdir -p ~/.codex
+ln -s -f ~/.dotfiles/prompts/AGENTS.md ~/.codex/AGENTS.md
 npx --yes skills add ~/.dotfiles/skills -g -a claude-code -a codex -y
 
 # Build Swift tools

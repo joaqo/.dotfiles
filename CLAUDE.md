@@ -27,7 +27,8 @@ Symlinks dotfiles to ~, installs fzf, language servers (pnpm), ripgrep, compiles
 - `.config/lazygit/` - lazygit custom commands (symlinked to ~/Library/Application Support/lazygit/, not ~/.config/)
 - `.config/tmuxinator/` - tmuxinator project configs (mellow)
 - `.config/ghostty/` - ghostty terminal config (gruvbox dark)
-- `.claude/` - claude code settings & hooks (symlinked)
+- `prompts/AGENTS.md` - shared global instructions for Claude Code and Codex CLI; symlinked to `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`
+- `.claude/` - Claude Code settings, hooks, and commands (symlinked)
 - `skills/` - shared global custom skills, installed into both Claude Code and Codex CLI via `skills.sh`
 - `bin/` - custom scripts: `autocommit` (claude haiku commit msgs), `kp` (fzf process killer), `focus-iterm-session`
 - `scripts/executeTask/` - ExecuteTask launcher + tools. GUI sends prompts through the local `agent` CLI, which calls CLI tools, notifies via terminal-notifier.
