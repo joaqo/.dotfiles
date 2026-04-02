@@ -20,12 +20,20 @@ private let schema = #"{"type":"object","properties":{"result":{"type":"string"}
 private let systemPrompt = """
 You are a non-interactive execution agent.
 
-Carry out the user's request directly.
-Use tools when needed.
-If the prompt includes local image file paths, inspect them before acting.
+Your only job is to receive a single initial prompt from the user, to load any skills required to tackle that prompt, tackle the prompt, and then return a summary of what you did. Prompts will be short simple routing tasks, like creating a new task for another agent to work on, adding a reminder to the mac reminders app, or creating a task in notion.
+
+So for example if the iput is:
+'task: find out why notifications are not sending correctly on my dotfiles swift agent'
+
+You should NOT find out why the notifications are not sending correctly yourself. You should instead load the /task skill which will instruct you on how to create a task for this request so another agent can work on it.
+
+You are basically a router, that receives instructions and then routes them to skills or other agents.
+
 Do not ask follow-up questions.
 Do not explain your reasoning.
 Do not return analysis, chat, or filler.
+You are only a router, you do simple routing tasks, you never tackle large tasks yourself.
+If you're confused don't get creative, just exit out and return the issue you had.
 
 Return JSON matching the provided schema.
 `result` must be a short plain-text summary of what you did or what blocked execution.
@@ -275,14 +283,65 @@ final class ViewModel: ObservableObject {
     }
 
     private func fallbackResult(stdout: String, stderr: String, exitCode: Int32) -> String {
-        let candidates = [
-            stdout.trimmingCharacters(in: .whitespacesAndNewlines),
-            stderr.trimmingCharacters(in: .whitespacesAndNewlines),
-        ]
-        for candidate in candidates where !candidate.isEmpty {
-            return candidate
+        let trimmedStdout = stdout.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedStdout.isEmpty {
+            return clipped(trimmedStdout)
         }
+
+        let trimmedStderr = stderr.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedStderr.isEmpty {
+            if let summary = summarizeFailure(from: trimmedStderr) {
+                return summary
+            }
+            return clipped(trimmedStderr)
+        }
+
         return exitCode == 0 ? "Done" : "agent exec failed (\(exitCode))"
+    }
+
+    private func summarizeFailure(from stderr: String) -> String? {
+        let lines = stderr
+            .split(whereSeparator: \.isNewline)
+            .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+
+        let preferredPrefixes = [
+            "codex failed:",
+            "error:",
+            "fatal:",
+        ]
+
+        for prefix in preferredPrefixes {
+            if let line = lines.first(where: { $0.lowercased().hasPrefix(prefix) }) {
+                return clipped(line)
+            }
+        }
+
+        if let line = lines.last(where: { isUsefulFailureLine($0) }) {
+            return clipped(line)
+        }
+
+        return nil
+    }
+
+    private func isUsefulFailureLine(_ line: String) -> Bool {
+        let lowercased = line.lowercased()
+        if lowercased.hasPrefix("openai codex v") { return false }
+        if lowercased == "user" || lowercased == "exec" { return false }
+        if lowercased.hasPrefix("workdir:") || lowercased.hasPrefix("model:") { return false }
+        if lowercased.hasPrefix("provider:") || lowercased.hasPrefix("approval:") { return false }
+        if lowercased.hasPrefix("sandbox:") || lowercased.hasPrefix("reasoning ") { return false }
+        if lowercased.hasPrefix("session id:") || lowercased.hasPrefix("usage:") { return false }
+        if lowercased.hasPrefix("commands:") || lowercased.hasPrefix("environment:") { return false }
+        if lowercased.hasPrefix("/") { return false }
+        if line.count > 220 { return false }
+        return true
+    }
+
+    private func clipped(_ text: String, limit: Int = 220) -> String {
+        guard text.count > limit else { return text }
+        let index = text.index(text.startIndex, offsetBy: limit)
+        return String(text[..<index]).trimmingCharacters(in: .whitespacesAndNewlines) + "..."
     }
 
     private func notify(title: String, message: String, sound: String) {
