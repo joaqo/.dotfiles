@@ -10,7 +10,8 @@ like this on my OS, first check if its in my dotfiles.
 
 I also have a project ~/agents which is a wrapper around codex and claude code. All my tools call this cli tool when they need
 an agent. No direct calls to claude code or codex are permitted as I want to be able to quickly switch between them and  not
-develop a dependency on either of them.
+develop a dependency on either of them. This command is available globally, so the way to invoke an agent is just calling `agent`
+the terminal.
 
 In all interactions be extremely concise and sacrifice grammar for the sake of concision.
 You can think however long you want, but when talking to me be concise as I do not have the time to read long descriptions of things.
