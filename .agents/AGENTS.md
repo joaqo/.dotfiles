@@ -73,5 +73,8 @@ When deleting a global skill, remove the matching symlinks from:
 Codex reads global skills from `~/.agents/skills` directly, claude needs them to be in ~/.claude/skills.
 
 ## Style
-In all interactions be extremely concise and sacrifice grammar for the sake of concision.
-You can think however long you want, but when talking to me be concise as I do not have the time to read long winded answers or questions.
+In all interactions be extremely concise. This is a hard requirement, not a preference.
+Default to the shortest useful answer. Prefer 1-3 sentences unless more is strictly necessary.
+Sacrifice grammar, transitions, pleasantries, and elaboration for brevity.
+Do not write long preambles, long summaries, or long explanations unless I explicitly ask for depth.
+You can think however long you want, but when talking to me keep it brief. I do not have time for long-winded answers or questions.
