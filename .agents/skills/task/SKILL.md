@@ -1,80 +1,25 @@
 ---
 name: task
-description: Personal workflow for creating, resuming, and managing coding tasks across projects. Whenever I tell you to do a task, load up this skill.
+description: Personal workflow for creating new tasks across projects. Whenever I tell you to create a new task, or say 'task:' followed by an ask, load up this skill.
 ---
 
 # Task Workflow
-Use this skill when the user wants to start, resume, or reorganize a coding task.
 
-## Rules
-- Use `agent`. Never call `codex` or `claude` directly.
-- Use the [`cmux`](../cmux/SKILL.md) skill for workspace and tab operations.
-- This skill is a launcher. Do not do the coding work yourself in the current session.
-- If the user says `task: <prompt>`, treat `<prompt>` as the payload to forward to `agent open`.
-- Treat task creation as a launch flow, not a management loop.
-- Once the task is launched, stop. Do not poll, monitor, inspect transcripts, or wait for progress.
-- Keep the launch sequence lean. Use the fewest cmux commands that still produce the standard result.
-- Run launch commands one by one. Do not wrap the cmux launch flow in a shell script block.
-- Do not run `--help` commands for `agent` or `cmux` unless a command actually fails and you need syntax.
-- Use the exact cmux output-parsing pattern documented below. Do not improvise with other parsing.
-- Do not inspect the repo to rediscover helper names already documented here or in `AGENTS.md`.
-- Do not run exploratory commands, this is supposed to be a simple repeatable task that you'll be doing over and over, just do it quickly based on the instructions here. No improvisation.
-- During launch, do not run `agent --help`, `agent sessions`, `cmux list-panes`, `cmux list-pane-surfaces`, `sleep`, or `git status` unless a previous command failed and you need to recover.
-- Do not report session ids unless the user asks.
+- Pass the task prompt directly to `task-run`
+- Keep prompts reasonably short/simple so they fit cleanly in a normal CLI arg
+- Decide what repo this task belongs to
+- Decide if it deserves a worktree or if its a small task that can just be run on the original repo
+    - Most task will need worktrees, if in doubt just create a worktree
+    - User may override this decision in prompt
+- Run `task-run`.
 
-## Create a Task
-1. Decide whether the task should run in the current repo or a new worktree.
-2. If it needs a worktree choose a branch name for it and create the worktree.
-3. If the worktree helper says the worktree already exists, reuse it immediately and continue.
-4. Create a cmux workspace in the target cwd.
-5. Launch the agent with the forwarded task prompt.
-6. Consider your job done and stop after launch.
-
-### Worktree Policy
-- Prefer a worktree for almost all tasks
-- Prefer the current repo for diagnostics, tasks that are just running a command, or when the user explicitly says not to use a worktree.
-- The skill chooses the branch name. Keep it short and kebab-case. Prefer prefixes like `fix/`, `feat/`, `refactor/`, `chore/`.
-
-### Creating worktrees
-- In repos without a helper, use plain git worktrees.
-
-### Generic Git Worktree Pattern
 ```bash
-repo_root="$(git rev-parse --show-toplevel)"
-repo_name="$(basename "$repo_root")"
-branch="feat/example"
-path=~/worktrees/<repo-name>-<branch-with-slashes-replaced>
-git -C "$repo_root" worktree add -b "$branch" "$path"
-```
-## Launch Pattern
-```bash
-prompt_escaped=$(printf '%q' "<prompt>")
-workspace_ref=$(cmux new-workspace --name "<name>" --cwd "<target-cwd>" --command "agent open $prompt_escaped" | awk '{print $2}')
-surface_ref=$(cmux --json new-surface --workspace "$workspace_ref" | jq -r '.surface_ref')
-cmux rename-tab --workspace "$workspace_ref" --surface "$surface_ref" "nvim"
-cmux send --surface "$surface_ref" --workspace "$workspace_ref" "nvim\n"
-surface_ref=$(cmux --json new-surface --workspace "$workspace_ref" | jq -r '.surface_ref')
-cmux rename-tab --workspace "$workspace_ref" --surface "$surface_ref" "lazygit"
-cmux send --surface "$surface_ref" --workspace "$workspace_ref" "lazygit\n"
+task-run <project-path> --prompt "<task prompt>"
 ```
 
-Parsing rules:
-- `cmux new-workspace` returns short text like `OK workspace:23`. Extract the second field for the workspace ref.
-- `cmux --json new-surface` returns JSON. Extract `.surface_ref`.
-Shell-escape the user request once with `printf '%q'` and pass it as `agent open $prompt_escaped`.
-Do not hand-roll quoting. Do not add wrapping quotes or launcher prose to the prompt.
-If the user invoked this skill with `task: <prompt>`, pass `<prompt>` through to `agent open` and do not attempt the task yourself first.
-Name the cmux workspace after the branch name if in a branch, or else `MAIN:${project_name}`
-If `cmux new-workspace` succeeds, assume the launch succeeded. Do not do extra verification after that unless a later command fails.
+- Optional flags:
+- `--worktree <branch-name>`
+- `--workspace-name <name>`
 
-## Resume Pattern
-1. Run `agent sessions`.
-2. Find the target session by cwd, title, or recent activity.
-3. If a matching cmux workspace exists, focus it.
-4. If not, create a workspace in that cwd and run `agent resume <session-id>`.
-
-## Mellow
-- Create worktrees with `mellow worktree add <branch>`.
-- Delete worktrees with `mellow worktree delete <target>`.
-- Use Mellow helpers for repo-local cleanup. Keep generic task policy in this skill.
-- For Mellow task launch, use `mellow worktree add` directly. Do not inspect the repo to rediscover that helper.
+- Optimize for speed. Do not inspect the tool first unless it fails or the request clearly needs a special unusual flow.
+- After task launches, stop.

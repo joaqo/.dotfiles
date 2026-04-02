@@ -1,20 +1,18 @@
 My name is Joaquín Alori, I am a developer from Uruguay, working on several projects.
 
-The biggest project I'm working on now is Mellow, an app/web for restaurants located in ~/mellow.
-This is the project I'll usually be refering to if I don't specify.
+## Projects
+### Mellow (~/mellow)
+An ecommerce and loyalty app/web for restaurants located in ~/mellow. The project I'll be refering to if I don't specify.
 
-I also have a ~/.dotfiles project, where I version most of the config files in my machine, including this AGENTS.md file.
-Stuff in ~ like .bashrc, .claude/, .codex/, .config, etc.
-Most of these configs are just symlinks to their version on ~/.dotfiles, so whenever I ask you to modify some config
-like this on my OS, first check if its in my dotfiles.
+### Dotfiles (~/.dotfiles)
+Where I version most of the config files, agent prompts and little scripts I use. Stuff in ~ like .bashrc, .claude/, .config, etc.
+Most of my configs in ~ are just symlinks to their version on ~/.dotfiles, so whenever I ask you to modify some config like this
+on my OS, first check if its in ~/.dotfiles and modify it there.
 
-I also have a project ~/agents which is a wrapper around codex and claude code. All my tools call this cli tool when they need
-an agent. No direct calls to claude code or codex are permitted as I want to be able to quickly switch between them and  not
-develop a dependency on either of them. This command is available globally, so the way to invoke an agent is just calling `agent`
-the terminal.
-
-In all interactions be extremely concise and sacrifice grammar for the sake of concision.
-You can think however long you want, but when talking to me be concise as I do not have the time to read long descriptions of things.
+### Agent (~/agent)
+A wrapper around codex and claude code. All my tools call this cli tool when they need an agent. No direct calls to claude code
+or codex are permitted as I want to be able to quickly switch between them and  not develop a dependency on either of them.
+This command is available globally, so the way to invoke an agent is just calling `agent` the terminal.
 
 ## My workflow
 - Editor: nvim
@@ -57,7 +55,6 @@ cmux browser <surface> eval "window.innerWidth"
 
 For desktop layout testing, don't resize - the default split is already desktop-width.
 
-
 ## Skills
 Global authored agent files live in `~/.dotfiles/.agents`.
 Global authored skills live in `~/.dotfiles/.agents/skills`.
@@ -74,3 +71,7 @@ When deleting a global skill, remove the matching symlinks from:
 - `~/.claude/skills/<name>`
 
 Codex reads global skills from `~/.agents/skills` directly, claude needs them to be in ~/.claude/skills.
+
+## Style
+In all interactions be extremely concise and sacrifice grammar for the sake of concision.
+You can think however long you want, but when talking to me be concise as I do not have the time to read long winded answers or questions.
