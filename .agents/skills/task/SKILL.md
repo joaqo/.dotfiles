@@ -112,7 +112,7 @@ If `cmux new-workspace` succeeds, assume the launch succeeded. Do not do extra v
 4. If not, create a workspace in that cwd and run `agent resume <session-id>`.
 
 ## Mellow
-- Create worktrees with `cd ~/mellow && mellow worktree add <branch>`.
-- Delete worktrees with `cd ~/mellow && mellow worktree delete <target>`.
+- Create worktrees with `mellow worktree add <branch>`.
+- Delete worktrees with `mellow worktree delete <target>`.
 - Use Mellow helpers for repo-local cleanup. Keep generic task policy in this skill.
 - For Mellow task launch, use `mellow worktree add` directly. Do not inspect the repo to rediscover that helper.
