@@ -27,16 +27,11 @@ Symlinks dotfiles to ~, installs fzf, language servers (pnpm), ripgrep, compiles
 - `.config/lazygit/` - lazygit custom commands (symlinked to ~/Library/Application Support/lazygit/, not ~/.config/)
 - `.config/tmuxinator/` - tmuxinator project configs (mellow)
 - `.config/ghostty/` - ghostty terminal config (gruvbox dark)
-- `prompts/AGENTS.md` - shared global instructions for Claude Code and Codex CLI; symlinked to `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`
+- `.agents/AGENTS.md` - shared global instructions for Claude Code and Codex CLI; symlinked to `~/.agents/AGENTS.md`, `~/.claude/CLAUDE.md`, and `~/.codex/AGENTS.md`
+- `.agents/skills/` - shared global authored skills. Symlinked into `~/.agents/skills/` and `~/.claude/skills/`. Codex reads globals from `~/.agents/skills/`
 - `.claude/` - Claude Code settings, hooks, and commands (symlinked)
-- `skills/` - shared global custom skills, installed into both Claude Code and Codex CLI via `skills.sh`
 - `bin/` - custom scripts: `autocommit` (claude haiku commit msgs), `kp` (fzf process killer), `focus-iterm-session`
-- `scripts/executeTask/` - ExecuteTask launcher + tools. GUI sends prompts through the local `agent` CLI, which calls CLI tools, notifies via terminal-notifier.
-  - `main.swift` - floating window GUI, compiled to `executeTask` binary
-  - `system-prompt.md` - system prompt for the agent
-  - `tools/mellow-task` - bash, runs mellow task in iTerm pane
-  - `tools/mellow-notion` - bash, runs mellow notion add
-  - `tools/EventKitCLI/` - Swift CLI for Apple Reminders & Calendar (compiled to `eventkit-cli`)
+- `scripts/executeTask/tools/EventKitCLI/` - Swift CLI for Apple Reminders & Calendar (compiled to `eventkit-cli`)
 - `scripts/NvimInITerm.applescript` - makes macOS default to nvim+iTerm for code and text files. Compiled to ~/Applications/NvimInITerm.app, registered as default handler for 50+ file types via duti.
 
 ## Style

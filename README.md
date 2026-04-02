@@ -9,7 +9,7 @@ git clone git@github.com:joaqo/.dotfiles.git  --depth 1
 sh .dotfiles/install.sh
 ```
 
-`install.sh` also installs shared global skills from `~/.dotfiles/skills` into both Claude Code and Codex CLI via `skills.sh`, while preserving Codex's built-in `~/.codex/skills/.system` skills.
+`install.sh` also symlinks shared global agent files from `~/.dotfiles/.agents` into `~/.agents`, `~/.claude`, and `~/.codex`. Global custom skills live in `~/.agents/skills`, Claude mirrors them from `~/.claude/skills`, and Codex keeps its built-in `~/.codex/skills/.system` skills separate.
 
 Logout from machine
 ```bash

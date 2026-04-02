@@ -1,6 +1,7 @@
 My name is Joaquín Alori, I am a developer from Uruguay, working on several projects.
 
-The biggest project I'm working on now is Mellow, and this is the one I'll usually be refering to if I don't specify.
+The biggest project I'm working on now is Mellow, an app/web for restaurants located in ~/mellow.
+This is the project I'll usually be refering to if I don't specify.
 
 I also have a ~/.dotfiles project, where I version most of the config files in my machine, including this AGENTS.md file.
 Stuff in ~ like .bashrc, .claude/, .codex/, .config, etc.
@@ -56,11 +57,19 @@ cmux browser <surface> eval "window.innerWidth"
 For desktop layout testing, don't resize - the default split is already desktop-width.
 
 
-## Skills Sync
-Global authored skills live in `~/.dotfiles/skills`.
-Do not add authored skills under `.claude/skills`, `.codex/skills`, or `.agents/skills`. Those are generated install targets.
-When creating or deleting a global skill, run:
+## Skills
+Global authored agent files live in `~/.dotfiles/.agents`.
+Global authored skills live in `~/.dotfiles/.agents/skills`.
+
+When creating a new global skill:
 ```bash
-npx --yes skills add ~/.dotfiles/skills -g -a claude-code -a codex -y
+mkdir -p ~/.agents/skills ~/.claude/skills
+ln -s ~/.dotfiles/.agents/skills/<name> ~/.agents/skills/<name>
+ln -s ~/.agents/skills/<name> ~/.claude/skills/<name>
 ```
-Editing an existing skill file does not require a resync. Creating, deleting, renaming, or adding/removing files inside a skill directory does.
+
+When deleting a global skill, remove the matching symlinks from:
+- `~/.agents/skills/<name>`
+- `~/.claude/skills/<name>`
+
+Codex reads global skills from `~/.agents/skills` directly, claude needs them to be in ~/.claude/skills.
