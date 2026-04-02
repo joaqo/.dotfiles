@@ -88,7 +88,8 @@ Notes:
 
 ## Launch Pattern
 ```bash
-workspace_ref=$(cmux new-workspace --name "<name>" --cwd "<target-cwd>" --command 'agent open "<prompt>"' | awk '{print $2}')
+prompt_escaped=$(printf '%q' "<prompt>")
+workspace_ref=$(cmux new-workspace --name "<name>" --cwd "<target-cwd>" --command "agent open $prompt_escaped" | awk '{print $2}')
 surface_ref=$(cmux --json new-surface --workspace "$workspace_ref" | jq -r '.surface_ref')
 cmux rename-tab --workspace "$workspace_ref" --surface "$surface_ref" "nvim"
 cmux send --surface "$surface_ref" --workspace "$workspace_ref" "nvim\n"
@@ -100,7 +101,8 @@ cmux send --surface "$surface_ref" --workspace "$workspace_ref" "lazygit\n"
 Parsing rules:
 - `cmux new-workspace` returns short text like `OK workspace:23`. Extract the second field for the workspace ref.
 - `cmux --json new-surface` returns JSON. Extract `.surface_ref`.
-Pass the user request directly and simply to `agent open "<prompt>"`. Do not rewrite it into a long launcher prompt.
+Shell-escape the user request once with `printf '%q'` and pass it as `agent open $prompt_escaped`.
+Do not hand-roll quoting. Do not add wrapping quotes or launcher prose to the prompt.
 If the user invoked this skill with `task: <prompt>`, pass `<prompt>` through to `agent open` and do not attempt the task yourself first.
 Name the cmux workspace after the branch name if in a branch, or else `MAIN:${project_name}`
 If `cmux new-workspace` succeeds, assume the launch succeeded. Do not do extra verification after that unless a later command fails.
