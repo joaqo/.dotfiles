@@ -59,9 +59,10 @@ for skill in ~/.dotfiles/.agents/skills/*; do
 done
 
 ln -s -f ~/agent/agent ~/.local/bin/agent
+ln -s -f /Applications/cmux.app/Contents/Resources/bin/cmux ~/.local/bin/cmux
 
-cd ~/.dotfiles/scripts/executeTask/tools/EventKitCLI && swiftc -parse-as-library -o eventkit-cli -framework EventKit -framework CoreLocation main.swift
-ln -s -f ~/.dotfiles/scripts/executeTask/tools/EventKitCLI/eventkit-cli ~/.local/bin/eventkit-cli
+cd ~/.dotfiles/scripts/oneShot && swiftc -parse-as-library -o oneShot -framework AppKit -framework SwiftUI main.swift
+ln -s -f ~/.dotfiles/scripts/oneShot/oneShot ~/.local/bin/oneShot
 
 cd ~
 

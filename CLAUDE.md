@@ -31,7 +31,7 @@ Symlinks dotfiles to ~, installs fzf, language servers (pnpm), ripgrep, compiles
 - `.agents/skills/` - shared global authored skills. Symlinked into `~/.agents/skills/` and `~/.claude/skills/`. Codex reads globals from `~/.agents/skills/`
 - `.claude/` - Claude Code settings, hooks, and commands (symlinked)
 - `bin/` - custom scripts: `autocommit` (claude haiku commit msgs), `kp` (fzf process killer), `focus-iterm-session`
-- `scripts/executeTask/tools/EventKitCLI/` - Swift CLI for Apple Reminders & Calendar (compiled to `eventkit-cli`)
+- `scripts/oneShot/main.swift` - tiny Swift GUI for sending prompts + images to `agent exec`, with logs and notifications
 - `scripts/NvimInITerm.applescript` - makes macOS default to nvim+iTerm for code and text files. Compiled to ~/Applications/NvimInITerm.app, registered as default handler for 50+ file types via duti.
 
 ## Style
