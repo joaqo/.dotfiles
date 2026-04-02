@@ -46,46 +46,6 @@ branch="feat/example"
 path=~/worktrees/<repo-name>-<branch-with-slashes-replaced>
 git -C "$repo_root" worktree add -b "$branch" "$path"
 ```
-
-## Delete a Task
-1. Identify the target worktree path and branch.
-2. If the repo has a helper for local cleanup, use it.
-3. Otherwise:
-   - stop any repo processes tied to that worktree if you started them
-   - `git worktree remove --force <path>`
-   - `git -C <main-repo> branch -D <branch>`
-
-## Merge a Task
-1. Identify the task worktree, branch, main repo path, and base branch.
-2. Verify the task worktree is clean: no uncommitted changes.
-3. Rebase the task branch onto the base branch.
-4. Fast-forward merge the task branch into the base branch from the main repo.
-5. Delete the worktree and merged branch.
-6. If the repo has local cleanup rules, run its delete helper after merge or use its integrated finish flow if one exists.
-
-If you encounter anything unexpected or any command fails, just stop, explain to me what happened and wait for further instructions. Always play it safe.
-
-Default git flow:
-
-```bash
-task_path="$(git rev-parse --show-toplevel)"
-task_branch="$(git -C "$task_path" branch --show-current)"
-main_repo="$(git -C "$task_path" worktree list --porcelain | awk '/^worktree /{print $2; exit}')"
-base_branch="$(git -C "$main_repo" branch --show-current)"
-
-git -C "$task_path" status --short
-git -C "$task_path" rebase "$base_branch"
-git -C "$main_repo" merge --ff-only "$task_branch"
-git -C "$main_repo" branch -d "$task_branch"
-git -C "$main_repo" worktree remove --force "$task_path"
-```
-
-Notes:
-- Prefer `--ff-only`.
-- Prefer rebasing before merge.
-- Delete the branch only after merge succeeds.
-- If the repo is in a dirty state or the rebase conflicts, stop and tell the user.
-
 ## Launch Pattern
 ```bash
 prompt_escaped=$(printf '%q' "<prompt>")
