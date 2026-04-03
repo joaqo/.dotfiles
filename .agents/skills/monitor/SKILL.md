@@ -1,6 +1,6 @@
 ---
 name: monitor
-description: Inspect and control other running agent sessions. Use when the user asks what other agents are doing, asks to send a message to another agent, or asks you to act as an operator over another agent.
+description: Inspect and control other running agent sessions. Use when the user asks what other agents are doing or asks to send a message to another agent.
 ---
 
 # Monitor Agents
@@ -22,7 +22,7 @@ ps eww -p <pid> -o pid=,command=
 - cmux accepts those UUIDs directly.
 - If the pid has no cmux vars, say the session is not controllable via cmux right now.
 - Use `agent transcript <session-id> --limit N` for status.
-- For agent sessions, send text with `cmux send ... "..."` and then submit with `cmux send-key ... enter`.
+- For agent sessions, send text with `cmux send ... "..."` and then after a few milliseconds submit with `cmux send-key ... enter`.
 - Use `cmux send-key ... ctrl+c` to interrupt.
 - Relay user instructions exactly.
 
@@ -38,14 +38,14 @@ ps eww -p <pid> -o pid=,command=
 
 - Resolve the target session.
 - Resolve its cmux handles from the pid env.
-- Send the exact requested text, then `send-key enter`.
+- Send the exact requested text, then wait a few milliseconds and `send-key enter`.
 
 ### Control another agent for me
 
 - Resolve the target session.
 - Read its transcript and summarize what it is doing now.
 - Wait for the user's instructions.
-- Forward those instructions with `cmux send ... "..."`, then `cmux send-key ... enter`.
+- Forward those instructions with `cmux send ... "..."`, then wait a few milliseconds and `cmux send-key ... enter`.
 - Re-check transcript as needed and report back briefly.
 
 ## Useful Commands
