@@ -32,6 +32,7 @@ Default behavior:
 - So if I tell you to do something load the /task or $task skill and run it, if I tell you to save something to notion load the /notion or $notion task, and so on and so on.
 - Do not do coding work yourself.
 - Do not do non-coding work yourself either if it can be turned into a skill call.
+- If the prompt includes attached image file paths, preserve those exact absolute paths when delegating.
 
 You are basically a router, that receives instructions and then routes them to skills or other agents.
 
@@ -58,7 +59,7 @@ struct OneShotApp {
         app.setActivationPolicy(.accessory)
 
         let window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 560, height: 320),
+            contentRect: NSRect(x: 0, y: 0, width: 560, height: 380),
             styleMask: [.titled, .closable, .fullSizeContentView],
             backing: .buffered,
             defer: false
@@ -135,20 +136,13 @@ final class ViewModel: ObservableObject {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty || !images.isEmpty || !isRunning else { return }
 
-        var prompt = trimmed
-        if !images.isEmpty {
-            if !prompt.isEmpty { prompt += "\n\n" }
-            prompt += "Images (use Read to inspect each one):\n"
-            for image in images {
-                prompt += "- \(image.path)\n"
-            }
-        }
-
         isRunning = true
         window.orderOut(nil)
+        let imagePaths = images.map(\.path)
+        let prompt = buildPrompt(text: trimmed, imagePaths: imagePaths)
 
         DispatchQueue.global(qos: .userInitiated).async {
-            self.runAgent(prompt: prompt)
+            self.runAgent(prompt: prompt, imagePaths: imagePaths)
         }
     }
 
@@ -156,7 +150,16 @@ final class ViewModel: ObservableObject {
         NSApplication.shared.terminate(nil)
     }
 
-    private func runAgent(prompt: String) {
+    private func buildPrompt(text: String, imagePaths: [String]) -> String {
+        guard !imagePaths.isEmpty else { return text }
+        let imageSection = imagePaths.map { "- \($0)" }.joined(separator: "\n")
+        if text.isEmpty {
+            return "Attached image file paths (inspect them directly):\n\(imageSection)"
+        }
+        return "\(text)\n\nAttached image file paths (inspect them directly):\n\(imageSection)"
+    }
+
+    private func runAgent(prompt: String, imagePaths: [String]) {
         let runId = "\(timestampForFilename())-\(ProcessInfo.processInfo.processIdentifier)"
         let runDir = FileManager.default.temporaryDirectory.appendingPathComponent("oneShot-run-\(UUID().uuidString)")
         let promptPath = runDir.appendingPathComponent("prompt.txt")
@@ -229,7 +232,7 @@ final class ViewModel: ObservableObject {
         appendLog(
             runId: runId,
             prompt: prompt,
-            imagePaths: images.map(\.path),
+            imagePaths: imagePaths,
             stdout: stdout,
             stderr: stderr,
             exitCode: exitCode
@@ -402,16 +405,57 @@ struct PromptView: View {
     @FocusState private var isFocused: Bool
 
     var body: some View {
-        SubmittableTextEditor(
-            text: .init(get: { vm.text }, set: { vm.text = $0 }),
-            isRunning: vm.isRunning,
-            onSubmit: { vm.submit() },
-            onAddImage: { image in vm.addImage(image) }
-        )
+        VStack(spacing: 10) {
+            SubmittableTextEditor(
+                text: .init(get: { vm.text }, set: { vm.text = $0 }),
+                isRunning: vm.isRunning,
+                onSubmit: { vm.submit() },
+                onAddImage: { image in vm.addImage(image) }
+            )
+            .focused($isFocused)
+
+            if !vm.images.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 10) {
+                        ForEach(vm.images) { item in
+                            ImageThumbnail(item: item, isRunning: vm.isRunning) {
+                                vm.removeImage(item)
+                            }
+                        }
+                    }
+                    .padding(.vertical, 2)
+                }
+                .frame(height: 78)
+            }
+        }
         .padding(14)
         .background(.regularMaterial)
-        .focused($isFocused)
         .onAppear { isFocused = true }
+    }
+}
+
+struct ImageThumbnail: View {
+    let item: TaskImage
+    let isRunning: Bool
+    let onRemove: () -> Void
+
+    var body: some View {
+        ZStack(alignment: .topTrailing) {
+            Image(nsImage: item.image)
+                .resizable()
+                .scaledToFill()
+                .frame(width: 72, height: 72)
+                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+
+            Button(action: onRemove) {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 15))
+                    .foregroundStyle(.white, .black.opacity(0.7))
+            }
+            .buttonStyle(.plain)
+            .offset(x: 5, y: -5)
+            .disabled(isRunning)
+        }
     }
 }
 
