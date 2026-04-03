@@ -8,9 +8,10 @@ description: Personal workflow for creating new tasks across projects. Whenever 
 - Pass the task prompt directly to `task-run`
 - Keep prompts reasonably short/simple so they fit cleanly in a normal CLI arg
 - Decide what repo this task belongs to
-- Decide if it deserves a worktree or if its a small task that can just be run on the original repo
+- Decide what branch name to choose for the git worktree this task will run in.
     - Most task will need worktrees, if in doubt just create a worktree
     - User may override this decision in prompt
+    - The only instances in which you might choose not to run inside a worktree is if the task will not modify any code.
 - Run `task-run`.
 
 ```bash
@@ -21,5 +22,4 @@ task-run <project-path> --prompt "<task prompt>"
 - `--worktree <branch-name>`
 - `--workspace-name <name>`
 
-- Optimize for speed. Do not inspect the tool first unless it fails or the request clearly needs a special unusual flow.
 - After task launches, stop.
