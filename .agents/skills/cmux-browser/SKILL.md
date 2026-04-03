@@ -28,6 +28,28 @@ cmux --json browser surface:7 click e2 --snapshot-after
 cmux browser surface:7 snapshot --interactive
 ```
 
+## Flag Safety
+
+For commands that take free-text positional args, especially `fill` and `type`, do not append flags after the text value.
+If you need a fresh DOM state, run `snapshot` as a separate command after the action.
+
+Wrong:
+
+```bash
+cmux browser surface:7 fill e11 "hello" --snapshot-after
+cmux browser surface:7 type e11 "hello" --snapshot-after
+```
+
+Preferred:
+
+```bash
+cmux browser surface:7 fill e11 "hello"
+cmux browser surface:7 snapshot --interactive
+
+cmux browser surface:7 type e11 "hello"
+cmux browser surface:7 snapshot --interactive
+```
+
 ## Surface Targeting
 
 ```bash
@@ -77,7 +99,8 @@ cmux browser surface:7 snapshot --interactive
 ### Clear an Input
 
 ```bash
-cmux browser surface:7 fill e11 "" --snapshot-after --json
+cmux browser surface:7 fill e11 ""
+cmux browser surface:7 snapshot --interactive
 cmux browser surface:7 get value e11 --json
 ```
 
