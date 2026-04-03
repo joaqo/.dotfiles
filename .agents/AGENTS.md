@@ -65,16 +65,16 @@ Global authored skills live in `~/.dotfiles/.agents/skills`.
 
 When creating a new global skill:
 ```bash
-mkdir -p ~/.agents/skills ~/.claude/skills
-ln -s ~/.dotfiles/.agents/skills/<name> ~/.agents/skills/<name>
-ln -s ~/.agents/skills/<name> ~/.claude/skills/<name>
+mkdir -p ~/.codex/skills ~/.claude/skills
+ln -s ~/.dotfiles/.agents/skills/<name> ~/.codex/skills/<name>
+ln -s ~/.codex/skills/<name> ~/.claude/skills/<name>
 ```
 
 When deleting a global skill, remove the matching symlinks from:
-- `~/.agents/skills/<name>`
+- `~/.codex/skills/<name>`
 - `~/.claude/skills/<name>`
 
-Codex reads global skills from `~/.agents/skills` directly, claude needs them to be in ~/.claude/skills.
+Codex reads global skills from `~/.codex/skills` directly, claude needs them to be in `~/.claude/skills`.
 
 ## Style
 In all interactions be extremely concise. This is a hard requirement, not a preference.

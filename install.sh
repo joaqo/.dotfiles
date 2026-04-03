@@ -33,29 +33,33 @@ ln -s -f ~/.dotfiles/.config/lazygit/config.yml "$HOME/Library/Application Suppo
 mkdir -p "$HOME/Library/Application Support/com.mitchellh.ghostty"
 ln -s -f ~/.dotfiles/.config/ghostty/config "$HOME/Library/Application Support/com.mitchellh.ghostty/"
 
-mkdir -p ~/.claude
-mkdir -p ~/.agents ~/.agents/skills ~/.claude/skills ~/.codex
-ln -s -f ~/.dotfiles/.agents/AGENTS.md ~/.agents/AGENTS.md
+mkdir -p ~/.claude ~/.claude/skills ~/.codex ~/.codex/skills
 ln -s -f ~/.dotfiles/.agents/AGENTS.md ~/.claude/CLAUDE.md
 ln -s -f ~/.dotfiles/.claude/settings.json ~/.claude/
 ln -s -f ~/.dotfiles/.claude/hooks ~/.claude/
 ln -s -f ~/.dotfiles/.agents/AGENTS.md ~/.codex/AGENTS.md
 
-for link in ~/.agents/skills/* ~/.claude/skills/*; do
+if [ -L ~/.agents/AGENTS.md ] && [ "$(readlink ~/.agents/AGENTS.md)" = "$HOME/.dotfiles/.agents/AGENTS.md" ]; then
+    rm ~/.agents/AGENTS.md
+fi
+
+for link in ~/.agents/skills/* ~/.claude/skills/* ~/.codex/skills/*; do
     [ -L "$link" ] || continue
     target="$(readlink "$link")"
     case "$target" in
-        "$HOME"/.dotfiles/.agents/skills/*|"$HOME"/.agents/skills/*)
+        "$HOME"/.dotfiles/.agents/skills/*|"$HOME"/.agents/skills/*|"$HOME"/.codex/skills/*)
             rm "$link"
             ;;
     esac
 done
 
+rmdir ~/.agents/skills ~/.agents 2>/dev/null || true
+
 for skill in ~/.dotfiles/.agents/skills/*; do
     [ -d "$skill" ] || continue
     name="$(basename "$skill")"
-    ln -s "$skill" ~/.agents/skills/"$name"
-    ln -s ~/.agents/skills/"$name" ~/.claude/skills/"$name"
+    ln -s "$skill" ~/.codex/skills/"$name"
+    ln -s ~/.codex/skills/"$name" ~/.claude/skills/"$name"
 done
 
 ln -s -f ~/agent/agent ~/.local/bin/agent
