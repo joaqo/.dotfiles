@@ -1,0 +1,4 @@
+interface:
+  display_name: "Branch Agent"
+  short_description: "Fork the current live agent into a sibling cmux tab without a worktree."
+  default_prompt: "Use this skill when the user wants a parallel sibling agent from the current task in the same working directory. Create a new cmux tab in the current pane, fork the current live session into it, keep the prompt short, and do not create a worktree."
