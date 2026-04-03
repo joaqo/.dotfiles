@@ -55,6 +55,10 @@ cmux browser <surface> eval "window.innerWidth"
 
 For desktop layout testing, don't resize - the default split is already desktop-width.
 
+## Debugging
+When debugging a library/runtime bug, first search GitHub issues for the exact package(s) implicated by the stack trace or error.
+Then search the issue tracker of the most likely upstream dependency. Do this before broad web searching.
+
 ## Skills
 Global authored agent files live in `~/.dotfiles/.agents`.
 Global authored skills live in `~/.dotfiles/.agents/skills`.
