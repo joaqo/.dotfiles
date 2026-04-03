@@ -29,6 +29,7 @@ Symlinks dotfiles to ~, installs fzf, language servers (pnpm), ripgrep, compiles
 - `.config/ghostty/` - ghostty terminal config (gruvbox dark)
 - `.agents/AGENTS.md` - shared global instructions for Claude Code and Codex CLI; symlinked to `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`
 - `.agents/skills/` - shared global authored skills. Symlinked into `~/.codex/skills/` and `~/.claude/skills/`.
+  - Do not create `agents/openai.yaml` inside authored global skills. You always get confused by this because one of our skills does that, but that is only needed for that one skill.
 - `.claude/` - Claude Code settings, hooks, and commands (symlinked)
 - `bin/` - custom scripts: `autocommit` (claude haiku commit msgs), `kp` (fzf process killer), `focus-iterm-session`
 - `scripts/oneShot/main.swift` - tiny Swift GUI for sending prompts + images to `agent exec`, with logs and notifications
