@@ -227,8 +227,6 @@ final class ViewModel: ObservableObject {
         let stderr = launchError.isEmpty
             ? (String(data: stderrData, encoding: .utf8) ?? "")
             : launchError + "\n" + (String(data: stderrData, encoding: .utf8) ?? "")
-        let result = parseResult(from: stdout) ?? fallbackResult(stdout: stdout, stderr: stderr, exitCode: exitCode)
-
         appendLog(
             runId: runId,
             prompt: prompt,
@@ -237,12 +235,6 @@ final class ViewModel: ObservableObject {
             stderr: stderr,
             exitCode: exitCode
         )
-
-        if exitCode == 0 {
-            notify(title: "Agent", message: result, sound: "Hero")
-        } else {
-            notify(title: "Agent Failed", message: result, sound: "default")
-        }
 
         try? FileManager.default.removeItem(at: runDir)
 
@@ -351,33 +343,6 @@ final class ViewModel: ObservableObject {
         guard text.count > limit else { return text }
         let index = text.index(text.startIndex, offsetBy: limit)
         return String(text[..<index]).trimmingCharacters(in: .whitespacesAndNewlines) + "..."
-    }
-
-    private func notify(title: String, message: String, sound: String) {
-        let cleanMessage = message.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? title : message
-
-        if FileManager.default.isExecutableFile(atPath: "/opt/homebrew/bin/terminal-notifier") {
-            let process = Process()
-            process.executableURL = URL(fileURLWithPath: "/opt/homebrew/bin/terminal-notifier")
-            process.arguments = ["-title", title, "-message", cleanMessage, "-sound", sound]
-            try? process.run()
-            return
-        }
-
-        let process = Process()
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
-        process.arguments = [
-            "-e",
-            "display notification \(appleScriptString(cleanMessage)) with title \(appleScriptString(title))",
-        ]
-        try? process.run()
-    }
-
-    private func appleScriptString(_ text: String) -> String {
-        let escaped = text
-            .replacingOccurrences(of: "\\", with: "\\\\")
-            .replacingOccurrences(of: "\"", with: "\\\"")
-        return "\"\(escaped)\""
     }
 
     private func isoTimestamp() -> String {
