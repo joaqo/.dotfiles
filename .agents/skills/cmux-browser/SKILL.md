@@ -64,6 +64,9 @@ cmux browser open-split https://example.com
 ```
 
 Notes:
+- Route browser actions from `caller` context or explicit refs, not `focused`.
+- The user often views another workspace while the agent works, so `focused` usually points at unrelated UI state.
+- After opening a browser, verify workspace/pane/surface placement before continuing.
 - CLI output defaults to short refs (`surface:N`, `pane:N`, `workspace:N`, `window:N`).
 - UUIDs are still accepted on input; only request UUID output when needed (`--id-format uuids|both`).
 - Keep using one `surface:N` per task unless you intentionally switch.

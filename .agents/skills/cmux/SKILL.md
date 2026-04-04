@@ -14,6 +14,13 @@ Use this skill to control non-browser cmux topology and routing.
 - Pane: split container in a workspace.
 - Surface: a tab within a pane (terminal or browser panel).
 
+## Targeting Rule
+
+- Default to `caller` context from `cmux identify --json`, not `focused`.
+- Use `caller.workspace_ref` plus explicit pane/surface refs you just created or verified.
+- Do not infer the target from `focused.workspace_ref`, `focused.pane_ref`, or `focused.surface_ref` unless the user explicitly wants the currently focused UI.
+- After creating or moving anything, verify placement with `cmux tree`, `cmux list-panes`, or `cmux list-pane-surfaces` before continuing.
+
 ## Fast Start
 
 ```bash
