@@ -46,17 +46,13 @@ main() {
   if [[ -n "$WORKTREE_BRANCH" ]]; then
     [[ -n "$repo_root" ]] || fail "not-a-git-repo"
     branch_name="$WORKTREE_BRANCH"
-    if target_cwd="$(project_create_worktree "$effective_project" "$repo_root" "$branch_name")"; then
-      :
-    else
-      target_cwd="$(create_generic_worktree "$repo_root" "$branch_name")"
-    fi
+    target_cwd="$(project_create_worktree "$effective_project" "$repo_root" "$branch_name")"
   elif [[ -n "$repo_root" ]]; then
     target_cwd="$repo_root"
   fi
 
   workspace_name="$(derive_workspace_name "$target_cwd" "$branch_name")"
-  launch_command="agent open $(shell_quote "$PROMPT_TEXT")"
+  launch_command="AGENT_TASK_WORKSPACE=1 agent open $(shell_quote "$PROMPT_TEXT")"
 
   say "project=$effective_project"
   launch_workspace "$workspace_name" "$target_cwd" "$launch_command"

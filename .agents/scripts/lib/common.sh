@@ -34,6 +34,11 @@ close_workspace() {
     return 0
   fi
 
+  if [[ "${AGENT_TASK_WORKSPACE:-}" != "1" ]]; then
+    say "workspace=skipped:not-task-workspace"
+    return 0
+  fi
+
   cmux close-workspace --workspace "$workspace_ref"
   say "workspace=closed:$workspace_ref"
 }
@@ -83,6 +88,18 @@ create_generic_worktree() {
   fi
 
   printf '%s\n' "$target"
+}
+
+delete_generic_worktree() {
+  local main_repo="$1"
+  local task_path="$2"
+  local branch_name="${3:-}"
+  local branch_delete_flag="${4:--d}"
+
+  cd /
+  git -C "$main_repo" worktree remove --force "$task_path"
+  [[ -n "$branch_name" ]] || return 0
+  git -C "$main_repo" branch "$branch_delete_flag" "$branch_name"
 }
 
 launch_workspace() {

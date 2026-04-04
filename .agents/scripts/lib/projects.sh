@@ -35,7 +35,7 @@ project_create_worktree() {
       mellow_create_worktree "$@"
       ;;
     generic)
-      return 1
+      create_generic_worktree "$@"
       ;;
     *)
       fail "unknown-project:$project"
@@ -45,6 +45,7 @@ project_create_worktree() {
 
 project_delete_worktree() {
   local project="$1"
+  local task_path main_repo branch_name branch_delete_flag
   shift
 
   case "$project" in
@@ -52,7 +53,11 @@ project_delete_worktree() {
       mellow_delete_worktree "$@"
       ;;
     generic)
-      return 1
+      task_path="${1:-}"
+      main_repo="${2:-}"
+      branch_name="${3:-}"
+      branch_delete_flag="${4:--d}"
+      delete_generic_worktree "$main_repo" "$task_path" "$branch_name" "$branch_delete_flag"
       ;;
     *)
       fail "unknown-project:$project"

@@ -39,14 +39,7 @@ fi
 
 git -C "$task_path" rebase "$base_branch"
 git -C "$main_repo" merge --ff-only "$task_branch"
-
-if project_delete_worktree "$effective_project" "$task_path" "$main_repo"; then
-  :
-else
-  cd /
-  git -C "$main_repo" branch -d "$task_branch"
-  git -C "$main_repo" worktree remove --force "$task_path"
-fi
+project_delete_worktree "$effective_project" "$task_path" "$main_repo" "$task_branch" -d
 
 say "project=$effective_project"
 say "merge=ok:$task_branch->$base_branch"

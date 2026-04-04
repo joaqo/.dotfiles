@@ -41,16 +41,7 @@ main_repo="$PROJECT_CONTEXT_MAIN_REPO"
 effective_project="$PROJECT_CONTEXT_KIND"
 [[ -n "$main_repo" ]] || fail "main-repo-not-found"
 branch="$(git branch --show-current || true)"
-
-if project_delete_worktree "$effective_project" "$task_path" "$main_repo"; then
-  :
-else
-  cd /
-  git -C "$main_repo" worktree remove --force "$task_path"
-  if [[ -n "$branch" ]]; then
-    git -C "$main_repo" branch -D "$branch" || true
-  fi
-fi
+project_delete_worktree "$effective_project" "$task_path" "$main_repo" "$branch" -D || true
 
 say "project=$effective_project"
 say "worktree=deleted:$task_path"
