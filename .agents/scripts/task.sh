@@ -28,8 +28,50 @@ derive_workspace_name() {
   fi
 }
 
+wait_for_task_session() {
+  local target_cwd="$1"
+  local prompt_text="$2"
+  local started_after_ms="$3"
+  local attempt session_id
+
+  for attempt in {1..100}; do
+    session_id="$(
+      agent sessions --json 2>/dev/null | jq -sr \
+        --arg cwd "$target_cwd" \
+        --arg prompt "$prompt_text" \
+        --argjson started_after_ms "$started_after_ms" '
+          map(
+            select(
+              .cwd == $cwd
+              and (
+                (.started_at // 0) >= $started_after_ms
+                or (.updated_at // 0) >= $started_after_ms
+              )
+              and (
+                (.title // "") == $prompt
+                or ((.command // "") | contains($prompt))
+              )
+            )
+          )
+          | sort_by(.updated_at // 0)
+          | last
+          | .id // empty
+        '
+    )"
+
+    if [[ -n "$session_id" ]]; then
+      printf '%s\n' "$session_id"
+      return 0
+    fi
+
+    sleep 0.1
+  done
+
+  return 1
+}
+
 main() {
-  local base_cwd repo_root main_repo effective_project branch_name target_cwd workspace_name launch_command
+  local base_cwd repo_root main_repo effective_project branch_name target_cwd workspace_name launch_command launch_started_ms session_id
 
   [[ -n "$PROJECT_PATH" ]] || fail "missing-project-path"
   [[ -n "$PROMPT_TEXT" ]] || fail "missing-prompt"
@@ -53,10 +95,13 @@ main() {
 
   workspace_name="$(derive_workspace_name "$target_cwd" "$branch_name")"
   launch_command="AGENT_TASK_WORKSPACE=1 agent open $(shell_quote "$PROMPT_TEXT")"
+  launch_started_ms="$(( $(date +%s) * 1000 ))"
 
   say "project=$effective_project"
   launch_workspace "$workspace_name" "$target_cwd" "$launch_command"
+  session_id="$(wait_for_task_session "$target_cwd" "$PROMPT_TEXT" "$launch_started_ms")" || fail "agent-session-not-detected:$target_cwd"
   [[ -n "$branch_name" ]] && say "branch=$branch_name"
+  say "session=$session_id"
   say "prompt=inline"
 }
 
