@@ -4,6 +4,14 @@ Login flows, session persistence, OAuth, and 2FA patterns for cmux browser surfa
 
 **Related**: [session-management.md](session-management.md), [SKILL.md](../SKILL.md)
 
+## Input Rule
+
+For authentication, always prefer `click` + `type`.
+
+Do not default to `fill` in login flows. `fill` is not human-like enough for many auth systems and can miss keypress-driven behavior, focus changes, autofill hooks, anti-bot signals, or other logic that only appears during real typing.
+
+Use `fill` in auth flows only for explicit clearing/replacing, not as the normal way to enter credentials or codes.
+
 ## Contents
 
 - [Basic Login Flow](#basic-login-flow)
@@ -24,8 +32,10 @@ cmux browser surface:7 wait --load-state complete --timeout-ms 15000
 cmux browser surface:7 snapshot --interactive
 # [ref=e1] email, [ref=e2] password, [ref=e3] submit
 
-cmux browser surface:7 fill e1 "user@example.com"
-cmux browser surface:7 fill e2 "$APP_PASSWORD"
+cmux browser surface:7 click e1
+cmux browser surface:7 type e1 "user@example.com"
+cmux browser surface:7 click e2
+cmux browser surface:7 type e2 "$APP_PASSWORD"
 cmux browser surface:7 click e3 --snapshot-after --json
 cmux browser surface:7 wait --url-contains "/dashboard" --timeout-ms 20000
 ```
@@ -56,7 +66,8 @@ cmux browser open https://app.example.com/auth/google --json
 cmux browser surface:7 wait --url-contains "accounts.google.com" --timeout-ms 30000
 cmux browser surface:7 snapshot --interactive
 
-cmux browser surface:7 fill e1 "user@gmail.com"
+cmux browser surface:7 click e1
+cmux browser surface:7 type e1 "user@gmail.com"
 cmux browser surface:7 click e2 --snapshot-after --json
 
 cmux browser surface:7 wait --url-contains "app.example.com" --timeout-ms 45000
@@ -68,8 +79,10 @@ cmux browser surface:7 state save ./oauth-state.json
 ```bash
 cmux browser open https://app.example.com/login --json
 cmux browser surface:7 snapshot --interactive
-cmux browser surface:7 fill e1 "user@example.com"
-cmux browser surface:7 fill e2 "$APP_PASSWORD"
+cmux browser surface:7 click e1
+cmux browser surface:7 type e1 "user@example.com"
+cmux browser surface:7 click e2
+cmux browser surface:7 type e2 "$APP_PASSWORD"
 cmux browser surface:7 click e3
 
 # complete 2FA manually in the webview, then:
@@ -102,8 +115,10 @@ URL=$(cmux browser "$SURFACE" get url)
 
 if printf '%s' "$URL" | grep -q '/login'; then
   cmux browser "$SURFACE" snapshot --interactive
-  cmux browser "$SURFACE" fill e1 "$APP_USERNAME"
-  cmux browser "$SURFACE" fill e2 "$APP_PASSWORD"
+  cmux browser "$SURFACE" click e1
+  cmux browser "$SURFACE" type e1 "$APP_USERNAME"
+  cmux browser "$SURFACE" click e2
+  cmux browser "$SURFACE" type e2 "$APP_PASSWORD"
   cmux browser "$SURFACE" click e3
   cmux browser "$SURFACE" wait --url-contains "/dashboard" --timeout-ms 20000
   cmux browser "$SURFACE" state save "$STATE_FILE"

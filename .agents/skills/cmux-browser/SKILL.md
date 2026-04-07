@@ -7,12 +7,32 @@ description: End-user browser automation with cmux. Use when you need to open si
 
 Use this skill for browser tasks inside cmux webviews.
 
+## Input Strategy
+
+For text entry, default to `click` + `type`.
+
+Assume `fill` is the wrong choice unless there is a specific reason to use it. In this setup, you should almost never use `fill`.
+
+Why:
+- `type` is the closest to human behavior.
+- `type` produces the key-driven event sequence many apps depend on.
+- `fill` jumps straight to the final value and can miss keypress-driven side effects, validation, formatting, autocomplete behavior, focus transitions, anti-bot checks, and other logic that only appears during real typing.
+- In real products, you usually do not know which inputs have those side effects ahead of time.
+
+Practical rule:
+- Default: `click` the field, then `type`.
+- Use `fill` only as an exception:
+  - clearing a field with `fill ""`
+  - deliberately replacing text in a clearly dumb/plain field when human-like behavior does not matter
+
+If unsure, use `type`. Do not use `fill` just because it is shorter.
+
 ## Core Workflow
 
 1. Open or target a browser surface.
 2. Verify navigation with `get url` before waiting or snapshotting.
 3. Snapshot (`--interactive`) to get fresh element refs — or use `find` if you know the element by role/label/text.
-4. Act with refs (`click`, `fill`, `type`, `select`, `press`).
+4. Act with refs (`click`, `type`, `press`, `select`; use `fill` only in the rare exception cases above).
 5. Wait for state changes.
 6. Re-snapshot after DOM/navigation changes.
 
@@ -23,14 +43,15 @@ cmux --json browser open https://example.com
 cmux browser surface:7 get url
 cmux browser surface:7 wait --load-state complete --timeout-ms 15000
 cmux browser surface:7 snapshot --interactive
-cmux browser surface:7 fill e1 "hello"
+cmux browser surface:7 click e1
+cmux browser surface:7 type e1 "hello"
 cmux --json browser surface:7 click e2 --snapshot-after
 cmux browser surface:7 snapshot --interactive
 ```
 
 ## Flag Safety
 
-For commands that take free-text positional args, especially `fill` and `type`, do not append flags after the text value.
+For commands that take free-text positional args, especially `type` and the rarer `fill`, do not append flags after the text value.
 If you need a fresh DOM state, run `snapshot` as a separate command after the action.
 
 Wrong:
@@ -43,10 +64,11 @@ cmux browser surface:7 type e11 "hello" --snapshot-after
 Preferred:
 
 ```bash
-cmux browser surface:7 fill e11 "hello"
+cmux browser surface:7 type e11 "hello"
 cmux browser surface:7 snapshot --interactive
 
-cmux browser surface:7 type e11 "hello"
+# only when you specifically need to clear/replace:
+cmux browser surface:7 fill e11 ""
 cmux browser surface:7 snapshot --interactive
 ```
 
@@ -92,8 +114,10 @@ cmux --json browser open https://example.com/signup
 cmux browser surface:7 get url
 cmux browser surface:7 wait --load-state complete --timeout-ms 15000
 cmux browser surface:7 snapshot --interactive
-cmux browser surface:7 fill e1 "Jane Doe"
-cmux browser surface:7 fill e2 "jane@example.com"
+cmux browser surface:7 click e1
+cmux browser surface:7 type e1 "Jane Doe"
+cmux browser surface:7 click e2
+cmux browser surface:7 type e2 "jane@example.com"
 cmux --json browser surface:7 click e3 --snapshot-after
 cmux browser surface:7 wait --url-contains "/welcome" --timeout-ms 15000
 cmux browser surface:7 snapshot --interactive
@@ -126,7 +150,7 @@ If `get url` is empty or `about:blank`, navigate first instead of waiting on loa
 |-----------|-------------|
 | [references/commands.md](references/commands.md) | Full browser command mapping and quick syntax |
 | [references/snapshot-refs.md](references/snapshot-refs.md) | Ref lifecycle and stale-ref troubleshooting |
-| [references/authentication.md](references/authentication.md) | Login/OAuth/2FA patterns and state save/load |
+| [references/authentication.md](references/authentication.md) | Login/OAuth/2FA patterns, why to prefer `type`, and state save/load |
 | [references/authentication.md#saving-authentication-state](references/authentication.md#saving-authentication-state) | Save authenticated state right after login |
 | [references/session-management.md](references/session-management.md) | Multi-surface isolation and state persistence patterns |
 | [references/video-recording.md](references/video-recording.md) | Current recording status and practical alternatives |
@@ -136,7 +160,7 @@ If `get url` is empty or `about:blank`, navigate first instead of waiting on loa
 
 | Template | Description |
 |----------|-------------|
-| [templates/form-automation.sh](templates/form-automation.sh) | Snapshot/ref form fill loop |
+| [templates/form-automation.sh](templates/form-automation.sh) | Snapshot/ref form typing loop |
 | [templates/authenticated-session.sh](templates/authenticated-session.sh) | Login once, save/load state |
 | [templates/capture-workflow.sh](templates/capture-workflow.sh) | Navigate + capture snapshots/screenshots |
 
@@ -149,7 +173,7 @@ These commands currently return `not_supported` because they rely on Chrome/CDP-
 - network route interception/mocking
 - low-level raw input injection
 
-Use supported high-level commands (`click`, `fill`, `press`, `scroll`, `wait`, `snapshot`) instead.
+Use supported high-level commands (`click`, `type`, `fill`, `press`, `scroll`, `wait`, `snapshot`) instead.
 
 ## Troubleshooting
 

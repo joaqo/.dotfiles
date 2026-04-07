@@ -9,4 +9,4 @@ cmux browser "$SURFACE" get url
 cmux browser "$SURFACE" wait --load-state complete --timeout-ms 15000
 cmux browser "$SURFACE" snapshot --interactive
 
-echo "Now run fill/click commands using refs from the snapshot above."
+echo "Now run click/type commands using refs from the snapshot above."

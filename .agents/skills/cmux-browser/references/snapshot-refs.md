@@ -39,8 +39,10 @@ cmux browser surface:7 snapshot --interactive --compact --max-depth 3
 
 ```bash
 cmux browser surface:7 click e6
-cmux browser surface:7 fill e10 "user@example.com"
-cmux browser surface:7 fill e11 "password123"
+cmux browser surface:7 click e10
+cmux browser surface:7 type e10 "user@example.com"
+cmux browser surface:7 click e11
+cmux browser surface:7 type e11 "password123"
 cmux browser surface:7 click e12
 ```
 
