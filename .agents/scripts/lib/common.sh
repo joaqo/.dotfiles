@@ -4,6 +4,21 @@ say() {
   printf '%s\n' "$*"
 }
 
+retry_command() {
+  local attempts="$1"
+  local delay_seconds="$2"
+  shift 2
+
+  local attempt
+  for ((attempt = 1; attempt <= attempts; attempt++)); do
+    if "$@"; then
+      return 0
+    fi
+    (( attempt == attempts )) && return 1
+    sleep "$delay_seconds"
+  done
+}
+
 fail() {
   say "error=$1"
   exit 1
@@ -102,22 +117,106 @@ delete_generic_worktree() {
   git -C "$main_repo" branch "$branch_delete_flag" "$branch_name"
 }
 
+workspace_exists() {
+  local workspace_ref="$1"
+  cmux --json list-panes --workspace "$workspace_ref" >/dev/null 2>&1
+}
+
+workspace_primary_terminal_surface() {
+  local workspace_ref="$1"
+
+  cmux --json list-panes --workspace "$workspace_ref" 2>/dev/null | jq -r '
+    .panes[0].selected_surface_ref
+    // .panes[0].surface_refs[0]
+    // empty
+  '
+}
+
+workspace_has_surface() {
+  local workspace_ref="$1"
+  local surface_ref="$2"
+
+  cmux --json list-panes --workspace "$workspace_ref" 2>/dev/null | jq -e \
+    --arg surface_ref "$surface_ref" '
+      [.panes[].surface_refs[]?]
+      | index($surface_ref) != null
+    ' >/dev/null
+}
+
+cmux_create_workspace() {
+  local workspace_name="$1"
+  local target_cwd="$2"
+  local command_text="$3"
+  local workspace_ref attempt
+
+  for attempt in {1..3}; do
+    workspace_ref="$(cmux new-workspace --name "$workspace_name" --cwd "$target_cwd" --command "$command_text" 2>/dev/null | awk '{print $2}')"
+    if [[ -n "$workspace_ref" ]] && workspace_exists "$workspace_ref"; then
+      printf '%s\n' "$workspace_ref"
+      return 0
+    fi
+    [[ -n "$workspace_ref" ]] && cmux close-workspace --workspace "$workspace_ref" >/dev/null 2>&1 || true
+    sleep 0.2
+  done
+
+  return 1
+}
+
+cmux_create_surface() {
+  local workspace_ref="$1"
+  local response surface_ref attempt
+
+  for attempt in {1..3}; do
+    response="$(cmux --json new-surface --workspace "$workspace_ref" 2>/dev/null || true)"
+    surface_ref="$(jq -r '.surface_ref // empty' <<<"$response" 2>/dev/null)"
+    if [[ -n "$surface_ref" ]] && workspace_has_surface "$workspace_ref" "$surface_ref"; then
+      printf '%s\n' "$surface_ref"
+      return 0
+    fi
+    sleep 0.2
+  done
+
+  return 1
+}
+
+cmux_configure_surface() {
+  local workspace_ref="$1"
+  local surface_ref="$2"
+  local title="$3"
+  local command_text="$4"
+
+  retry_command 3 0.2 cmux rename-tab --workspace "$workspace_ref" --surface "$surface_ref" "$title" >/dev/null 2>&1 || return 1
+  retry_command 3 0.2 cmux send --workspace "$workspace_ref" --surface "$surface_ref" "$command_text" >/dev/null 2>&1 || return 1
+}
+
+cmux_send_to_surface() {
+  local workspace_ref="$1"
+  local surface_ref="$2"
+  local command_text="$3"
+
+  retry_command 3 0.2 cmux send --workspace "$workspace_ref" --surface "$surface_ref" "$command_text" >/dev/null 2>&1
+}
+
 launch_workspace() {
   local workspace_name="$1"
   local target_cwd="$2"
   local command_text="$3"
   local workspace_ref surface_ref
 
-  workspace_ref="$(cmux new-workspace --name "$workspace_name" --cwd "$target_cwd" --command "$command_text" | awk '{print $2}')"
+  workspace_ref="$(cmux_create_workspace "$workspace_name" "$target_cwd" "$command_text")"
   [[ -n "$workspace_ref" ]] || fail "workspace-create-failed"
 
-  surface_ref="$(cmux --json new-surface --workspace "$workspace_ref" | jq -r '.surface_ref')"
-  cmux rename-tab --workspace "$workspace_ref" --surface "$surface_ref" "nvim"
-  cmux send --workspace "$workspace_ref" --surface "$surface_ref" "nvim\n"
+  LAUNCH_WORKSPACE_REF="$workspace_ref"
+  LAUNCH_WORKSPACE_PRIMARY_SURFACE_REF="$(workspace_primary_terminal_surface "$workspace_ref")"
+  [[ -n "$LAUNCH_WORKSPACE_PRIMARY_SURFACE_REF" ]] || fail "workspace-primary-surface-not-found:$workspace_ref"
 
-  surface_ref="$(cmux --json new-surface --workspace "$workspace_ref" | jq -r '.surface_ref')"
-  cmux rename-tab --workspace "$workspace_ref" --surface "$surface_ref" "lazygit"
-  cmux send --workspace "$workspace_ref" --surface "$surface_ref" "lazygit\n"
+  surface_ref="$(cmux_create_surface "$workspace_ref")"
+  [[ -n "$surface_ref" ]] || fail "workspace-surface-create-failed:$workspace_ref:nvim"
+  cmux_configure_surface "$workspace_ref" "$surface_ref" "nvim" "nvim\n" || fail "workspace-surface-configure-failed:$workspace_ref:$surface_ref:nvim"
+
+  surface_ref="$(cmux_create_surface "$workspace_ref")"
+  [[ -n "$surface_ref" ]] || fail "workspace-surface-create-failed:$workspace_ref:lazygit"
+  cmux_configure_surface "$workspace_ref" "$surface_ref" "lazygit" "lazygit\n" || fail "workspace-surface-configure-failed:$workspace_ref:$surface_ref:lazygit"
 
   say "workspace=created:$workspace_ref"
   say "cwd=$target_cwd"
