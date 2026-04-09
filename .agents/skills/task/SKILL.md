@@ -12,6 +12,8 @@ description: Personal workflow for creating new tasks across projects. Whenever 
     - Always run tasks in a worktree unless the user explicitly says not to
     - Treat no-worktree runs as opt-out, not a default judgment call
 - Run `task-run`.
+- Inspect the `task-run` output carefully.
+- Preserve the exact launch facts and errors for the caller.
 
 ```bash
 task-run <project-path> --worktree <branch-name> --prompt "<task prompt>"

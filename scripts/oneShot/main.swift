@@ -16,7 +16,60 @@ private let launchPath = [
     "/usr/sbin",
     "/sbin",
 ].joined(separator: ":")
-private let schema = #"{"type":"object","properties":{"result":{"type":"string"}},"required":["result"],"additionalProperties":false}"#
+private let schema = #"""
+{
+  "type": "object",
+  "properties": {
+    "skill": {
+      "type": "string",
+      "enum": ["task", "notion"]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "error"]
+    },
+    "summary": {
+      "type": "string"
+    },
+    "notes": {
+      "type": ["string", "null"]
+    },
+    "data": {
+      "type": "object",
+      "properties": {
+        "project": {
+          "type": ["string", "null"]
+        },
+        "cwd": {
+          "type": ["string", "null"]
+        },
+        "workspace": {
+          "type": ["string", "null"]
+        },
+        "session": {
+          "type": ["string", "null"]
+        },
+        "branch": {
+          "type": ["string", "null"]
+        },
+        "prompt_source": {
+          "type": ["string", "null"]
+        },
+        "launch_retried": {
+          "type": ["boolean", "null"]
+        }
+      },
+      "required": ["project", "cwd", "workspace", "session", "branch", "prompt_source", "launch_retried"],
+      "additionalProperties": false
+    },
+    "error": {
+      "type": ["string", "null"]
+    }
+  },
+  "required": ["skill", "status", "summary", "notes", "data", "error"],
+  "additionalProperties": false
+}
+"""#
 private let systemPrompt = """
 You are a non-interactive execution agent.
 
@@ -46,6 +99,27 @@ Examples:
 - "Whats our top selling user" -> use /task.
 
 Anything that is not explicitly notion -> use /task
+Your final answer must be JSON matching the schema.
+It must describe what actually happened after you called the chosen skill.
+
+Schema rules:
+- Set `skill` to the skill you actually used: `task` or `notion`.
+- Set `status` to `ok` or `error`.
+- Set `summary` to a short plain-text summary.
+- Set `notes` to short extra details when useful, otherwise null.
+- Set `data` to an object. Use null field values when a fact is unavailable.
+- Set `error` to the exact blocking error when there is one, otherwise null.
+
+For /task:
+- Run `task-run`.
+- Inspect the real `task-run` output before filling the schema.
+- Never claim task launch success unless the output proves it.
+- When task launch succeeds, include verified fields in `data` when available, especially `session`, and also `workspace`, `cwd`, `branch`, `project` when present.
+- When task launch fails, set `status` to `error` and propagate the exact error text.
+
+For /notion:
+- Fill the same schema after using the notion skill.
+
 Do not ask follow-up questions.
 Do not explain your reasoning.
 Do not return analysis, chat, or filler.
@@ -53,7 +127,6 @@ You are only a router, you do simple routing tasks, you never tackle large tasks
 If you're confused don't get creative, just exit out and return the issue you had.
 
 Return JSON matching the provided schema.
-`result` must be a short plain-text summary of what you did or what blocked execution.
 """
 
 struct TaskImage: Identifiable {
@@ -246,6 +319,10 @@ final class ViewModel: ObservableObject {
             exitCode: exitCode
         )
 
+        if let notification = failureNotification(stdout: stdout, stderr: stderr, exitCode: exitCode) {
+            notify(title: notification.title, message: notification.message)
+        }
+
         try? FileManager.default.removeItem(at: runDir)
 
         DispatchQueue.main.async {
@@ -285,12 +362,109 @@ final class ViewModel: ObservableObject {
         }
     }
 
-    private func parseResult(from stdout: String) -> String? {
+    private func parseResponse(from stdout: String) -> [String: Any]? {
         guard let data = stdout.data(using: .utf8) else { return nil }
-        guard let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else { return nil }
-        guard let result = object["result"] as? String else { return nil }
-        let trimmed = result.trimmingCharacters(in: .whitespacesAndNewlines)
-        return trimmed.isEmpty ? nil : trimmed
+        return try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+    }
+
+    private func parseResult(from stdout: String) -> String? {
+        guard let object = parseResponse(from: stdout) else { return nil }
+        guard validateResponse(object) == nil else { return nil }
+        guard let summary = object["summary"] as? String else { return nil }
+        let trimmedSummary = summary.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedSummary.isEmpty else { return nil }
+        let status = (object["status"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines)
+        if status == "error", let error = object["error"] as? String {
+            let trimmedError = error.trimmingCharacters(in: .whitespacesAndNewlines)
+            return trimmedError.isEmpty ? trimmedSummary : "\(trimmedSummary): \(trimmedError)"
+        }
+        return trimmedSummary
+    }
+
+    private func validateResponse(_ object: [String: Any]) -> String? {
+        guard let skill = object["skill"] as? String, skill == "task" || skill == "notion" else {
+            return "Missing or invalid `skill`"
+        }
+
+        guard let status = object["status"] as? String, status == "ok" || status == "error" else {
+            return "Missing or invalid `status`"
+        }
+
+        guard let summary = object["summary"] as? String, !summary.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return "Missing or empty `summary`"
+        }
+
+        let notes = object["notes"]
+        if !(notes == nil || notes is NSNull || notes is String) {
+            return "Invalid `notes`"
+        }
+
+        guard let dataObject = object["data"] as? [String: Any] else {
+            return "Invalid `data`"
+        }
+
+        let error = object["error"]
+        if !(error == nil || error is NSNull || error is String) {
+            return "Invalid `error`"
+        }
+
+        if status == "error" {
+            guard let errorText = object["error"] as? String, !errorText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                return "Missing `error` for failed response"
+            }
+        }
+
+        if skill == "task", status == "ok" {
+            guard let session = dataObject["session"] as? String,
+                  !session.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                return "Missing `data.session` for successful task response"
+            }
+        }
+
+        return nil
+    }
+
+    private func failureNotification(stdout: String, stderr: String, exitCode: Int32) -> (title: String, message: String)? {
+        if let object = parseResponse(from: stdout) {
+            if let validationError = validateResponse(object) {
+                return ("Task Failed", clipped("Router returned invalid output: \(validationError)"))
+            }
+            let status = (object["status"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines)
+            if status == "error" {
+                let message = parseResult(from: stdout) ?? fallbackResult(stdout: stdout, stderr: stderr, exitCode: exitCode)
+                return ("Task Failed", clipped(message))
+            }
+            return nil
+        }
+
+        if exitCode == 0 {
+            return ("Task Failed", "Router returned invalid output")
+        }
+
+        return ("Task Failed", clipped(fallbackResult(stdout: stdout, stderr: stderr, exitCode: exitCode)))
+    }
+
+    private func notify(title: String, message: String) {
+        let cleanMessage = clipped(message.replacingOccurrences(of: "\n", with: " "))
+        if FileManager.default.isExecutableFile(atPath: "/opt/homebrew/bin/terminal-notifier") {
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: "/opt/homebrew/bin/terminal-notifier")
+            process.arguments = ["-title", title, "-message", cleanMessage, "-sound", "default"]
+            try? process.run()
+            return
+        }
+
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/osascript")
+        process.arguments = [
+            "-e",
+            "display notification \(appleScriptString(cleanMessage)) with title \(appleScriptString(title))"
+        ]
+        try? process.run()
+    }
+
+    private func appleScriptString(_ value: String) -> String {
+        "\"\(value.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\""))\""
     }
 
     private func fallbackResult(stdout: String, stderr: String, exitCode: Int32) -> String {
@@ -315,6 +489,17 @@ final class ViewModel: ObservableObject {
             .split(whereSeparator: \.isNewline)
             .map { String($0).trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
+
+        let preferredContains = [
+            "invalid schema for response_format",
+            "invalid_json_schema",
+        ]
+
+        for needle in preferredContains {
+            if let line = lines.first(where: { $0.lowercased().contains(needle) }) {
+                return clipped(line)
+            }
+        }
 
         let preferredPrefixes = [
             "codex failed:",

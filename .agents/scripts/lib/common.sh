@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 say() {
+  [[ "${QUIET_SAY_OUTPUT:-}" == "1" ]] && return 0
   printf '%s\n' "$*"
 }
 

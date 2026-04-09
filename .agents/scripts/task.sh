@@ -14,6 +14,54 @@ PROJECT_PATH=""
 WORKTREE_BRANCH=""
 WORKSPACE_NAME=""
 PROMPT_TEXT=""
+TASK_PROJECT=""
+TASK_TARGET_CWD=""
+TASK_WORKSPACE_REF=""
+TASK_SESSION_ID=""
+TASK_BRANCH=""
+TASK_PROMPT_SOURCE="inline"
+TASK_LAUNCH_RETRIED=0
+QUIET_SAY_OUTPUT=1
+
+emit_task_result() {
+  local status="$1"
+  local summary="$2"
+  local error_text="${3:-}"
+
+  jq -cn \
+    --arg route "task" \
+    --arg status "$status" \
+    --arg summary "$summary" \
+    --arg error "$error_text" \
+    --arg project "${TASK_PROJECT:-}" \
+    --arg cwd "${TASK_TARGET_CWD:-}" \
+    --arg workspace "${TASK_WORKSPACE_REF:-}" \
+    --arg session "${TASK_SESSION_ID:-}" \
+    --arg branch "${TASK_BRANCH:-}" \
+    --arg prompt_source "${TASK_PROMPT_SOURCE:-}" \
+    --argjson launch_retried "$TASK_LAUNCH_RETRIED" '
+      {
+        route: $route,
+        status: $status,
+        summary: $summary,
+        data: {
+          project: (if $project == "" then null else $project end),
+          cwd: (if $cwd == "" then null else $cwd end),
+          workspace: (if $workspace == "" then null else $workspace end),
+          session: (if $session == "" then null else $session end),
+          branch: (if $branch == "" then null else $branch end),
+          prompt_source: (if $prompt_source == "" then null else $prompt_source end),
+          launch_retried: $launch_retried
+        },
+        error: (if $error == "" then null else $error end)
+      }
+    '
+}
+
+fail() {
+  emit_task_result "error" "Task launch failed" "$1"
+  exit 1
+}
 
 derive_workspace_name() {
   local target_cwd="$1"
@@ -79,8 +127,6 @@ retry_workspace_launch_command() {
   [[ -n "$surface_ref" ]] || surface_ref="$(workspace_primary_terminal_surface "$workspace_ref")"
   [[ -n "$surface_ref" ]] || return 1
 
-  say "launch-retry=workspace:$workspace_ref"
-  say "launch-retry-surface=$surface_ref"
   cmux_send_to_surface "$workspace_ref" "$surface_ref" "${command_text}\\n"
 }
 
@@ -96,32 +142,35 @@ main() {
   repo_root="$PROJECT_CONTEXT_REPO_ROOT"
   main_repo="$PROJECT_CONTEXT_MAIN_REPO"
   effective_project="$PROJECT_CONTEXT_KIND"
+  TASK_PROJECT="$effective_project"
   target_cwd="$base_cwd"
   branch_name=""
 
   if [[ -n "$WORKTREE_BRANCH" ]]; then
     [[ -n "$repo_root" ]] || fail "not-a-git-repo"
     branch_name="$WORKTREE_BRANCH"
+    TASK_BRANCH="$branch_name"
     target_cwd="$(project_create_worktree "$effective_project" "$repo_root" "$branch_name")"
   elif [[ -n "$repo_root" ]]; then
     target_cwd="$repo_root"
   fi
+  TASK_TARGET_CWD="$target_cwd"
 
   workspace_name="$(derive_workspace_name "$target_cwd" "$branch_name")"
   launch_command="AGENT_TASK_WORKSPACE=1 agent open $(shell_quote "$PROMPT_TEXT")"
   launch_started_ms="$(( $(date +%s) * 1000 ))"
 
-  say "project=$effective_project"
   launch_workspace "$workspace_name" "$target_cwd" "$launch_command"
+  TASK_WORKSPACE_REF="${LAUNCH_WORKSPACE_REF:-}"
   session_id="$(wait_for_task_session "$target_cwd" "$PROMPT_TEXT" "$launch_started_ms")" || {
+    TASK_LAUNCH_RETRIED=1
     retry_started_ms="$(( $(date +%s) * 1000 ))"
     retry_workspace_launch_command "${LAUNCH_WORKSPACE_REF:-}" "${LAUNCH_WORKSPACE_PRIMARY_SURFACE_REF:-}" "$launch_command" \
       || fail "workspace-launch-command-retry-failed:${LAUNCH_WORKSPACE_REF:-unknown}"
     session_id="$(wait_for_task_session "$target_cwd" "$PROMPT_TEXT" "$retry_started_ms")" || fail "agent-session-not-detected:$target_cwd"
   }
-  [[ -n "$branch_name" ]] && say "branch=$branch_name"
-  say "session=$session_id"
-  say "prompt=inline"
+  TASK_SESSION_ID="$session_id"
+  emit_task_result "ok" "Task launched"
 }
 
 need agent
