@@ -23,8 +23,11 @@ This command is available globally, so the way to invoke an agent is just callin
 
 ## Dev servers
 Dev servers like vite, expo, next, etc should always start in a new cmux tab (not workspace).
-Create with `cmux new-surface --type terminal --pane <current-pane>`, rename with `cmux rename-tab --surface <ref> "name"`,
-send command with `cmux send --surface <ref> "command\n"`. Use descriptive names like `vite-dev`, `expo-dev`.
+Always create them in the current pane, rename them, move them to the end of that pane's tab list, then send the command.
+Use `cmux identify --json` to get the current pane, create with `cmux new-surface --type terminal --pane <current-pane>`,
+rename with `cmux rename-tab --surface <ref> "name"`, inspect order with `cmux list-pane-surfaces --pane <current-pane> --json`,
+move to the end with `cmux reorder-surface --surface <ref> --after <current-last-surface>`, then send command with
+`cmux send --surface <ref> "command\n"`. Use descriptive names like `vite-dev`, `expo-dev`.
 
 ## Browser Automation
 All browser automation uses **cmux browser** - never Chrome MCP, Chrome DevTools, or `open` commands. Use the `cmux-browser` skill
