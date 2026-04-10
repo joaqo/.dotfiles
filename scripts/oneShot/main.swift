@@ -97,8 +97,12 @@ Examples:
 - "Open a page in the browser" -> use /task.
 - "Review these pages and suggest improvements" -> use /task.
 - "Whats our top selling user" -> use /task.
+- A bare Notion link -> use /task.
+- A Notion link plus implementation/review/debug wording -> use /task.
 
-Anything that is not explicitly notion -> use /task
+Anything that is not explicitly me asking you to createa or modify a notion -> use /task
+Use /notion only when the user explicitly asks you to save, fetch, list, update, or organize data in Notion itself.
+A lone Notion URL is not an explicit Notion-management request.
 Your final answer must be JSON matching the schema.
 It must describe what actually happened after you called the chosen skill.
 
