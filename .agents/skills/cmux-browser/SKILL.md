@@ -49,6 +49,19 @@ cmux --json browser surface:7 click e2 --snapshot-after
 cmux browser surface:7 snapshot --interactive
 ```
 
+## Slow Pages And Replacement Policy
+
+Browser surfaces can be slow to load or briefly time out. Do not assume a timeout means the page is stuck.
+
+Rules:
+- Stay on the same browser surface by default.
+- If a browser command times out, retry on that same surface first.
+- Spend about 30 seconds total retrying and waiting on the same surface before calling it stuck.
+- Never respond to a slow page by opening extra browser pages or surfaces for the same task.
+- If the surface is still stuck after ~30 seconds, close that surface first with `cmux close-surface --surface surface:N`.
+- Only after closing the stuck surface may you open one replacement surface.
+- Do not fan out multiple replacement browser surfaces for one stuck page.
+
 ## Flag Safety
 
 For commands that take free-text positional args, especially `type` and the rarer `fill`, do not append flags after the text value.

@@ -20,6 +20,7 @@ Use this skill to control non-browser cmux topology and routing.
 - Use `caller.workspace_ref` plus explicit pane/surface refs you just created or verified.
 - Do not infer the target from `focused.workspace_ref`, `focused.pane_ref`, or `focused.surface_ref` unless the user explicitly wants the currently focused UI.
 - After creating or moving anything, verify placement with `cmux tree`, `cmux list-panes`, or `cmux list-pane-surfaces` before continuing.
+- For browser surfaces: if a command times out, keep retrying the same surface for about 30 seconds before calling it stuck. Do not open extra replacement pages during that window. If replacement is needed, close the stuck surface first with `cmux close-surface --surface ...`, then open one replacement surface.
 
 ## Fast Start
 
