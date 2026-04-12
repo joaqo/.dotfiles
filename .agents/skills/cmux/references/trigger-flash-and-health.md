@@ -20,4 +20,4 @@ cmux surface-health
 cmux surface-health --workspace workspace:2
 ```
 
-Use this before routing focused input if UI state may be stale.
+Use this before routing explicit `--surface` or `--workspace` input if target state may be stale.

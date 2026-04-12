@@ -2,6 +2,8 @@
 
 Window/workspace lifecycle and ordering operations.
 
+Automation rule: never call `focus-window` or `select-workspace` unless the user explicitly asks to change visible UI focus.
+
 ## Inspect
 
 ```bash
@@ -11,16 +13,23 @@ cmux list-workspaces
 cmux current-workspace
 ```
 
-## Create/Focus/Close
+## Create/Close
 
 ```bash
 cmux new-window
-cmux focus-window --window window:2
 cmux close-window --window window:2
 
 cmux new-workspace
-cmux select-workspace --workspace workspace:4
 cmux close-workspace --workspace workspace:4
+```
+
+## Manual Focus Commands
+
+Only use these when the user explicitly asks to change visible UI focus.
+
+```bash
+cmux focus-window --window window:2
+cmux select-workspace --workspace workspace:4
 ```
 
 ## Reorder and Move

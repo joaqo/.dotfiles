@@ -2,6 +2,8 @@
 
 ## Opening a Markdown Panel
 
+Automation rule: do not call `cmux select-workspace` or other cmux focus commands before `cmux markdown open`. Route via caller context or explicit refs.
+
 ```bash
 cmux markdown open <path>
 cmux markdown <path>          # shorthand (implicit "open")
@@ -12,8 +14,8 @@ cmux markdown <path>          # shorthand (implicit "open")
 | Flag | Description | Default |
 |------|-------------|---------|
 | `--workspace <id\|ref\|index>` | Target workspace | `$CMUX_WORKSPACE_ID` |
-| `--surface <id\|ref\|index>` | Source surface to split from | Focused surface |
-| `--window <id\|ref>` | Target window | Current window |
+| `--surface <id\|ref\|index>` | Source surface to split from | Caller surface |
+| `--window <id\|ref>` | Target window | Caller window |
 
 ### Output
 

@@ -15,7 +15,7 @@ Most v2-backed commands accept:
 cmux identify --json
 ```
 
-Returns current focused topology plus optional caller resolution.
+Returns both current focused topology and caller resolution. For automation, route from `caller`, not from `focused`.
 
 ## Caller Override
 

@@ -2,17 +2,16 @@
 
 Send text and keystrokes to terminal surfaces programmatically.
 
+Automation rule: never rely on the focused surface. Resolve a target surface first, then pass `--surface`.
+
 ## Send Text
 
 ```bash
-# Send to focused surface
-cmux send "npm run dev\n"
-
 # Send to specific surface
 cmux send --surface surface:7 "echo hello\n"
 
 # Send without trailing newline (won't execute)
-cmux send "partial command"
+cmux send --surface surface:7 "partial command"
 ```
 
 > Use `\n` to execute the command. Without it, text is typed but not submitted.
@@ -20,23 +19,19 @@ cmux send "partial command"
 ## Send Keys
 
 ```bash
-# Send to focused surface
-cmux send-key enter
-cmux send-key tab
-cmux send-key escape
-cmux send-key backspace
-cmux send-key up
-cmux send-key down
-cmux send-key left
-cmux send-key right
-
-# Send to specific surface
 cmux send-key --surface surface:7 enter
+cmux send-key --surface surface:7 tab
+cmux send-key --surface surface:7 escape
+cmux send-key --surface surface:7 backspace
+cmux send-key --surface surface:7 up
+cmux send-key --surface surface:7 down
+cmux send-key --surface surface:7 left
+cmux send-key --surface surface:7 right
 
 # Modifier combinations
-cmux send-key ctrl+c
-cmux send-key ctrl+d
-cmux send-key ctrl+z
+cmux send-key --surface surface:7 ctrl+c
+cmux send-key --surface surface:7 ctrl+d
+cmux send-key --surface surface:7 ctrl+z
 ```
 
 ## Common Patterns

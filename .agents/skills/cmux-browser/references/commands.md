@@ -17,6 +17,8 @@ This maps common `agent-browser` usage to `cmux browser` usage.
 
 ## Core Command Groups
 
+Automation rule: do not call `cmux select-workspace` or other cmux focus commands before browser commands. Use caller context or explicit refs and operate on unfocused workspaces directly.
+
 ### Navigation
 
 ```bash

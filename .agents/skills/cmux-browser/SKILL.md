@@ -104,6 +104,7 @@ Notes:
 - Never use `cmux browser open` to create a second browser for a task in a workspace that already has a browser pane.
 - Route browser actions from `caller` context or explicit refs, not `focused`.
 - The user often views another workspace while the agent works, so `focused` usually points at unrelated UI state.
+- Never call `cmux select-workspace` or any cmux focus command before browser actions. Use `cmux browser <surface> ...` directly on unfocused workspaces.
 - After opening a browser, verify workspace/pane/surface placement before continuing.
 - CLI output defaults to short refs (`surface:N`, `pane:N`, `workspace:N`, `window:N`).
 - UUIDs are still accepted on input; only request UUID output when needed (`--id-format uuids|both`).

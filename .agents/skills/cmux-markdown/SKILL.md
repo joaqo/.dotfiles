@@ -100,6 +100,8 @@ cmux markdown open plan.md --surface surface:5
 cmux markdown open plan.md --window window:1
 ```
 
+Do not call `cmux select-workspace` or other cmux focus commands before `cmux markdown open`. Route via caller context or explicit refs and leave the user's current focus alone.
+
 ## Deep-Dive References
 
 | Reference | When to Use |
