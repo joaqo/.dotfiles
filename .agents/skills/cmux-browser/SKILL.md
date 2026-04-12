@@ -99,6 +99,9 @@ cmux browser open-split https://example.com
 ```
 
 Notes:
+- Treat `cmux browser open` as a routing/reuse command, not a topology command.
+- If you need a guaranteed new visible browser context, use `cmux new-pane --type browser --url <url>` instead of `cmux browser open`.
+- Never use `cmux browser open` to create a second browser for a task in a workspace that already has a browser pane.
 - Route browser actions from `caller` context or explicit refs, not `focused`.
 - The user often views another workspace while the agent works, so `focused` usually points at unrelated UI state.
 - After opening a browser, verify workspace/pane/surface placement before continuing.
