@@ -50,6 +50,7 @@ close_workspace() {
     return 0
   fi
 
+  cd /
   cmux close-workspace --workspace "$workspace_ref"
   say "workspace=closed:$workspace_ref"
 }
