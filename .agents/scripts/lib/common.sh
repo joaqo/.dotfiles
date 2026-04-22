@@ -50,11 +50,6 @@ close_workspace() {
     return 0
   fi
 
-  if [[ "${AGENT_TASK_WORKSPACE:-}" != "1" ]]; then
-    say "workspace=skipped:not-task-workspace"
-    return 0
-  fi
-
   cmux close-workspace --workspace "$workspace_ref"
   say "workspace=closed:$workspace_ref"
 }

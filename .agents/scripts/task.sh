@@ -97,7 +97,7 @@ main() {
   TASK_TARGET_CWD="$target_cwd"
 
   workspace_name="$(derive_workspace_name "$target_cwd" "$branch_name")"
-  launch_command="AGENT_TASK_WORKSPACE=1 agent open $(shell_quote "$PROMPT_TEXT")"
+  launch_command="agent open $(shell_quote "$PROMPT_TEXT")"
 
   launch_workspace "$workspace_name" "$target_cwd" "$launch_command"
   TASK_WORKSPACE_REF="${LAUNCH_WORKSPACE_REF:-}"
