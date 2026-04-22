@@ -17,10 +17,8 @@ PROMPT_TEXT=""
 TASK_PROJECT=""
 TASK_TARGET_CWD=""
 TASK_WORKSPACE_REF=""
-TASK_SESSION_ID=""
 TASK_BRANCH=""
 TASK_PROMPT_SOURCE="inline"
-TASK_LAUNCH_RETRIED=0
 QUIET_SAY_OUTPUT=1
 
 emit_task_result() {
@@ -36,10 +34,8 @@ emit_task_result() {
     --arg project "${TASK_PROJECT:-}" \
     --arg cwd "${TASK_TARGET_CWD:-}" \
     --arg workspace "${TASK_WORKSPACE_REF:-}" \
-    --arg session "${TASK_SESSION_ID:-}" \
     --arg branch "${TASK_BRANCH:-}" \
-    --arg prompt_source "${TASK_PROMPT_SOURCE:-}" \
-    --argjson launch_retried "$TASK_LAUNCH_RETRIED" '
+    --arg prompt_source "${TASK_PROMPT_SOURCE:-}" '
       {
         route: $route,
         status: $status,
@@ -48,10 +44,8 @@ emit_task_result() {
           project: (if $project == "" then null else $project end),
           cwd: (if $cwd == "" then null else $cwd end),
           workspace: (if $workspace == "" then null else $workspace end),
-          session: (if $session == "" then null else $session end),
           branch: (if $branch == "" then null else $branch end),
-          prompt_source: (if $prompt_source == "" then null else $prompt_source end),
-          launch_retried: $launch_retried
+          prompt_source: (if $prompt_source == "" then null else $prompt_source end)
         },
         error: (if $error == "" then null else $error end)
       }
@@ -76,62 +70,8 @@ derive_workspace_name() {
   fi
 }
 
-wait_for_task_session() {
-  local target_cwd="$1"
-  local prompt_text="$2"
-  local started_after_ms="$3"
-  local attempt session_id
-
-  for attempt in {1..100}; do
-    session_id="$(
-      agent sessions --json 2>/dev/null | jq -sr \
-        --arg cwd "$target_cwd" \
-        --arg prompt "$prompt_text" \
-        --argjson started_after_ms "$started_after_ms" '
-          map(
-            select(
-              .cwd == $cwd
-              and (
-                (.started_at // 0) >= $started_after_ms
-                or (.updated_at // 0) >= $started_after_ms
-              )
-              and (
-                (.title // "") == $prompt
-                or ((.command // "") | contains($prompt))
-              )
-            )
-          )
-          | sort_by(.updated_at // 0)
-          | last
-          | .id // empty
-        '
-    )"
-
-    if [[ -n "$session_id" ]]; then
-      printf '%s\n' "$session_id"
-      return 0
-    fi
-
-    sleep 0.1
-  done
-
-  return 1
-}
-
-retry_workspace_launch_command() {
-  local workspace_ref="$1"
-  local surface_ref="$2"
-  local command_text="$3"
-
-  [[ -n "$workspace_ref" ]] || return 1
-  [[ -n "$surface_ref" ]] || surface_ref="$(workspace_primary_terminal_surface "$workspace_ref")"
-  [[ -n "$surface_ref" ]] || return 1
-
-  cmux_send_to_surface "$workspace_ref" "$surface_ref" "${command_text}\\n"
-}
-
 main() {
-  local base_cwd repo_root main_repo effective_project branch_name target_cwd workspace_name launch_command launch_started_ms retry_started_ms session_id
+  local base_cwd repo_root main_repo effective_project branch_name target_cwd workspace_name launch_command
 
   [[ -n "$PROJECT_PATH" ]] || fail "missing-project-path"
   [[ -n "$PROMPT_TEXT" ]] || fail "missing-prompt"
@@ -158,18 +98,9 @@ main() {
 
   workspace_name="$(derive_workspace_name "$target_cwd" "$branch_name")"
   launch_command="AGENT_TASK_WORKSPACE=1 agent open $(shell_quote "$PROMPT_TEXT")"
-  launch_started_ms="$(( $(date +%s) * 1000 ))"
 
   launch_workspace "$workspace_name" "$target_cwd" "$launch_command"
   TASK_WORKSPACE_REF="${LAUNCH_WORKSPACE_REF:-}"
-  session_id="$(wait_for_task_session "$target_cwd" "$PROMPT_TEXT" "$launch_started_ms")" || {
-    TASK_LAUNCH_RETRIED=1
-    retry_started_ms="$(( $(date +%s) * 1000 ))"
-    retry_workspace_launch_command "${LAUNCH_WORKSPACE_REF:-}" "${LAUNCH_WORKSPACE_PRIMARY_SURFACE_REF:-}" "$launch_command" \
-      || fail "workspace-launch-command-retry-failed:${LAUNCH_WORKSPACE_REF:-unknown}"
-    session_id="$(wait_for_task_session "$target_cwd" "$PROMPT_TEXT" "$retry_started_ms")" || fail "agent-session-not-detected:$target_cwd"
-  }
-  TASK_SESSION_ID="$session_id"
   emit_task_result "ok" "Task launched"
 }
 

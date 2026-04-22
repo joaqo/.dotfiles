@@ -46,20 +46,14 @@ private let schema = #"""
         "workspace": {
           "type": ["string", "null"]
         },
-        "session": {
-          "type": ["string", "null"]
-        },
         "branch": {
           "type": ["string", "null"]
         },
         "prompt_source": {
           "type": ["string", "null"]
-        },
-        "launch_retried": {
-          "type": ["boolean", "null"]
         }
       },
-      "required": ["project", "cwd", "workspace", "session", "branch", "prompt_source", "launch_retried"],
+      "required": ["project", "cwd", "workspace", "branch", "prompt_source"],
       "additionalProperties": false
     },
     "error": {
@@ -118,7 +112,7 @@ For /task:
 - Run `task-run`.
 - Inspect the real `task-run` output before filling the schema.
 - Never claim task launch success unless the output proves it.
-- When task launch succeeds, include verified fields in `data` when available, especially `session`, and also `workspace`, `cwd`, `branch`, `project` when present.
+- When task launch succeeds, include verified fields in `data` when available, especially `workspace`, and also `cwd`, `branch`, `project` when present.
 - When task launch fails, set `status` to `error` and propagate the exact error text.
 
 For /notion:
@@ -419,9 +413,9 @@ final class ViewModel: ObservableObject {
         }
 
         if skill == "task", status == "ok" {
-            guard let session = dataObject["session"] as? String,
-                  !session.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-                return "Missing `data.session` for successful task response"
+            guard let workspace = dataObject["workspace"] as? String,
+                  !workspace.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+                return "Missing `data.workspace` for successful task response"
             }
         }
 
