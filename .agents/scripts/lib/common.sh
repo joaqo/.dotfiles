@@ -40,7 +40,7 @@ shell_quote() {
 }
 
 current_workspace_ref() {
-  cmux identify --json 2>/dev/null | jq -r '.caller.workspace_ref // empty' 2>/dev/null || true
+  printf '%s\n' "${CMUX_WORKSPACE_ID:-}"
 }
 
 close_workspace() {
