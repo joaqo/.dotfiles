@@ -14,6 +14,7 @@ PROJECT_PATH=""
 WORKTREE_BRANCH=""
 WORKSPACE_NAME=""
 PROMPT_TEXT=""
+AGENT_PROFILE=""
 TASK_PROJECT=""
 TASK_TARGET_CWD=""
 TASK_WORKSPACE_REF=""
@@ -97,7 +98,7 @@ main() {
   TASK_TARGET_CWD="$target_cwd"
 
   workspace_name="$(derive_workspace_name "$target_cwd" "$branch_name")"
-  launch_command="agent open $(shell_quote "$PROMPT_TEXT")"
+  launch_command="agent open${AGENT_PROFILE:+ $AGENT_PROFILE} $(shell_quote "$PROMPT_TEXT")"
 
   launch_workspace "$workspace_name" "$target_cwd" "$launch_command"
   TASK_WORKSPACE_REF="${LAUNCH_WORKSPACE_REF:-}"
@@ -120,6 +121,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     --prompt)
       PROMPT_TEXT="${2:-}"
+      shift 2
+      ;;
+    --agent)
+      AGENT_PROFILE="${2:-}"
+      case "$AGENT_PROFILE" in
+        codex|claude) ;;
+        *) fail "invalid-agent:$AGENT_PROFILE (expected codex|claude)" ;;
+      esac
       shift 2
       ;;
     -*)

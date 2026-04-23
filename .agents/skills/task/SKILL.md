@@ -21,6 +21,7 @@ task-run <project-path> --worktree <branch-name> --prompt "<task prompt>"
 
 - Optional flags:
 - `--workspace-name <name>`
+- `--agent <codex|claude>` — force the worker agent to use a specific profile (`agent open codex ...` / `agent open claude ...`). Omit to use the default `agent` profile. Only pass this when the user explicitly asks for codex or claude.
 - Omit `--worktree` only when the user explicitly asked for no worktree
 
 - After task launches, stop.
