@@ -32,7 +32,6 @@ Symlinks dotfiles to ~, installs fzf, language servers (pnpm), ripgrep, compiles
   - Do not create `agents/openai.yaml` inside authored global skills. You always get confused by this because one of our skills does that, but that is only needed for that one skill.
 - `.claude/` - Claude Code settings, hooks, and commands (symlinked)
 - `bin/` - custom scripts: `autocommit` (claude haiku commit msgs), `kp` (fzf process killer), `focus-iterm-session`
-- `scripts/oneShot/main.swift` - tiny Swift GUI for sending prompts + images to `agent exec`, with logs and notifications. Rebuild after edits: `cd ~/.dotfiles/scripts/oneShot && swiftc -parse-as-library -o oneShot -framework AppKit -framework SwiftUI main.swift`
 - `scripts/NvimInITerm.applescript` - makes macOS default to nvim+iTerm for code and text files. Compiled to ~/Applications/NvimInITerm.app, registered as default handler for 50+ file types via duti.
 
 ## Style

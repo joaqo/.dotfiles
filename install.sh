@@ -66,9 +66,6 @@ ln -s -f ~/agent/agent ~/.local/bin/agent
 ln -s -f ~/notion/notion ~/.local/bin/notion
 ln -s -f /Applications/cmux.app/Contents/Resources/bin/cmux ~/.local/bin/cmux
 
-cd ~/.dotfiles/scripts/oneShot && swiftc -parse-as-library -o oneShot -framework AppKit -framework SwiftUI main.swift
-ln -s -f ~/.dotfiles/scripts/oneShot/oneShot ~/.local/bin/oneShot
-
 cd ~
 
 # NvimInITerm — open text/code files in nvim via iTerm
