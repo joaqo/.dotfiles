@@ -14,6 +14,12 @@ A wrapper around codex and claude code. All my tools call this cli tool when the
 or codex are permitted as I want to be able to quickly switch between them and  not develop a dependency on either of them.
 This command is available globally, so the way to invoke an agent is just calling `agent` the terminal.
 
+### (~/task-manager)
+A swift macOS app that allows me to create new tasks and manage existing tasks. Tasks are worktrees (in ~/worktrees) that have or have
+had an agent running on them. I usually launch new tasks using this tool, which is in charge of creating a new worktree, opening it in
+my IDE (currently creates a cmux workspace on the worktree) and launches an AI agent with an initial prompt so it starts working on the
+task I set out for it.
+
 ## My workflow
 - Editor: nvim
 - Terminal: cmux
