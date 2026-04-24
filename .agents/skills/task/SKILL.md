@@ -5,8 +5,7 @@ description: Personal workflow for creating new tasks across projects. Whenever 
 
 # Task Workflow
 
-- Pass the task prompt directly to `task-run`
-- Keep prompts reasonably short/simple so they fit cleanly in a normal CLI arg
+- Pass the task prompt to `task-run --prompt` verbatim, or as close to verbatim as possible. Do not paraphrase, summarize, or rewrite it. Routing bits aimed at the router (e.g. "run this on codex") can be dropped since they're handled via `--agent`.
 - Decide what repo this task belongs to
 - Decide what branch name to choose for the git worktree this task will run in
     - Always run tasks in a worktree unless the user explicitly says not to
