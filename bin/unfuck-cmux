@@ -1,0 +1,73 @@
+#!/bin/bash
+# unfuck-cmux - dismiss stuck AXSheet alerts that wedge cmux's socket RPC
+# See https://github.com/manaflow-ai/cmux/issues/2872
+
+set -euo pipefail
+
+action="${1:-dismiss}"
+
+case "$action" in
+  dismiss) button="Cancel" ;;
+  accept)  button="OK" ;;
+  list)    button="" ;;
+  *)
+    echo "usage: unfuck-cmux [dismiss|accept|list]" >&2
+    exit 1
+    ;;
+esac
+
+if [[ "$action" == "list" ]]; then
+  osascript <<'APPLESCRIPT'
+tell application "System Events"
+  tell process "cmux"
+    repeat with w in windows
+      try
+        repeat with s in sheets of w
+          log (name of w) & " -> sheet: " & (description of s)
+          repeat with b in buttons of s
+            log "  button: " & (name of b)
+          end repeat
+        end repeat
+      end try
+    end repeat
+  end tell
+end tell
+APPLESCRIPT
+  exit 0
+fi
+
+clicked=0
+while IFS= read -r window_name; do
+  [[ -z "$window_name" ]] && continue
+  if osascript -e "tell application \"System Events\" to tell process \"cmux\" to tell window \"$window_name\" to tell sheet 1 to click button \"$button\"" >/dev/null 2>&1; then
+    echo "clicked \"$button\" on sheet in window: $window_name"
+    clicked=$((clicked + 1))
+  fi
+done < <(osascript <<'APPLESCRIPT'
+tell application "System Events"
+  tell process "cmux"
+    set out to ""
+    repeat with w in windows
+      try
+        if (count of sheets of w) > 0 then
+          set out to out & (name of w) & linefeed
+        end if
+      end try
+    end repeat
+    return out
+  end tell
+end tell
+APPLESCRIPT
+)
+
+if [[ $clicked -eq 0 ]]; then
+  echo "no stuck sheets found"
+  exit 0
+fi
+
+if cmux ping >/dev/null 2>&1; then
+  echo "cmux socket recovered"
+else
+  echo "cmux socket still not responding — try 'unfuck-cmux list'" >&2
+  exit 1
+fi
