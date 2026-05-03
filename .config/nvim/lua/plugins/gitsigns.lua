@@ -7,6 +7,7 @@ return {
     "lewis6991/gitsigns.nvim",
     event = { "BufReadPre", "BufNewFile" },
     opts = {
+      base = "HEAD",
       signs = {
         add = { text = "│" },
         change = { text = "│" },
@@ -23,8 +24,8 @@ return {
         end
 
         -- stylua: ignore start
-        map("n", "]c", gs.next_hunk, "Next Hunk")
-        map("n", "[c", gs.prev_hunk, "Prev Hunk")
+        map("n", "]c", function() gs.nav_hunk("next", { target = "all" }) end, "Next Hunk")
+        map("n", "[c", function() gs.nav_hunk("prev", { target = "all" }) end, "Prev Hunk")
         map({ "n", "v" }, "<leader>hs", ":Gitsigns stage_hunk<CR>", "Stage Hunk")
         map({ "n", "v" }, "<leader>hr", ":Gitsigns reset_hunk<CR>", "Reset Hunk")
         map("n", "<leader>hS", gs.stage_buffer, "Stage Buffer")
