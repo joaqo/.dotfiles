@@ -88,9 +88,8 @@ create_generic_worktree() {
   local target
 
   target="$(derive_generic_worktree_path "$repo_root" "$branch_name")"
-  if [[ -d "$target" ]]; then
-    printf '%s\n' "$target"
-    return 0
+  if [[ -e "$target" ]]; then
+    fail "worktree-target-exists:$target"
   fi
 
   if git -C "$repo_root" show-ref --verify --quiet "refs/heads/$branch_name"; then
