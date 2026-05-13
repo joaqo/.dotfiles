@@ -17,9 +17,8 @@ mellow_create_worktree() {
   need mellow
 
   target="$HOME/worktrees/${branch_name//\//-}"
-  if [[ -d "$target" ]]; then
-    printf '%s\n' "$target"
-    return 0
+  if [[ -e "$target" ]]; then
+    fail "worktree-target-exists:$target"
   fi
 
   mellow worktree add "$branch_name"

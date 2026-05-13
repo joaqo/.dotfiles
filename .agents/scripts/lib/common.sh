@@ -142,11 +142,10 @@ workspace_has_surface() {
 cmux_create_workspace() {
   local workspace_name="$1"
   local target_cwd="$2"
-  local command_text="$3"
   local workspace_ref attempt
 
   for attempt in {1..3}; do
-    workspace_ref="$(cmux new-workspace --name "$workspace_name" --cwd "$target_cwd" --command "$command_text" 2>/dev/null | awk '{print $2}')"
+    workspace_ref="$(cmux new-workspace --name "$workspace_name" --cwd "$target_cwd" 2>/dev/null | awk '{print $2}')"
     if [[ -n "$workspace_ref" ]] && workspace_exists "$workspace_ref"; then
       printf '%s\n' "$workspace_ref"
       return 0
@@ -199,12 +198,19 @@ launch_workspace() {
   local command_text="$3"
   local workspace_ref surface_ref
 
-  workspace_ref="$(cmux_create_workspace "$workspace_name" "$target_cwd" "$command_text")"
+  workspace_ref="$(cmux_create_workspace "$workspace_name" "$target_cwd")"
   [[ -n "$workspace_ref" ]] || fail "workspace-create-failed"
 
   LAUNCH_WORKSPACE_REF="$workspace_ref"
   LAUNCH_WORKSPACE_PRIMARY_SURFACE_REF="$(workspace_primary_terminal_surface "$workspace_ref")"
   [[ -n "$LAUNCH_WORKSPACE_PRIMARY_SURFACE_REF" ]] || fail "workspace-primary-surface-not-found:$workspace_ref"
+
+  # Send the launch command to the primary surface after it exists, rather than
+  # passing --command to new-workspace. cmux new-workspace --command races the
+  # workspace's shell startup and silently drops keystrokes when the PTY isn't
+  # ready, producing a workspace with no agent running.
+  cmux_send_to_surface "$workspace_ref" "$LAUNCH_WORKSPACE_PRIMARY_SURFACE_REF" "${command_text}\n" \
+    || fail "workspace-primary-surface-send-failed:$workspace_ref:$LAUNCH_WORKSPACE_PRIMARY_SURFACE_REF"
 
   surface_ref="$(cmux_create_surface "$workspace_ref")"
   [[ -n "$surface_ref" ]] || fail "workspace-surface-create-failed:$workspace_ref:nvim"
