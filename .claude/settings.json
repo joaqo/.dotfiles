@@ -25,5 +25,6 @@
   "skipDangerousModePermissionPrompt": true,
   "editorMode": "normal",
   "autoCompactEnabled": false,
-  "voiceEnabled": true
+  "voiceEnabled": true,
+  "agentPushNotifEnabled": true
 }
