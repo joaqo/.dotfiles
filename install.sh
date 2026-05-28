@@ -64,7 +64,6 @@ done
 
 ln -s -f ~/agent/agent ~/.local/bin/agent
 ln -s -f ~/notion/notion ~/.local/bin/notion
-ln -s -f /Applications/cmux.app/Contents/Resources/bin/cmux ~/.local/bin/cmux
 
 cd ~
 

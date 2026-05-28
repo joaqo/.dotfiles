@@ -1,4 +1,0 @@
-interface:
-  display_name: "cmux Core"
-  short_description: "Control windows/workspaces/panes/surfaces and routing with cmux CLI."
-  default_prompt: "Use this skill to inspect and manipulate cmux topology: identify caller context, target explicit handles, create/route/move/reorder windows/workspaces/panes/surfaces, and avoid any workspace or pane focus changes unless the user explicitly asks for them."
