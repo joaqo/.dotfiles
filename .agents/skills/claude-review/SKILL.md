@@ -7,26 +7,22 @@ You just finished a task with uncommitted changes. Run a Claude code review on t
 
 ## Steps
 
-1. **Spawn an explorer subagent** with this prompt:
+1. **Run Claude directly** from the current working directory:
 
-   > Run this in bash from the current working directory:
-   >
-   > ```bash
-   > agent exec claude "Review the uncommitted changes in the current working directory. Focus on bugs, risks, behavioral regressions, and missing tests. Reply with only the final review summary." --ephemeral
-   > ```
-   >
-   > It emits intermediate output followed by a final review summary. Reply with ONLY that final summary — verbatim, complete, untruncated, no preamble, no commentary, no markdown wrappers. If the command fails, reply with the raw error output verbatim.
+   ```bash
+   agent exec claude "Review the uncommitted changes in the current working directory. Focus on bugs, risks, behavioral regressions, and missing tests. Reply with only the final review summary." --ephemeral
+   ```
 
-   The subagent returns the review. The noisy intermediate output stays in its context, not yours.
+   If you are running from Codex, this only works when approvals go to the user, or in Full Access. If the thread is using Guardian/Auto Review approvals, the command can be rejected before the user sees an approval prompt because it sends private workspace data to Claude. Do not delegate this through a subagent. If escalation is rejected, tell the user to switch the thread permissions from Guardian/Auto Review to user approval or Full Access, then rerun the command.
 
-2. **Read the review carefully.** You have more context than the subagent — you know what the task was, what tradeoffs were considered, what's intentional vs. accidental.
+2. **Read the review carefully.** You have more context than Claude — you know what the task was, what tradeoffs were considered, what's intentional vs. accidental.
 
 3. **Show the user both pieces**, in this format:
 
    ```
    ## Claude review
 
-   <subagent's review, verbatim>
+   <Claude's review, verbatim>
 
    ## My assessment
 
