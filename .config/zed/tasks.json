@@ -31,21 +31,21 @@
   },
   {
     "label": "Worktree Rebase",
-    "command": "worktree-rebase",
+    "command": "wmerge",
     "hide": "on_success",
     "allow_concurrent_runs": true,
     "use_new_terminal": true
   },
   {
     "label": "Worktree Delete",
-    "command": "worktree-delete",
+    "command": "wdelete",
     "hide": "on_success",
     "allow_concurrent_runs": true,
     "use_new_terminal": true
   },
   {
     "label": "Worktree Open",
-    "command": "worktree-open",
+    "command": "wopen",
     "hide": "on_success",
     "allow_concurrent_runs": true,
     "use_new_terminal": true

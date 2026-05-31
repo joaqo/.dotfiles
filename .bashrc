@@ -217,175 +217,120 @@ notify() {
 }
 
 # Git worktree management
-worktree-add() {
-  read -p "Enter worktree name: " name
-  git worktree add $WORKTREE_DIR/$name
+wadd() {
+  local name=$1
+  if [ -z "$name" ]; then
+    echo "Usage: wadd <name>" >&2
+    return 1
+  fi
+  git worktree add $WORKTREE_DIR/$name && cd $WORKTREE_DIR/$name
 }
 
-worktree-rebase() {
+wmerge() {
   # Colors
   local RED='\033[0;31m'
   local GREEN='\033[0;32m'
   local YELLOW='\033[0;33m'
   local NC='\033[0m' # No Color
 
-  if [ $# -eq 0 ]; then
-    local branches=($(git worktree list | grep -o '\[.*\]' | tr -d '[]' | grep -v '^main$'))
-
-    # Use fzf if available, otherwise use select menu
-    if command -v fzf &> /dev/null; then
-      name=$(printf '%s\n' "${branches[@]}" | fzf --height=40% --reverse --no-info --prompt="Select worktree to rebase: ")
-      [ -z "$name" ] && return 0  # User cancelled
-    else
-      echo -e "${YELLOW}Select worktree to rebase:${NC}"
-      select name in "${branches[@]}"; do
-        [ -n "$name" ] && break
-      done
-    fi
-  else
-    name=$1
+  # The worktree we're standing in
+  local wt
+  wt=$(git rev-parse --show-toplevel 2>/dev/null)
+  if [ -z "$wt" ]; then
+    echo -e "${RED}✗ Not inside a git repo${NC}" >&2
+    return 1
   fi
 
-  # Path to the primary (original) worktree
+  # The primary (main) worktree and its branch
+  local root
   root=$(git worktree list --porcelain | awk '/^worktree / {print $2; exit}')
+  if [ "$wt" == "$root" ]; then
+    echo -e "${RED}✗ Already in the main worktree${NC}" >&2
+    return 1
+  fi
+  local main
+  main=$(git -C "$root" symbolic-ref --quiet --short HEAD)
 
-  # Path to the worktree that has branch "$name" checked out
-  wt=$(git worktree list --porcelain | awk -v b="refs/heads/$name" '
-    /^worktree / { w=$2 }
-    /^branch / && $2==b { print w; exit }
-  ')
-
-  if [ -z "$wt" ]; then
-    echo -e "${RED}✗ No worktree found for branch '$name'${NC}"
+  # The branch checked out here
+  local name
+  name=$(git symbolic-ref --quiet --short HEAD)
+  if [ -z "$name" ]; then
+    echo -e "${RED}✗ Detached HEAD, no branch to merge${NC}" >&2
     return 1
   fi
 
   # Check for uncommitted changes
-  if ! git -C "$wt" diff-index --quiet HEAD --; then
+  if ! git diff-index --quiet HEAD --; then
     echo -e "${RED}✗ Worktree has uncommitted changes${NC}"
     echo -e "${YELLOW}Commit or stash changes before rebasing${NC}"
     return 1
   fi
 
-  # Rebase the worktree's branch onto main
-  echo -e "${YELLOW}Rebasing $name onto main...${NC}"
-  if ! git -C "$wt" rebase main; then
+  # Rebase this branch onto main
+  echo -e "${YELLOW}Rebasing $name onto $main...${NC}"
+  if ! git rebase "$main"; then
     echo -e "${RED}✗ Rebase failed${NC}"
-    echo -e "${YELLOW}To resolve:${NC}"
-    echo -e "  cd $wt"
-    echo -e "  # Fix conflicts, then:"
-    echo -e "  git rebase --continue"
-    echo -e "  # Or abort:"
-    echo -e "  git rebase --abort"
+    echo -e "${YELLOW}To resolve: fix conflicts, then 'git rebase --continue' (or --abort)${NC}"
     return 1
   fi
-  echo -e "${GREEN}✓ Rebased onto main${NC}"
+  echo -e "${GREEN}✓ Rebased onto $main${NC}"
 
   # Fast-forward main in the primary worktree
-  echo -e "${YELLOW}Switching to main...${NC}"
-  if ! git -C "$root" switch main; then
-    echo -e "${RED}✗ Failed to switch to main${NC}"
-    echo -e "${YELLOW}Check if main branch exists or has uncommitted changes${NC}"
-    return 1
-  fi
-
-  echo -e "${YELLOW}Merging $name into main...${NC}"
+  echo -e "${YELLOW}Merging $name into $main...${NC}"
   if ! git -C "$root" merge --ff-only "$name"; then
     echo -e "${RED}✗ Fast-forward merge failed${NC}"
-    echo -e "${YELLOW}This usually means main has diverged. The rebase succeeded but merge failed.${NC}"
-    echo -e "${YELLOW}You may need to manually merge or rebase differently.${NC}"
+    echo -e "${YELLOW}$main may have diverged. The rebase succeeded but merge failed.${NC}"
     return 1
   fi
-  echo -e "${GREEN}✓ Merged into main${NC}"
+  echo -e "${GREEN}✓ Merged into $main${NC}"
 
-  # Remove worktree + branch
+  # Remove worktree + branch (cd out first)
   echo -e "${YELLOW}Removing worktree...${NC}"
-
-  # If inside the worktree being deleted, cd out first
-  if [[ "$PWD" == "$wt"* ]]; then
-    cd "$HOME/mellow" || cd "$HOME"
-  fi
-
+  cd "$root" || cd "$HOME"
   if ! git worktree remove "$wt"; then
     echo -e "${RED}✗ Failed to remove worktree${NC}"
-    echo -e "${YELLOW}You may need to remove it manually:${NC}"
     echo -e "  git worktree remove $wt --force"
     return 1
   fi
-
   if ! git -C "$root" branch -d "$name"; then
-    echo -e "${YELLOW}⚠ Branch '$name' could not be deleted (may have unmerged changes)${NC}"
-    echo -e "${YELLOW}Use 'git branch -D $name' to force delete${NC}"
+    echo -e "${YELLOW}⚠ Branch '$name' could not be deleted; use 'git branch -D $name'${NC}"
   fi
 
   echo -e "${GREEN}✓ Cleaned up${NC}"
 }
 
-worktree-delete() {
-  # Colors
+wdelete() {
   local RED='\033[0;31m'
-  local YELLOW='\033[0;33m'
-  local GREEN='\033[0;32m'
-  local BOLD_BLACK='\033[1;30m'
-  local NC='\033[0m' # No Color
+  local NC='\033[0m'
 
-  if [ $# -eq 0 ]; then
-    local branches=($(
-      git worktree list --porcelain \
-      | awk '
-          /^worktree / {
-            wt++
-            next
-          }
-          wt > 1 && /^branch / {
-            sub("refs/heads/", "", $2)
-            print $2
-          }
-        '
-    ))
-
-    # Use fzf if available, otherwise use select menu
-    if command -v fzf &> /dev/null; then
-      name=$(printf '%s\n' "${branches[@]}" | fzf --height=40% --reverse --no-info --prompt="Select worktree to remove: ")
-      [ -z "$name" ] && return 0  # User cancelled
-    else
-      echo "Select worktree to remove:"
-      select name in "${branches[@]}"; do
-        [ -n "$name" ] && break
-      done
-    fi
-  else
-    name=$1
-  fi
-
-  # Confirm before removing
-  echo -e "${RED}⚠  Will delete worktree and branch ${BOLD_BLACK}$name${NC}"
-  read -p "Delete? [y/N] " -n 1 -r
-  echo
-  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo "Cancelled."
-    return 0
-  fi
-
+  # Path to the worktree we're standing in
   local wt_path
-  wt_path=$(git worktree list --porcelain | awk -v b="refs/heads/$name" '
-    /^worktree / { w=$2 }
-    /^branch / && $2==b { print w; exit }
-  ')
+  wt_path=$(git rev-parse --show-toplevel 2>/dev/null)
   if [ -z "$wt_path" ]; then
-    echo -e "${RED}✗ No worktree found for branch '$name'${NC}"
+    echo -e "${RED}✗ Not inside a git repo${NC}" >&2
     return 1
   fi
 
-  # If inside the worktree being deleted, cd out first
-  if [[ "$PWD" == "$wt_path"* ]]; then
-    cd "$HOME/mellow" || cd "$HOME"
+  # Refuse to delete the main worktree
+  local main_path
+  main_path=$(git worktree list --porcelain | awk '/^worktree / {print $2; exit}')
+  if [ "$wt_path" == "$main_path" ]; then
+    echo -e "${RED}✗ Refusing to delete the main worktree${NC}" >&2
+    return 1
   fi
 
-  git worktree remove "$wt_path" --force && git branch -d $name --force
+  # Branch checked out here (may be empty if detached)
+  local name
+  name=$(git symbolic-ref --quiet --short HEAD 2>/dev/null)
+
+  # cd out before removing
+  cd "$main_path" || cd "$HOME"
+
+  git worktree remove "$wt_path" --force
+  [ -n "$name" ] && git branch -D "$name"
 }
 
-worktree-open() {
+wopen() {
   if [ $# -eq 0 ]; then
     local branches=($(git worktree list | grep -o '\[.*\]' | tr -d '[]' | grep -v '^main$'))
 
