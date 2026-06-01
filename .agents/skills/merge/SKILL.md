@@ -18,6 +18,5 @@ Constraints: Never squash, cherry-pick, or create merge commits.
 3. **Rebase** the source onto the main branch (`git rebase <main_branch>` from the source worktree).
    - On conflict: stop and consult. Show the conflicting files and diffs, state how you'd resolve each and why, phrased so the user can reply "ok" to let you proceed. Only resolve after they agree; if they decline, `git rebase --abort` and report. Then update the source commit to the new HEAD.
 4. **Fast-forward** main onto the rebased source: `git merge --ff-only <source_commit>` from the main worktree. After a rebase this must fast-forward; if it doesn't, stop and report.
-5. **Deinit**: if a `deinit.sh` exists at the source worktree root, run it before removing the worktree (from the source worktree). If it exits non-zero, stop and report.
-6. **Remove the worktree**: `cd` to the main worktree, `git worktree remove <source_worktree>`, then `git branch -d <source_branch>` if it had one. If `-d` refuses, report and suggest `-D` rather than force-deleting.
-7. Report how it landed (clean vs resolved conflicts).
+5. **Remove the worktree**: `cd` to the main worktree, `git worktree remove <source_worktree>`, then `git branch -d <source_branch>` if it had one. If `-d` refuses, report and suggest `-D` rather than force-deleting.
+6. Report how it landed (clean vs resolved conflicts).

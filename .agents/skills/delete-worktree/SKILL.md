@@ -1,6 +1,6 @@
 ---
 name: delete-worktree
-description: Delete the current worktree and its branch without merging — runs any deinit.sh at the worktree root, then removes the worktree.
+description: Delete the current worktree and its branch without merging — removes the worktree.
 ---
 
 # Delete Worktree
@@ -13,6 +13,5 @@ The source is the current `HEAD` (may be a branch or a detached Codex worktree).
 
 1. Read source state: `git rev-parse --show-toplevel` (source worktree), `git branch --show-current` (source branch, may be empty). If the working tree is dirty, stop and confirm with the user — deleting discards uncommitted work.
 2. Find the main worktree (the one on the main branch). If the source *is* the main worktree, stop — never delete the main worktree.
-3. **Deinit**: if a `deinit.sh` exists at the source worktree root, run it before removing the worktree (from the source worktree). If it exits non-zero, stop and report.
-4. **Remove the worktree**: `cd` to the main worktree, `git worktree remove <source_worktree>`, then `git branch -d <source_branch>` if it had one. If `-d` refuses (unmerged work), report and suggest `-D` rather than force-deleting.
-5. Report what was removed.
+3. **Remove the worktree**: `cd` to the main worktree, `git worktree remove <source_worktree>`, then `git branch -d <source_branch>` if it had one. If `-d` refuses (unmerged work), report and suggest `-D` rather than force-deleting.
+4. Report what was removed.
