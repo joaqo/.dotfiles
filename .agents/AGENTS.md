@@ -24,6 +24,7 @@ AI agent with an initial prompt so it starts working on the task I set out for i
 - Shell: bash
 - Python: uv
 - Git: commit message titles below 72 chars.
+- "main branch" / "main" means my **local** main, not `origin/main`, unless I say otherwise.
 
 ## Debugging
 When debugging a library/runtime bug, first search GitHub issues for the exact package(s) implicated by the stack trace or error.
@@ -52,3 +53,6 @@ Default to the shortest useful answer. Prefer 1-3 sentences unless more is stric
 Sacrifice grammar, transitions, pleasantries, and elaboration for brevity.
 Do not write long preambles, long summaries, or long explanations unless I explicitly ask for depth.
 You can think however long you want, but when talking to me keep it brief. I do not have time for long-winded answers or questions.
+
+## Code comments
+Only comment to capture non-obvious *why* or a gotcha. Never narrate what the code/JSX/layout does — if it's visible in the code, don't restate it. Specifically, don't write a comment that just restates a variable/ref/state and what the surrounding code does with it — if the name and the nearby lines already say it, write no comment (e.g. `// Whether the seller has typed in the stock field. Until they do, we keep it synced to the loaded value` above a `stockEdited` ref is banned — the name already says it). Match the file's existing comment density; default to one line, and prefer zero comments over a redundant one.
