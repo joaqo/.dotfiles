@@ -53,3 +53,4 @@ theme = Gruvbox Dark Hard
 macos-titlebar-style = tabs
 confirm-close-surface = false
 macos-option-as-alt = left
+keybind = global:ctrl+grave_accent=toggle_quick_terminal
