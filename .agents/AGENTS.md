@@ -1,4 +1,4 @@
-My name is Joaquín Alori, I am a developer from Uruguay, working on several projects.
+My name is Joaquín Alori, I am a developer from Uruguay, working on several projects. My phone number is +59898231030, and my github username is joaqo.
 
 ## Projects
 ### Mellow (~/mellow)
