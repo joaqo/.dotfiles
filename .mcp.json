@@ -1,9 +1,9 @@
 {
   "mcpServers": {
-    "maestro": {
+    "argent": {
       "type": "stdio",
-      "command": "maestro",
-      "args": ["mcp"]
+      "command": "npx",
+      "args": ["-y", "@swmansion/argent@latest", "mcp"]
     }
   }
 }
