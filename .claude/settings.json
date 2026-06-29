@@ -17,6 +17,7 @@
   "effortLevel": "high",
   "awaySummaryEnabled": false,
   "showClearContextOnPlanAccept": true,
+  "tui": "fullscreen",
   "voice": {
     "enabled": true,
     "mode": "hold"
