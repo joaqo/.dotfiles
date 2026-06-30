@@ -50,7 +50,10 @@ Constraints: Never squash, cherry-pick, or create merge commits.
 3. **Rebase** the source onto the main branch (`git rebase <main_branch>` from the source worktree).
    - On conflict: stop and consult. Show the conflicting files and diffs, state how you'd resolve each and why, phrased so the user can reply "ok" to let you proceed. Only resolve after they agree; if they decline, `git rebase --abort` and report. Then update the source commit to the new HEAD.
 4. **Fast-forward** main onto the rebased source: `git merge --ff-only <source_commit>` from the main worktree. After a rebase this must fast-forward; if it doesn't, stop and report.
-5. **Stop dev servers in the source worktree** first, or they'll rewrite files into the path and leave an orphaned stub. Run `mellow site kill`, `mellow sellerWeb kill`, `mellow favorites kill` from the worktree (each no-ops if no session).
+5. **Clean up resources this session/task spawned.** Only tear down what *this* work started — leave unrelated sims, tabs, and servers alone. Do the dev-server step before removing the worktree, or a live server will rewrite files into the path and leave an orphaned stub.
+   - **Dev servers**: stop any you started in this worktree. For mellow: `mellow site kill`, `mellow sellerWeb kill`, `mellow favorites kill` from the worktree (each no-ops if no session). Kill any other dev server you launched.
+   - **iOS simulators / Argent**: if you booted simulators or started Metro / simulator-servers this session, tear them down — `mcp__argent__stop-all-simulator-servers`, `mcp__argent__stop-metro`, then `xcrun simctl shutdown <udid>` for each sim *you* booted. Don't touch sims you didn't boot.
+   - **Chrome tabs**: close tabs you opened via the claude-in-chrome tools with `mcp__claude-in-chrome__tabs_close_mcp`. Don't close the user's other tabs.
 6. **Remove the worktree**: `cd` to the main worktree, `git worktree remove <source_worktree>`, then `git branch -d <source_branch>` if it had one. If `-d` refuses, report and suggest `-D` rather than force-deleting.
 7. Report how it landed (clean vs resolved conflicts).
 8. **Close the Ghostty tab** captured in step 1 (skip if the id was empty). Do this last, after reporting — it kills the running agent. Close by the saved id, not by working directory (the path is gone now):
