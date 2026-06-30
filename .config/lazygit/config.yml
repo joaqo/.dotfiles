@@ -1,5 +1,8 @@
 promptToReturnFromSubprocess: false
 
+gui:
+  expandFocusedSidePanel: true
+
 keybinding:
   commits:
     moveDownCommit: 'J'
