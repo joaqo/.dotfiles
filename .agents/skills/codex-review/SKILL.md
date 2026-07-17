@@ -21,17 +21,25 @@ You just finished a task with uncommitted changes. Run a Codex code review on th
 
 2. **Read the review carefully.** You have more context than the subagent — you know what the task was, what tradeoffs were considered, what's intentional vs. accidental.
 
-3. **Show the user both pieces**, in this format:
+3. **Show the user the findings in plain human language.** Do NOT paste the review verbatim — translate it. One numbered item per finding:
 
    ```
-   ## Codex review
+   ## Review findings
 
-   <subagent's review, verbatim>
+   1. **<3-5 word name>** — <what actually goes wrong, told as the concrete
+      scenario a user/seller/buyer would experience, in everyday words. No
+      jargon, no identifier soup. One to three sentences.> (`path/file.ts:12`)
+      → <your verdict: fix / skip / partial, and why, in one short clause>
 
-   ## My assessment
-
-   <your honest take>
+   2. ...
    ```
+
+   Example of the register: "the seller types `javascript:...` as the payment
+   link and it runs code on the buyer's page when tapped" — NOT "unvalidated
+   URL schemes are passed to window.open". Describe the failure the way you'd
+   explain it out loud to a teammate.
+
+   End with a one-line proposal: which items you'd fix now, which you'd skip.
 
 ## How to assess the review
 
