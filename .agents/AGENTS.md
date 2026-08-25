@@ -34,18 +34,19 @@ Then search the issue tracker of the most likely upstream dependency. Do this be
 Global authored agent files live in `~/.dotfiles/.agents`.
 Global authored skills live in `~/.dotfiles/.agents/skills`.
 
-When creating a new global skill:
+When creating a new global skill, create its directory and `SKILL.md`, then sync:
 ```bash
-mkdir -p ~/.codex/skills ~/.claude/skills
-ln -s ~/.dotfiles/.agents/skills/<name> ~/.codex/skills/<name>
-ln -s ~/.codex/skills/<name> ~/.claude/skills/<name>
+mkdir -p ~/.dotfiles/.agents/skills/<name>
+nvim ~/.dotfiles/.agents/skills/<name>/SKILL.md
+skill sync
 ```
 
-When deleting a global skill, remove the matching symlinks from:
-- `~/.codex/skills/<name>`
-- `~/.claude/skills/<name>`
+When deleting an authored global skill, delete its source directory and run `skill sync`.
+Use `skill add <repo-or-path>`, `skill update`, and `skill remove <name>` for external skills.
 
-Codex reads global skills from `~/.codex/skills` directly, claude needs them to be in `~/.claude/skills`.
+The `skill` command links canonical skill directories directly into both `~/.codex/skills` and `~/.claude/skills`. Authored skills stay in dotfiles; external git skills are live clones under `~/.local/share/agent-skills/repos` and are pinned in `.agents/skills.lock`.
+
+For a skill only the user may invoke, set `disable-model-invocation: true` in `SKILL.md` and `policy.allow_implicit_invocation: false` in `agents/openai.yaml`. The first controls Claude Code; the second controls Codex.
 
 ## Style
 In all interactions be extremely concise. This is a hard requirement, not a preference.

@@ -1,6 +1,7 @@
 ---
 name: handoff
 description: Package the current session for a successor agent — write a handoff summary and generate a readable transcript from the session JSONL, so a fresh agent can continue this work when context runs out or the session breaks.
+disable-model-invocation: true
 ---
 
 Produce a handoff so another agent can resume this work in a fresh session.

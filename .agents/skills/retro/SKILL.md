@@ -1,6 +1,7 @@
 ---
 name: retro
 description: Retrospective — reflect on the work done, then clean up the solution
+disable-model-invocation: true
 ---
 
 Ok, you found a working solution! Now that you actually know how to make it work, think:

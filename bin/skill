@@ -1,0 +1,551 @@
+#!/bin/bash
+
+set -euo pipefail
+
+DOTFILES_DIR="${SKILL_DOTFILES_DIR:-$HOME/.dotfiles}"
+AUTHORED_DIR="${SKILL_AUTHORED_DIR:-$DOTFILES_DIR/.agents/skills}"
+DATA_DIR="${SKILL_DATA_DIR:-$HOME/.local/share/agent-skills}"
+REPOS_DIR="$DATA_DIR/repos"
+CODEX_DIR="${SKILL_CODEX_DIR:-$HOME/.codex/skills}"
+CLAUDE_DIR="${SKILL_CLAUDE_DIR:-$HOME/.claude/skills}"
+LOCK_FILE="${SKILL_LOCK_FILE:-$DOTFILES_DIR/.agents/skills.lock}"
+STATE_FILE="${SKILL_STATE_FILE:-$DATA_DIR/managed-links}"
+
+die() {
+    echo "skill: $*" >&2
+    exit 1
+}
+
+usage() {
+    cat <<'EOF'
+Usage:
+  skill add <repo-or-path> [skill ...]
+  skill update [repo]
+  skill remove <skill>
+  skill list
+  skill sync
+  skill edit <skill>
+  skill <skill>
+EOF
+}
+
+make_temp() {
+    mktemp "${TMPDIR:-/tmp}/agent-skills.XXXXXX"
+}
+
+ensure_layout() {
+    mkdir -p "$AUTHORED_DIR" "$REPOS_DIR" "$CODEX_DIR" "$CLAUDE_DIR" "$(dirname "$LOCK_FILE")" "$(dirname "$STATE_FILE")"
+    if [ ! -f "$LOCK_FILE" ]; then
+        printf '# kind\tsource\tref\tcommit\tname\tpath\n' > "$LOCK_FILE"
+    fi
+}
+
+validate_field() {
+    case "$1" in
+        *$'\t'*|*$'\n'*) die "tabs and newlines are not supported in paths or names" ;;
+    esac
+}
+
+expand_path() {
+    case "$1" in
+        '~/'*) printf '%s/%s\n' "$HOME" "${1#\~/}" ;;
+        *) printf '%s\n' "$1" ;;
+    esac
+}
+
+absolute_dir() {
+    local path
+    path="$(expand_path "$1")"
+    [ -d "$path" ] || die "directory not found: $1"
+    (cd "$path" && pwd -P)
+}
+
+portable_path() {
+    case "$1" in
+        "$HOME"/*) printf '~/%s\n' "${1#"$HOME"/}" ;;
+        *) printf '%s\n' "$1" ;;
+    esac
+}
+
+git_url() {
+    case "$1" in
+        *://*|git@*|ssh://*) printf '%s\n' "$1" ;;
+        */*) printf 'https://github.com/%s.git\n' "${1%.git}" ;;
+        *) die "not a local directory or git repository: $1" ;;
+    esac
+}
+
+repo_dir() {
+    local source slug hash
+    source="$1"
+    slug="${source%/}"
+    slug="${slug##*/}"
+    slug="${slug%.git}"
+    slug="$(printf '%s' "$slug" | tr -cs 'A-Za-z0-9._-' '-')"
+    hash="$(printf '%s' "$source" | git hash-object --stdin | cut -c1-12)"
+    printf '%s/%s-%s\n' "$REPOS_DIR" "${slug:-repo}" "$hash"
+}
+
+record_for_name() {
+    awk -F '\t' -v name="$1" '$1 !~ /^#/ && $5 == name { print; exit }' "$LOCK_FILE"
+}
+
+record_for_source() {
+    awk -F '\t' -v source="$1" '$1 == "git" && $2 == source { print; exit }' "$LOCK_FILE"
+}
+
+clone_repo() {
+    local source destination url
+    source="$1"
+    destination="$(repo_dir "$source")"
+    url="$(git_url "$source")"
+
+    if [ -d "$destination/.git" ]; then
+        [ "$(git -C "$destination" remote get-url origin)" = "$url" ] || \
+            die "clone collision at $destination"
+    elif [ -e "$destination" ]; then
+        die "clone path exists but is not a git repository: $destination"
+    else
+        git clone "$url" "$destination"
+    fi
+
+    printf '%s\n' "$destination"
+}
+
+ensure_git_commit() {
+    local source commit repository head
+    source="$1"
+    commit="$2"
+    repository="$(clone_repo "$source")"
+
+    if ! git -C "$repository" cat-file -e "$commit^{commit}" 2>/dev/null; then
+        git -C "$repository" fetch origin "$commit"
+    fi
+
+    head="$(git -C "$repository" rev-parse HEAD)"
+    if [ "$head" != "$commit" ]; then
+        [ -z "$(git -C "$repository" status --porcelain)" ] || \
+            die "refusing to replace dirty clone: $repository"
+        git -C "$repository" checkout --detach "$commit"
+    fi
+
+    printf '%s\n' "$repository"
+}
+
+discover_skills() {
+    local root output file directory relative name
+    root="$1"
+    output="$2"
+    : > "$output"
+
+    while IFS= read -r file; do
+        directory="${file%/SKILL.md}"
+        if [ "$directory" = "$root" ]; then
+            relative='.'
+        else
+            relative="${directory#"$root"/}"
+        fi
+        name="$(basename "$directory")"
+        validate_field "$name"
+        validate_field "$relative"
+        printf '%s\t%s\n' "$name" "$relative" >> "$output"
+    done < <(find "$root" \( -name .git -o -name node_modules -o -name .venv \) -prune -o -type f -name SKILL.md -print)
+
+    sort -u -o "$output" "$output"
+    [ -s "$output" ] || die "no SKILL.md files found in $root"
+}
+
+select_skills() {
+    local catalog output requested count selection
+    catalog="$1"
+    output="$2"
+    shift 2
+    : > "$output"
+
+    if [ "$#" -gt 0 ]; then
+        for requested in "$@"; do
+            count="$(awk -F '\t' -v name="$requested" '$1 == name { count++ } END { print count + 0 }' "$catalog")"
+            [ "$count" -eq 1 ] || die "expected one skill named '$requested', found $count"
+            awk -F '\t' -v name="$requested" '$1 == name' "$catalog" >> "$output"
+        done
+        sort -u -o "$output" "$output"
+        return
+    fi
+
+    if [ "$(wc -l < "$catalog" | tr -d ' ')" -eq 1 ]; then
+        cp "$catalog" "$output"
+        return
+    fi
+
+    command -v fzf >/dev/null 2>&1 || die "multiple skills found; pass their names explicitly"
+    [ -t 0 ] && [ -t 1 ] || die "multiple skills found; pass their names explicitly"
+    if ! selection="$(fzf --multi --prompt='Skills> ' --with-nth=1,2 < "$catalog")"; then
+        die "selection cancelled"
+    fi
+    [ -n "$selection" ] || die "no skills selected"
+    printf '%s\n' "$selection" > "$output"
+}
+
+canonical_record_path() {
+    local kind source commit path root
+    kind="$1"
+    source="$2"
+    commit="$3"
+    path="$4"
+
+    case "$kind" in
+        git) root="$(ensure_git_commit "$source" "$commit")" ;;
+        local) root="$(absolute_dir "$source")" ;;
+        *) die "invalid lockfile kind: $kind" ;;
+    esac
+
+    if [ "$path" = '.' ]; then
+        printf '%s\n' "$root"
+    else
+        printf '%s/%s\n' "$root" "$path"
+    fi
+}
+
+managed_link() {
+    local target link name recorded
+    target="$1"
+    [ -L "$target" ] || return 1
+    link="$(readlink "$target")"
+    if [ -f "$STATE_FILE" ]; then
+        name="$(basename "$target")"
+        recorded="$(awk -F '\t' -v name="$name" '$1 == name { print $2; exit }' "$STATE_FILE")"
+        [ -n "$recorded" ] && [ "$link" = "$recorded" ]
+        return
+    fi
+    case "$target:$link" in
+        *:"$AUTHORED_DIR"/*|*:"$REPOS_DIR"/*|"$CLAUDE_DIR"/*:"$CODEX_DIR"/*) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+link_skill() {
+    local source target current
+    source="$1"
+    target="$2"
+
+    if [ -L "$target" ]; then
+        current="$(readlink "$target")"
+        [ "$current" = "$source" ] && return
+        die "refusing to replace unmanaged symlink: $target -> $current"
+    fi
+    [ ! -e "$target" ] || die "refusing to replace existing path: $target"
+    ln -s "$source" "$target"
+}
+
+sync_skills() {
+    local desired duplicates skill_dir name kind source ref commit path extra canonical link count temporary
+    ensure_layout
+    desired="$(make_temp)"
+    trap 'rm -f "$desired"' RETURN
+
+    for skill_dir in "$AUTHORED_DIR"/*; do
+        [ -f "$skill_dir/SKILL.md" ] || continue
+        name="$(basename "$skill_dir")"
+        printf '%s\t%s\n' "$name" "$skill_dir" >> "$desired"
+    done
+
+    while IFS=$'\t' read -r kind source ref commit name path extra; do
+        [ -n "$kind" ] || continue
+        case "$kind" in \#*) continue ;; esac
+        [ -z "${extra:-}" ] || die "invalid lockfile row for $name"
+        canonical="$(canonical_record_path "$kind" "$source" "$commit" "$path")"
+        [ -f "$canonical/SKILL.md" ] || die "missing SKILL.md for $name at $canonical"
+        printf '%s\t%s\n' "$name" "$canonical" >> "$desired"
+    done < "$LOCK_FILE"
+
+    duplicates="$(cut -f1 "$desired" | sort | uniq -d)"
+    [ -z "$duplicates" ] || die "duplicate skill names: $(printf '%s' "$duplicates" | tr '\n' ' ')"
+
+    while IFS=$'\t' read -r name canonical; do
+        [ -n "$name" ] || continue
+        preflight_target "$CODEX_DIR/$name" "$canonical"
+        preflight_target "$CLAUDE_DIR/$name" "$canonical"
+    done < "$desired"
+
+    for link in "$CODEX_DIR"/* "$CLAUDE_DIR"/*; do
+        if managed_link "$link"; then
+            rm "$link"
+        fi
+    done
+
+    while IFS=$'\t' read -r name canonical; do
+        [ -n "$name" ] || continue
+        link_skill "$canonical" "$CODEX_DIR/$name"
+        link_skill "$canonical" "$CLAUDE_DIR/$name"
+    done < "$desired"
+
+    temporary="$(make_temp)"
+    cp "$desired" "$temporary"
+    mv "$temporary" "$STATE_FILE"
+
+    count="$(wc -l < "$desired" | tr -d ' ')"
+    rm -f "$desired"
+    trap - RETURN
+    echo "Synced $count skills."
+}
+
+preflight_target() {
+    local target canonical current
+    target="$1"
+    canonical="$2"
+    if [ -L "$target" ]; then
+        current="$(readlink "$target")"
+        [ "$current" = "$canonical" ] || managed_link "$target" || \
+            die "skill target already exists: $target -> $current"
+    elif [ -e "$target" ]; then
+        die "skill target already exists: $target"
+    fi
+}
+
+add_skills() {
+    local input kind source root repository existing ref commit catalog selected name path row canonical duplicates
+    [ "$#" -ge 1 ] || die "usage: skill add <repo-or-path> [skill ...]"
+    input="$1"
+    shift
+    ensure_layout
+
+    if [ -d "$(expand_path "$input")" ]; then
+        kind='local'
+        root="$(absolute_dir "$input")"
+        source="$(portable_path "$root")"
+        ref='-'
+        commit='-'
+    else
+        case "$input" in /*|./*|../*|'~/'*) die "directory not found: $input" ;; esac
+        kind='git'
+        source="$input"
+        existing="$(record_for_source "$source")"
+        if [ -n "$existing" ]; then
+            IFS=$'\t' read -r _ _ ref commit _ _ <<< "$existing"
+            root="$(ensure_git_commit "$source" "$commit")"
+        else
+            repository="$(clone_repo "$source")"
+            [ -z "$(git -C "$repository" status --porcelain)" ] || die "refusing to add from dirty clone: $repository"
+            ref="$(git -C "$repository" symbolic-ref --quiet --short refs/remotes/origin/HEAD || true)"
+            ref="${ref#origin/}"
+            if [ -z "$ref" ]; then
+                ref="$(git -C "$repository" symbolic-ref --quiet --short HEAD || true)"
+            fi
+            [ -n "$ref" ] || die "repository has no default branch: $source"
+            git -C "$repository" fetch origin "$ref"
+            commit="$(git -C "$repository" rev-parse FETCH_HEAD)"
+            if [ "$(git -C "$repository" rev-parse HEAD)" != "$commit" ]; then
+                git -C "$repository" checkout --detach "$commit"
+            fi
+            root="$repository"
+        fi
+        [ -z "$(git -C "$root" status --porcelain)" ] || die "refusing to add from dirty clone: $root"
+    fi
+    validate_field "$source"
+
+    catalog="$(make_temp)"
+    selected="$(make_temp)"
+    trap 'rm -f "$catalog" "$selected"' RETURN
+    discover_skills "$root" "$catalog"
+    select_skills "$catalog" "$selected" "$@"
+    duplicates="$(cut -f1 "$selected" | sort | uniq -d)"
+    [ -z "$duplicates" ] || die "selected paths have duplicate skill names: $(printf '%s' "$duplicates" | tr '\n' ' ')"
+
+    while IFS=$'\t' read -r name path; do
+        [ -e "$AUTHORED_DIR/$name" ] && die "skill name collides with authored skill: $name"
+        row="$(record_for_name "$name")"
+        if [ -n "$row" ]; then
+            IFS=$'\t' read -r row_kind row_source _ _ _ row_path <<< "$row"
+            [ "$row_kind" = "$kind" ] && [ "$row_source" = "$source" ] && [ "$row_path" = "$path" ] && continue
+            die "skill name already registered: $name"
+        fi
+        canonical="$root"
+        [ "$path" = '.' ] || canonical="$root/$path"
+        preflight_target "$CODEX_DIR/$name" "$canonical"
+        preflight_target "$CLAUDE_DIR/$name" "$canonical"
+    done < "$selected"
+
+    while IFS=$'\t' read -r name path; do
+        row="$(record_for_name "$name")"
+        [ -n "$row" ] && continue
+        printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$kind" "$source" "$ref" "$commit" "$name" "$path" >> "$LOCK_FILE"
+        echo "Added $name from $source."
+    done < "$selected"
+
+    rm -f "$catalog" "$selected"
+    trap - RETURN
+    sync_skills
+}
+
+rewrite_source_commit() {
+    local source commit temporary
+    source="$1"
+    commit="$2"
+    temporary="$(make_temp)"
+    awk -F '\t' -v OFS='\t' -v source="$source" -v commit="$commit" \
+        '$1 == "git" && $2 == source { $4 = commit } { print }' "$LOCK_FILE" > "$temporary"
+    mv "$temporary" "$LOCK_FILE"
+    chmod 644 "$LOCK_FILE"
+}
+
+update_source() {
+    local source row ref locked repository old_commit new_commit records kind row_source row_ref row_commit name path extra
+    source="$1"
+    row="$(record_for_source "$source")"
+    [ -n "$row" ] || die "git source not found: $source"
+    IFS=$'\t' read -r _ _ ref locked _ _ <<< "$row"
+    repository="$(ensure_git_commit "$source" "$locked")"
+    [ -z "$(git -C "$repository" status --porcelain)" ] || die "refusing to update dirty clone: $repository"
+
+    git -C "$repository" fetch origin "$ref"
+    new_commit="$(git -C "$repository" rev-parse FETCH_HEAD)"
+    if [ "$new_commit" = "$locked" ]; then
+        echo "$source is already current."
+        return
+    fi
+
+    old_commit="$(git -C "$repository" rev-parse HEAD)"
+    git -C "$repository" checkout --detach "$new_commit"
+    records="$(make_temp)"
+    awk -F '\t' -v source="$source" '$1 == "git" && $2 == source' "$LOCK_FILE" > "$records"
+    while IFS=$'\t' read -r kind row_source row_ref row_commit name path extra; do
+        if [ "$path" = '.' ]; then
+            [ -f "$repository/SKILL.md" ] || {
+                git -C "$repository" checkout --detach "$old_commit"
+                rm -f "$records"
+                die "$name disappeared at $new_commit"
+            }
+        else
+            [ -f "$repository/$path/SKILL.md" ] || {
+                git -C "$repository" checkout --detach "$old_commit"
+                rm -f "$records"
+                die "$name disappeared at $new_commit"
+            }
+        fi
+    done < "$records"
+    rm -f "$records"
+
+    rewrite_source_commit "$source" "$new_commit"
+    echo "Updated $source to ${new_commit:0:12}."
+}
+
+update_skills() {
+    local filter sources source found
+    ensure_layout
+    [ "$#" -le 1 ] || die "usage: skill update [repo]"
+    filter="${1:-}"
+    sources="$(make_temp)"
+    awk -F '\t' '$1 == "git" { print $2 }' "$LOCK_FILE" | sort -u > "$sources"
+    [ -s "$sources" ] || { rm -f "$sources"; die "no git skill sources registered"; }
+
+    found=0
+    while IFS= read -r source; do
+        [ -z "$filter" ] || [ "$filter" = "$source" ] || continue
+        found=1
+        update_source "$source"
+    done < "$sources"
+    rm -f "$sources"
+    [ "$found" -eq 1 ] || die "git source not found: $filter"
+    sync_skills
+}
+
+remove_skills() {
+    local name row temporary target kind source ref commit locked_name path extra root canonical current
+    [ "$#" -eq 1 ] || die "usage: skill remove <skill>"
+    ensure_layout
+    name="$1"
+
+    row="$(record_for_name "$name")"
+    if [ -z "$row" ]; then
+        [ -e "$AUTHORED_DIR/$name" ] && die "$name is authored; delete its source directory, then run skill sync"
+        die "skill not registered: $name"
+    fi
+
+    IFS=$'\t' read -r kind source ref commit locked_name path extra <<< "$row"
+    if [ "$kind" = 'git' ]; then
+        root="$(repo_dir "$source")"
+    else
+        root="$(expand_path "$source")"
+    fi
+    canonical="$root"
+    [ "$path" = '.' ] || canonical="$root/$path"
+    for target in "$CODEX_DIR/$name" "$CLAUDE_DIR/$name"; do
+        if [ -L "$target" ]; then
+            current="$(readlink "$target")"
+            [ "$current" = "$canonical" ] || die "refusing to remove unmanaged symlink: $target -> $current"
+        fi
+    done
+
+    temporary="$(make_temp)"
+    awk -F '\t' -v name="$name" '$1 ~ /^#/ || $5 != name' "$LOCK_FILE" > "$temporary"
+    mv "$temporary" "$LOCK_FILE"
+    chmod 644 "$LOCK_FILE"
+    for target in "$CODEX_DIR/$name" "$CLAUDE_DIR/$name"; do
+        [ -L "$target" ] && rm "$target"
+    done
+    echo "Removed $name."
+    sync_skills
+}
+
+list_skills() {
+    local skill_dir name kind source ref commit path extra status repository head
+    ensure_layout
+    printf 'NAME\tTYPE\tSOURCE\tSTATUS\n'
+    for skill_dir in "$AUTHORED_DIR"/*; do
+        [ -f "$skill_dir/SKILL.md" ] || continue
+        name="$(basename "$skill_dir")"
+        printf '%s\tauthored\t%s\tlive\n' "$name" "$skill_dir"
+    done
+
+    while IFS=$'\t' read -r kind source ref commit name path extra; do
+        [ -n "$kind" ] || continue
+        case "$kind" in \#*) continue ;; esac
+        if [ "$kind" = 'local' ]; then
+            if [ -f "$(expand_path "$source")/$path/SKILL.md" ]; then
+                status='live'
+            else
+                status='missing'
+            fi
+        else
+            repository="$(repo_dir "$source")"
+            if [ ! -d "$repository/.git" ]; then
+                status='missing'
+            elif [ -n "$(git -C "$repository" status --porcelain)" ]; then
+                status='dirty'
+            else
+                head="$(git -C "$repository" rev-parse HEAD)"
+                [ "$head" = "$commit" ] && status='current' || status='drifted'
+            fi
+        fi
+        printf '%s\t%s\t%s\t%s\n' "$name" "$kind" "$source" "$status"
+    done < "$LOCK_FILE"
+}
+
+edit_skill() {
+    local name row kind source ref commit locked_name path extra canonical editor
+    name="$1"
+    ensure_layout
+    if [ -f "$AUTHORED_DIR/$name/SKILL.md" ]; then
+        canonical="$AUTHORED_DIR/$name"
+    else
+        row="$(record_for_name "$name")"
+        [ -n "$row" ] || die "skill not found: $name"
+        IFS=$'\t' read -r kind source ref commit locked_name path extra <<< "$row"
+        canonical="$(canonical_record_path "$kind" "$source" "$commit" "$path")"
+    fi
+    editor="${EDITOR:-nvim}"
+    exec "$editor" "$canonical/SKILL.md"
+}
+
+command="${1:-help}"
+[ "$#" -eq 0 ] || shift
+case "$command" in
+    add) add_skills "$@" ;;
+    update) update_skills "$@" ;;
+    remove|rm) remove_skills "$@" ;;
+    list|ls) [ "$#" -eq 0 ] || die "usage: skill list"; list_skills ;;
+    sync) [ "$#" -eq 0 ] || die "usage: skill sync"; sync_skills ;;
+    edit) [ "$#" -eq 1 ] || die "usage: skill edit <skill>"; edit_skill "$1" ;;
+    help|-h|--help) usage ;;
+    *) [ "$#" -eq 0 ] || die "unknown command: $command"; edit_skill "$command" ;;
+esac

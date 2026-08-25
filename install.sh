@@ -43,7 +43,7 @@ if [ -L ~/.agents/AGENTS.md ] && [ "$(readlink ~/.agents/AGENTS.md)" = "$HOME/.d
     rm ~/.agents/AGENTS.md
 fi
 
-for link in ~/.agents/skills/* ~/.claude/skills/* ~/.codex/skills/*; do
+for link in ~/.agents/skills/*; do
     [ -L "$link" ] || continue
     target="$(readlink "$link")"
     case "$target" in
@@ -54,13 +54,7 @@ for link in ~/.agents/skills/* ~/.claude/skills/* ~/.codex/skills/*; do
 done
 
 rmdir ~/.agents/skills ~/.agents 2>/dev/null || true
-
-for skill in ~/.dotfiles/.agents/skills/*; do
-    [ -d "$skill" ] || continue
-    name="$(basename "$skill")"
-    ln -s "$skill" ~/.codex/skills/"$name"
-    ln -s ~/.codex/skills/"$name" ~/.claude/skills/"$name"
-done
+~/.dotfiles/bin/skill sync
 
 ln -s -f ~/agent/agent ~/.local/bin/agent
 ln -s -f ~/notion/notion ~/.local/bin/notion
