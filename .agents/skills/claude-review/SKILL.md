@@ -1,6 +1,7 @@
 ---
 name: claude-review
 description: Get a Claude code review of uncommitted changes, then add your honest assessment of it. Use after finishing a task with uncommitted changes.
+disable-model-invocation: true
 ---
 
 You just finished a task with uncommitted changes. Run a Claude code review on those changes, then show the user the review alongside your honest take on it.

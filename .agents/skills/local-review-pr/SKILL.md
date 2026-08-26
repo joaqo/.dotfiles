@@ -1,6 +1,7 @@
 ---
 name: local-review-pr
 description: Locally review a PR branch in depth before deciding follow-up actions.
+disable-model-invocation: true
 ---
 
 # Local Review PR
