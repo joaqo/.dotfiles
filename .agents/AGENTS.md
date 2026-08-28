@@ -30,6 +30,9 @@ AI agent with an initial prompt so it starts working on the task I set out for i
 When debugging a library/runtime bug, first search GitHub issues for the exact package(s) implicated by the stack trace or error.
 Then search the issue tracker of the most likely upstream dependency. Do this before broad web searching.
 
+## Browser
+Keep browser tabs used for active work open across turns and interruptions. Close them only when the task is fully complete or I ask you to close them.
+
 ## Skills
 Global authored agent files live in `~/.dotfiles/.agents`.
 Global authored skills live in `~/.dotfiles/.agents/skills`.
