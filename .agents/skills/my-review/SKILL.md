@@ -1,5 +1,5 @@
 ---
-name: review-changes
+name: my-review
 description: Explain and reassess changes as the user reviews them.
 disable-model-invocation: true
 ---
