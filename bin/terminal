@@ -1,0 +1,258 @@
+#!/usr/bin/env -S uv run --no-project --script
+
+import argparse
+import os
+import plistlib
+import shlex
+import socket
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+from urllib.parse import quote
+
+
+APPS = {
+    "ghostty": "com.mitchellh.ghostty",
+    "sidebar": "uy.joaqo.ghostty.sidebar",
+}
+
+OPEN_SCRIPT = '''
+on run argv
+    set targetDirectory to item 1 of argv
+    set shellCommand to item 2 of argv
+    set keepFocus to item 3 of argv is "true"
+    set restoreApp to item 4 of argv
+    tell application id "__APP__"
+        set cfg to new surface configuration
+        set initial working directory of cfg to targetDirectory
+        if shellCommand is not "" then set command of cfg to shellCommand
+        set best to missing value
+        set prevId to missing value
+        if (count of windows) is 0 then
+            new window with configuration cfg
+        else
+            set bestCount to -1
+            repeat with w in windows
+                if (count of tabs of w) > bestCount then
+                    set bestCount to count of tabs of w
+                    set best to w
+                end if
+            end repeat
+            set prevId to id of (selected tab of best)
+            set lastTab to missing value
+            repeat with t in tabs of best
+                set lastTab to t
+            end repeat
+            select tab lastTab
+            new tab in best with configuration cfg
+        end if
+        if keepFocus then
+            -- Tab creation grabs focus asynchronously, so selection must settle first.
+            repeat 40 times
+                if frontmost then exit repeat
+                delay 0.03
+            end repeat
+            if prevId is not missing value then
+                repeat with t in tabs of best
+                    if (id of t) is prevId then
+                        select tab t
+                        exit repeat
+                    end if
+                end repeat
+                activate
+            else if restoreApp is not "" and restoreApp is not "__APP__" then
+                delay 0.15
+                tell application id restoreApp to activate
+            end if
+        else
+            activate
+        end if
+    end tell
+end run
+'''
+
+FIND_SCRIPT = '''
+on run argv
+    if not (application id "__APP__" is running) then return ""
+    set targetDirectory to item 1 of argv
+    set targetTTY to item 2 of argv
+    set directoryMatches to {}
+    delay 0.05
+    tell application id "__APP__"
+        repeat with w in windows
+            repeat with t in tabs of w
+                set matchesDirectory to false
+                repeat with s in terminals of t
+                    try
+                        if («class Gtty» of s) is targetTTY then return id of t
+                    end try
+                    try
+                        if (working directory of s) is targetDirectory then set matchesDirectory to true
+                    end try
+                end repeat
+                if matchesDirectory then set end of directoryMatches to id of t
+            end repeat
+        end repeat
+    end tell
+    if (count of directoryMatches) is 1 then return item 1 of directoryMatches
+    if (count of directoryMatches) > 1 then error "Multiple tabs match this directory; refusing to choose one."
+    return ""
+end run
+'''
+
+CLOSE_SCRIPT = '''
+on run argv
+    if not (application id "__APP__" is running) then return
+    set wantedId to item 1 of argv
+    tell application id "__APP__"
+        repeat with w in windows
+            repeat with t in tabs of w
+                if (id of t) is wantedId then
+                    close tab t
+                    return
+                end if
+            end repeat
+        end repeat
+    end tell
+end run
+'''
+
+
+def preference_path():
+    return Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "terminal" / "default"
+
+
+def current():
+    path = preference_path()
+    choice = path.read_text().strip() if path.exists() else "ghostty"
+    if choice not in APPS:
+        raise ValueError(f"Invalid terminal preference in {path}: {choice!r}")
+    return choice
+
+
+def use(choice):
+    path = preference_path().resolve()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(mode="w", dir=path.parent, delete=False) as output:
+        output.write(choice + "\n")
+        temporary = Path(output.name)
+    try:
+        temporary.replace(path)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def applescript(template, bundle, *arguments):
+    if bundle not in APPS.values():
+        raise ValueError(f"Unsupported terminal app: {bundle}")
+    # LaunchServices must not propagate agent variables such as NO_COLOR into new shells.
+    env = {key: os.environ[key] for key in (
+        "HOME", "USER", "LOGNAME", "SHELL", "TMPDIR", "__CF_USER_TEXT_ENCODING"
+    ) if key in os.environ}
+    env["PATH"] = "/usr/bin:/bin:/usr/sbin:/sbin"
+    result = subprocess.run(
+        ["/usr/bin/osascript", "-", *arguments],
+        input=template.replace("__APP__", bundle), text=True, capture_output=True, env=env,
+    )
+    if result.returncode:
+        raise RuntimeError(result.stderr.strip() or "AppleScript failed")
+    return result.stdout.strip()
+
+
+def open_tab(cwd, command=None, keep_focus=False, restore_app=""):
+    directory = Path(cwd).expanduser().resolve(strict=True)
+    if not directory.is_dir():
+        raise ValueError(f"Not a directory: {directory}")
+    shell_command = "bash -lc " + shlex.quote(command + "; exec bash -l") if command else ""
+    applescript(OPEN_SCRIPT, APPS[current()], str(directory), shell_command,
+                str(keep_focus).lower(), restore_app)
+
+
+def terminal_context():
+    pid = os.getpid()
+    tty = None
+    visited = set()
+    while pid > 1 and pid not in visited:
+        visited.add(pid)
+        result = subprocess.run(["/bin/ps", "-o", "ppid=,tty=,comm=", "-p", str(pid)],
+                                capture_output=True, text=True)
+        fields = result.stdout.strip().split(None, 2)
+        if len(fields) != 3:
+            break
+        parent, device, executable = fields
+        # The shell nearest Ghostty owns the tab's PTY; tools can allocate intermediate PTYs.
+        if device not in ("??", "?"):
+            tty = "/dev/" + device
+        binary = Path(executable)
+        if binary.name == "ghostty" and binary.parent.name == "MacOS":
+            try:
+                with (binary.parent.parent / "Info.plist").open("rb") as info:
+                    bundle = plistlib.load(info).get("CFBundleIdentifier")
+            except (OSError, ValueError):
+                return None
+            return (bundle, tty) if bundle in APPS.values() and tty else None
+        pid = int(parent)
+    return None
+
+
+def tab_reference(cwd):
+    context = terminal_context()
+    if not context:
+        return ""
+    bundle, tty = context
+    directory = str(Path(cwd).expanduser().resolve(strict=True))
+    if bundle == APPS["ghostty"]:
+        # Older Ghostty scripting dictionaries expose cwd but no terminal TTY.
+        uri = "file://" + socket.gethostname() + quote(directory, safe="/")
+        with open(tty, "w") as device:
+            device.write("\033]7;" + uri + "\033\\")
+    tab_id = applescript(FIND_SCRIPT, bundle, directory, tty)
+    return f"{bundle}:{tab_id}" if tab_id else ""
+
+
+def close_tab(reference):
+    bundle, separator, tab_id = reference.partition(":")
+    if not separator or not tab_id or bundle not in APPS.values():
+        raise ValueError("Expected the app:tab reference returned by terminal tab-ref")
+    applescript(CLOSE_SCRIPT, bundle, tab_id)
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Choose and control your Ghostty terminal.")
+    commands = parser.add_subparsers(dest="action", required=True)
+    select = commands.add_parser("use", help="Choose the app for future launches")
+    select.add_argument("app", choices=APPS)
+    commands.add_parser("current", help="Print the selected app")
+    launch = commands.add_parser("open", help="Open a tab in the selected app")
+    launch.add_argument("--cwd", default=".")
+    launch.add_argument("--command")
+    launch.add_argument("--keep-focus", action="store_true")
+    launch.add_argument("--restore-app", default="")
+    capture = commands.add_parser("tab-ref", help="Capture the calling tab, independent of the preference")
+    capture.add_argument("--cwd", default=".")
+    close = commands.add_parser("close-tab", help="Close a previously captured app:tab reference")
+    close.add_argument("reference")
+    args = parser.parse_args()
+    try:
+        if args.action == "use":
+            use(args.app)
+            print(args.app)
+        elif args.action == "current":
+            print(current())
+        elif args.action == "open":
+            open_tab(args.cwd, args.command, args.keep_focus, args.restore_app)
+        elif args.action == "tab-ref":
+            reference = tab_reference(args.cwd)
+            if reference:
+                print(reference)
+        elif args.action == "close-tab":
+            close_tab(args.reference)
+    except (OSError, ValueError, RuntimeError) as error:
+        print(f"terminal: {error}", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

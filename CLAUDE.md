@@ -32,6 +32,7 @@ Symlinks dotfiles to ~, installs fzf, language servers (pnpm), ripgrep, compiles
 - `.agents/skills.lock` - external skill sources, selected directories, and pinned git commits
 - `.claude/` - Claude Code settings, hooks, and commands (symlinked)
 - `bin/` - custom scripts, including `skill` for linking authored skills and managing live external skill clones
+- `bin/terminal` - shared Ghostty launcher; `terminal use sidebar|ghostty` saves the choice in `.config/terminal/default`. `terminal current` shows it; tab cleanup uses captured app:tab references independently.
 - `scripts/NvimInITerm.applescript` - makes macOS default to nvim+iTerm for code and text files. Compiled to ~/Applications/NvimInITerm.app, registered as default handler for 50+ file types via duti.
 
 ## Style

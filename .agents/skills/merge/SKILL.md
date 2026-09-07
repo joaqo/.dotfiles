@@ -15,36 +15,10 @@ Constraints: Never squash, cherry-pick, or create merge commits.
 
 1. Read source state: `git status --short`, `git rev-parse --show-toplevel` (source worktree), `git branch --show-current` (source branch, may be empty), `git rev-parse HEAD` (source commit). If dirty, stop — user must commit/stash first.
 
-   Then **capture the Ghostty tab id** for the source worktree *now*, before removal. Two gotchas: (a) Ghostty only learns a tab's `working directory` from the shell's OSC 7 escape, which fires at a prompt — but an agent occupies this tab without a prompt, so Ghostty's cwd for it is **blank** (this is why matching by cwd never worked). (b) Once the worktree is removed no path matches anyway. Fix: inject OSC 7 into the agent's controlling pts so Ghostty learns the path, then capture the tab id (the only stable handle after removal). Run this from the source worktree and save the printed id (empty = no Ghostty tab / not in Ghostty; skip the close step later):
+   Capture this session's terminal tab before removing the worktree, and save the printed `app:tab` reference. The `terminal` helper identifies the owning Ghostty app from the process tree; the launch preference does not affect this lookup. If it prints nothing or cannot identify a unique tab, skip the tab-close step.
 
    ```bash
-   SRC="$(git rev-parse --show-toplevel)"
-   # walk up the process tree to the agent's controlling pts (the Bash tool itself is detached)
-   tty=""; pid=$$
-   for i in $(seq 1 10); do
-     read ppid t < <(ps -o ppid=,tty= -p "$pid" 2>/dev/null)
-     [ -n "$t" ] && [ "$t" != "??" ] && { tty="$t"; break; }
-     [ -z "$ppid" ] && break
-     pid=$ppid
-   done
-   [ -n "$tty" ] && printf '\033]7;file://%s%s\033\\' "$(hostname)" "$SRC" > "/dev/$tty" 2>/dev/null
-
-   osascript - "$SRC" <<'EOF'
-   on run argv
-     set target to item 1 of argv
-     if not (application "Ghostty" is running) then return ""
-     tell application "Ghostty"
-       repeat with w in windows
-         repeat with t in tabs of w
-           try
-             if (working directory of (focused terminal of t)) is target then return (id of t)
-           end try
-         end repeat
-       end repeat
-     end tell
-     return ""
-   end run
-   EOF
+   terminal tab-ref --cwd "$(git rev-parse --show-toplevel)"
    ```
 2. Find the main worktree (the one on the main branch) and confirm it's clean and on the main branch. If the source *is* the main worktree, stop.
 3. **Rebase** the source onto the main branch (`git rebase <main_branch>` from the source worktree).
@@ -56,24 +30,8 @@ Constraints: Never squash, cherry-pick, or create merge commits.
    - **Chrome tabs**: close tabs you opened via the claude-in-chrome tools with `mcp__claude-in-chrome__tabs_close_mcp`. Don't close the user's other tabs.
 6. **Remove the worktree**: `cd` to the main worktree, `git worktree remove <source_worktree>`, then `git branch -d <source_branch>` if it had one. If `-d` refuses, report and suggest `-D` rather than force-deleting.
 7. Report how it landed (clean vs resolved conflicts).
-8. **Close the Ghostty tab** captured in step 1 (skip if the id was empty). Do this last, after reporting — it kills the running agent. Close by the saved id, not by working directory (the path is gone now):
+8. **Close the captured terminal tab**, if a reference was saved. Do this last, after reporting — it kills the running agent. The reference preserves both the app and tab ID even if the default terminal changed or the worktree is gone.
 
    ```bash
-   osascript - "<tab_id>" <<'EOF'
-   on run argv
-     set wantedId to item 1 of argv
-     tell application "Ghostty"
-       repeat with w in windows
-         repeat with t in tabs of w
-           try
-             if (id of t) is wantedId then
-               close tab t
-               return
-             end if
-           end try
-         end repeat
-       end repeat
-     end tell
-   end run
-   EOF
+   terminal close-tab '<captured_app:tab_reference>'
    ```

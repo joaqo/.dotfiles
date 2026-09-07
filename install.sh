@@ -26,6 +26,8 @@ cd ~/.config
 ln -s -f ~/.dotfiles/.config/nvim .
 ln -s -f ~/.dotfiles/.config/zed .
 ln -s -f ~/.dotfiles/.config/tmuxinator .
+ln -s -f ~/.dotfiles/.config/terminal .
+ln -s -f ~/.dotfiles/bin/terminal ~/.local/bin/terminal
 
 mkdir -p "$HOME/Library/Application Support/lazygit"
 ln -s -f ~/.dotfiles/.config/lazygit/config.yml "$HOME/Library/Application Support/lazygit/"
