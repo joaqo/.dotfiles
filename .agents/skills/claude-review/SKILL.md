@@ -1,6 +1,6 @@
 ---
 name: claude-review
-description: Get a Claude code review of uncommitted changes, then add your honest assessment of it. Use after finishing a task with uncommitted changes.
+description: Get a verified Claude Opus code review of uncommitted changes, then add your honest assessment of it. Use after finishing a task with uncommitted changes.
 disable-model-invocation: true
 ---
 
@@ -8,11 +8,15 @@ You just finished a task with uncommitted changes. Run a Claude code review on t
 
 ## Steps
 
-1. **Run Claude directly** from the current working directory:
+1. **Run Claude with verified Opus** from the current working directory:
 
    ```bash
-   agent exec claude "Review the uncommitted changes in the current working directory. Focus on bugs, risks, behavioral regressions, and missing tests. Reply with only the final review summary." --ephemeral
+   bash ~/.dotfiles/.agents/skills/claude-review/scripts/run-review-with-opus.sh
    ```
+
+   The script runs through `agent`, sets `ANTHROPIC_MODEL=opus`, and checks Claude's debug trace. It fails unless the final API dispatch used a `claude-opus-*` model. Claude may still use Haiku for internal auxiliary requests.
+
+   Successful output starts with `Verified model: <model>`. Everything after the following blank line is Claude's review; reproduce that review verbatim in step 3.
 
    If you are running from Codex, this only works when approvals go to the user, or in Full Access. If the thread is using Guardian/Auto Review approvals, the command can be rejected before the user sees an approval prompt because it sends private workspace data to Claude. Do not delegate this through a subagent. If escalation is rejected, tell the user to switch the thread permissions from Guardian/Auto Review to user approval or Full Access, then rerun the command.
 

@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eu
+
+: "${CLAUDE_REVIEW_REAL_CLAUDE:?}"
+: "${CLAUDE_REVIEW_DEBUG_LOG:?}"
+
+exec "$CLAUDE_REVIEW_REAL_CLAUDE" --debug-file "$CLAUDE_REVIEW_DEBUG_LOG" "$@"
