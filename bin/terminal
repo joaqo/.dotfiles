@@ -14,7 +14,7 @@ from urllib.parse import quote
 
 APPS = {
     "ghostty": "com.mitchellh.ghostty",
-    "sidebar": "uy.joaqo.ghostty.sidebar",
+    "agents": "uy.joaqo.ghostty.sidebar",
 }
 
 OPEN_SCRIPT = '''
