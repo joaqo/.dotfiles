@@ -51,6 +51,7 @@ background = 000
 macos-titlebar-proxy-icon = hidden
 theme = Gruvbox Dark Hard
 macos-titlebar-style = tabs
+window-save-state = always
 confirm-close-surface = false
 macos-option-as-alt = left
 keybind = global:ctrl+grave_accent=toggle_quick_terminal
