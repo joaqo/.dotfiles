@@ -29,5 +29,6 @@
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": false,
   "agentPushNotifEnabled": true,
-  "voiceEnabled": true
+  "voiceEnabled": true,
+  "feedbackDrafts": "off"
 }
