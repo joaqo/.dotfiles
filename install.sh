@@ -40,6 +40,10 @@ ln -s -f ~/.dotfiles/.agents/AGENTS.md ~/.claude/CLAUDE.md
 ln -s -f ~/.dotfiles/.claude/settings.json ~/.claude/
 ln -s -f ~/.dotfiles/.claude/hooks ~/.claude/
 ln -s -f ~/.dotfiles/.agents/AGENTS.md ~/.codex/AGENTS.md
+if [ -f ~/.codex/config.toml ] && [ ! -L ~/.codex/config.toml ]; then
+    mv ~/.codex/config.toml ~/.codex/config.toml.backup-"$(date +%Y%m%d%H%M%S)" || exit 1
+fi
+ln -s -f ~/.dotfiles/.codex/config.toml ~/.codex/config.toml
 
 if [ -L ~/.agents/AGENTS.md ] && [ "$(readlink ~/.agents/AGENTS.md)" = "$HOME/.dotfiles/.agents/AGENTS.md" ]; then
     rm ~/.agents/AGENTS.md

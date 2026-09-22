@@ -1,0 +1,234 @@
+personality = "pragmatic"
+model = "gpt-6-astra"
+model_reasoning_effort = "xhigh"
+approvals_reviewer = "auto_review"
+
+notify = ["/Users/joaqo/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient", "turn-ended"]
+
+[projects."/Users/joaqo/mellow"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/agent"]
+trust_level = "trusted"
+
+[projects."/"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/.dotfiles"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/.openclaw/workspace"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/Feyn"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/Documents/Codex/2026-05-24/how-you-doing"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/Documents/Codex/2026-05-24/orders-for-rikuras-are-failing-probably"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/.codex/worktrees/8fcb/.dotfiles"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/worktrees/fix-option-group-alert-dismiss"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/Documents/Codex/2026-07-29/realtime-voice-chat"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/Documents/Codex/2026-07-31/can"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/Documents/Codex/2026-07-31/can-you-make-this-mage-have"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/Documents/Codex/2026-08-01/how-d"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/Documents/Codex/2026-08-03/whats"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/task-manager"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/Documents/Codex/2026-08-08/chrome-tabs-the-user-has-the"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/Documents/Codex/2026-08-15/chrome-tabs-the-user-has-the"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/Documents/Codex/2026-08-16/ca"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/Documents/Codex/2026-08-17/got"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/Documents/Codex/2026-08-22/hel"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/worktrees/loyalty-rive-external-fonts"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/markdown-reader"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/terminal"]
+trust_level = "trusted"
+
+[projects."/Users/joaqo/Documents/Codex/2026-09-09/i-w"]
+trust_level = "trusted"
+
+[notice]
+hide_full_access_warning = true
+hide_rate_limit_model_nudge = true
+
+[notice.model_migrations]
+"gpt-5.3-codex" = "gpt-5.4"
+
+[tui]
+auto_recap = false
+status_line = ["model-with-reasoning", "current-dir", "context-usage", "context-window-size", "used-tokens"]
+
+[tui.model_availability_nux]
+"gpt-5.5" = 4
+gpt-6-astra = 4
+
+[marketplaces.openai-bundled]
+source_type = "local"
+source = "/Users/joaqo/.codex/.tmp/bundled-marketplaces/openai-bundled"
+
+[marketplaces.openai-primary-runtime]
+source_type = "local"
+source = "/Users/joaqo/.cache/codex-runtimes/codex-primary-runtime/plugins/openai-primary-runtime"
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."visualize@openai-bundled"]
+enabled = true
+
+[plugins."pdf@openai-primary-runtime"]
+enabled = true
+
+[plugins."template-creator@openai-primary-runtime"]
+enabled = true
+
+[plugins."browser@openai-bundled"]
+enabled = true
+
+[plugins."computer-use@openai-bundled"]
+enabled = true
+
+[plugins."chrome@openai-bundled"]
+enabled = true
+
+[plugins."codex-app-tools@openai-bundled"]
+enabled = true
+
+[plugins."sites@openai-bundled"]
+enabled = true
+
+[desktop]
+mac-menu-bar-enabled = true
+preventSleepWhileRunning = true
+keepRemoteControlAwakeWhilePluggedIn = true
+avatar-overlay-mascot-width-px = 113
+followUpQueueMode = "queue"
+dock-icon-preference = "app-default"
+realtimeVoiceScreenContextEnabled = true
+conversationDetailMode = "STEPS_PROSE"
+open-link-in-target-preference = "in-app-browser"
+
+[desktop.open-in-target-preferences]
+global = "iterm2"
+
+[desktop.open-in-target-preferences.perPath]
+"/Users/joaqo/.codex/worktrees/a48e/mellow" = "iterm2"
+
+[desktop.appearanceLightChromeTheme]
+accent = "#339cff"
+contrast = 45
+ink = "#1a1c1f"
+opaqueWindows = false
+surface = "#ffffff"
+
+[desktop.appearanceLightChromeTheme.fonts]
+
+[desktop.appearanceLightChromeTheme.semanticColors]
+diffAdded = "#00a240"
+diffRemoved = "#ba2623"
+skill = "#924ff7"
+
+[features]
+js_repl = false
+
+[mcp_servers.node_repl]
+args = []
+command = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node_repl"
+startup_timeout_sec = 120
+
+[mcp_servers.node_repl.env]
+NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS = "1000"
+NODE_REPL_NODE_MODULE_DIRS = "/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
+NODE_REPL_NODE_PATH = "/Applications/ChatGPT.app/Contents/Resources/cua_node/bin/node"
+NODE_REPL_TRUSTED_CODE_PATHS = "/Users/joaqo/.codex:/Applications/ChatGPT.app/Contents/Resources/cua_node/lib/node_modules"
+CODEX_HOME = "/Users/joaqo/.codex"
+BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
+BROWSER_USE_TINYSKY_ENABLED = "0"
+NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = "Control the in-app browser in conjunction with the Browser Plugin."
+NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = "Control the Chrome browser in conjunction with the Chrome Plugin. Prefer this method of controlling Chrome over alternatives (such as Computer Use) unless the user explicitly mentions an alternative."
+NODE_REPL_INSTRUCTIONS_USE_CASE_COMPUTER_USE = "Control desktop apps on macOS through Computer Use."
+BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
+BROWSER_USE_CODEX_APP_VERSION = "26.903.61454"
+NODE_REPL_TRUSTED_SERVICES = '{"browser":"/Users/joaqo/.codex/plugins/cache/openai-bundled/browser/26.903.61454/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
+SKY_CUA_SERVICE_PATH = "/Users/joaqo/.codex/computer-use/Codex Computer Use.app"
+CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex"
+
+[mcp_servers.argent]
+command = "npx"
+args = ["-y", "@swmansion/argent@latest", "mcp"]
+
+[mcp_servers.mercadopago]
+url = "https://mcp.mercadopago.com/mcp"
+
+[mcp_servers.mercadopago.tools.application_list]
+approval_mode = "approve"
+
+[mcp_servers.mercadopago.tools.get_credentials]
+approval_mode = "approve"
+
+[mcp_servers.mercadopago.tools.quality_checklist]
+approval_mode = "approve"
+
+[mcp_servers.mercadopago.tools.notifications_history]
+approval_mode = "approve"
+
+[mcp_servers.mercadopago.tools.quality_evaluation]
+approval_mode = "approve"
+
+[mcp_servers.mercadopago.tools.search_documentation]
+approval_mode = "approve"
+
+[mcp_servers.computer-use]
+command = "./Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
+args = ["mcp"]
+cwd = "."
+enabled = false
+
+[mcp_servers.cua_repl]
+command = "/Applications/ChatGPT.app/Contents/MacOS/ChatGPT"
+enabled = false
+
+[shell_environment_policy.set]
+NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "53484b46feddd277e436a0c3f38820eca8aab4e32c01bb44e1b5766eb369b5e6"

@@ -31,6 +31,7 @@ Symlinks dotfiles to ~, installs fzf, language servers (pnpm), ripgrep, compiles
 - `.agents/skills/` - shared global authored skills
 - `.agents/skills.lock` - external skill sources, selected directories, and pinned git commits
 - `.claude/` - Claude Code settings, hooks, and commands (symlinked)
+- `.codex/config.toml` - Codex settings, symlinked to `~/.codex/config.toml`; Codex saves settings back into this file
 - `bin/` - custom scripts, including `skill` for linking authored skills and managing live external skill clones
 - `bin/terminal` - shared Ghostty launcher; `terminal use agents|ghostty` chooses Ghostty Agents or official Ghostty and saves the choice in `.config/terminal/default`. `terminal current` shows it; tab cleanup uses captured app:tab references independently.
 - `scripts/NvimInITerm.applescript` - makes macOS default to nvim+iTerm for code and text files. Compiled to ~/Applications/NvimInITerm.app, registered as default handler for 50+ file types via duti.
