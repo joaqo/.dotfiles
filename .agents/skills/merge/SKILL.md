@@ -1,6 +1,6 @@
 ---
 name: merge
-description: Merge the current worktree/branch onto the local main branch by rebasing then fast-forwarding, consulting the user on conflicts, then removing the worktree.
+description: Merge the current worktree/branch onto the local main branch by rebasing then fast-forwarding, consulting the user on conflicts. Deletes the current worktree and closes its terminal tab, so it must be the last step of a task.
 ---
 
 # Merge Worktree
