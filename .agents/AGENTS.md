@@ -33,6 +33,12 @@ Then search the issue tracker of the most likely upstream dependency. Do this be
 ## Browser
 Keep browser tabs used for active work open across turns and interruptions. Close them only when the task is fully complete or I ask you to close them.
 
+For Chrome `browser-client`, agent-created tabs are temporary and retention marks last only for the current turn:
+- Immediately after creating or obtaining a tab for unfinished work, call `await tab.markHandoff()` in the same tool call, before navigation or interaction. Never defer this until the end of the turn.
+- At the start of EVERY subsequent turn, renew `markHandoff()` for this task's ongoing tabs before any other work, including when answering status questions or discussing a side issue.
+- Use `markDeliverable()` for completed pages the user should retain. Preserve existing browser bindings and tab handles across turns.
+- Prefer an existing user-opened tab for the requested page. Claimed user tabs are released and left open by automatic cleanup; agent-created tabs depend on the per-turn marks.
+
 ## Skills
 Global authored agent files live in `~/.dotfiles/.agents`.
 Global authored skills live in `~/.dotfiles/.agents/skills`.
