@@ -28,10 +28,11 @@ Constraints: Never squash, cherry-pick, or create merge commits.
    - **Dev servers**: stop any you started in this worktree. For mellow: `mellow site kill`, `mellow sellerWeb kill`, `mellow favorites kill` from the worktree (each no-ops if no session). Kill any other dev server you launched.
    - **iOS simulators / Argent**: if you booted simulators or started Metro / simulator-servers this session, tear them down — `mcp__argent__stop-all-simulator-servers`, `mcp__argent__stop-metro`, then `xcrun simctl shutdown <udid>` for each sim *you* booted. Don't touch sims you didn't boot.
    - **Chrome tabs**: close tabs you opened via the claude-in-chrome tools with `mcp__claude-in-chrome__tabs_close_mcp`. Don't close the user's other tabs.
-6. **Remove the worktree**: `cd` to the main worktree, `git worktree remove <source_worktree>`, then `git branch -d <source_branch>` if it had one. If `-d` refuses, report and suggest `-D` rather than force-deleting.
-7. Report how it landed (clean vs resolved conflicts).
-8. **Close the captured terminal tab**, if a reference was saved. Do this last, after reporting — it kills the running agent. The reference preserves both the app and tab ID even if the default terminal changed or the worktree is gone.
+6. **Report** how it landed (clean vs resolved conflicts). If no tab reference was captured, say so.
+7. **Finish**: remove the worktree, delete the branch, and close the captured tab in one final command. It must be one command: the agent's working directory is deleted and closing the tab kills the agent, so nothing can run after it. Omit `git branch -d` if the source had no branch, and omit `terminal close-tab` if no reference was captured.
 
    ```bash
-   terminal close-tab '<captured_app:tab_reference>'
+   cd <main_worktree> && git worktree remove <source_worktree> && git branch -d <source_branch> && terminal close-tab '<captured_app:tab_reference>'
    ```
+
+   If it fails, the tab stays open: report the error. If `git branch -d` refuses, suggest `-D` rather than force-deleting.
