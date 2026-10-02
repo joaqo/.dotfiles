@@ -29,10 +29,10 @@ Constraints: Never squash, cherry-pick, or create merge commits.
    - **iOS simulators / Argent**: if you booted simulators or started Metro / simulator-servers this session, tear them down — `mcp__argent__stop-all-simulator-servers`, `mcp__argent__stop-metro`, then `xcrun simctl shutdown <udid>` for each sim *you* booted. Don't touch sims you didn't boot.
    - **Chrome tabs**: close tabs you opened via the claude-in-chrome tools with `mcp__claude-in-chrome__tabs_close_mcp`. Don't close the user's other tabs.
 6. **Report** how it landed (clean vs resolved conflicts). If no tab reference was captured, say so.
-7. **Finish**: remove the worktree, delete the branch, and close the captured tab in one final command. It must be one command: the agent's working directory is deleted and closing the tab kills the agent, so nothing can run after it. Omit `git branch -d` if the source had no branch, and omit `terminal close-tab` if no reference was captured.
+7. **Finish**: remove the worktree, delete the branch, and close the captured tab in one final command. It must be one command: the agent's working directory is deleted and closing the tab kills the agent, so nothing can run after it. Omit `git branch -D` if the source had no branch, and omit `terminal close-tab` if no reference was captured. Use `-D`: main was just fast-forwarded onto the branch, so it holds all of its commits, but `-d` still refuses when the branch tracks a remote copy pushed before the rebase.
 
    ```bash
-   cd <main_worktree> && git worktree remove <source_worktree> && git branch -d <source_branch> && terminal close-tab '<captured_app:tab_reference>'
+   cd <main_worktree> && git worktree remove <source_worktree> && git branch -D <source_branch> && terminal close-tab '<captured_app:tab_reference>'
    ```
 
-   If it fails, the tab stays open: report the error. If `git branch -d` refuses, suggest `-D` rather than force-deleting.
+   If it fails, the tab stays open: report the error.
