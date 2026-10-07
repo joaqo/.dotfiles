@@ -19,6 +19,10 @@ A swift macOS app that allows me to create new tasks and manage existing tasks. 
 had an agent running on them. I usually launch new tasks using this tool, which is in charge of creating a new worktree and launching an
 AI agent with an initial prompt so it starts working on the task I set out for it.
 
+### Ghostty Agents (~/terminal)
+My personal macOS fork of Ghostty with a tab sidebar, installed as `/Applications/Ghostty Agents.app`. It's the terminal my agents
+run in; task-manager opens tabs in it via the `terminal` launcher. Maintained as a small patch stack on stable Ghostty release tags.
+
 ## My workflow
 - Editor: nvim
 - Shell: bash
