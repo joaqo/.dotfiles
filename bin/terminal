@@ -30,7 +30,7 @@ on run argv
         set best to missing value
         set prevId to missing value
         if (count of windows) is 0 then
-            new window with configuration cfg
+            set newTab to selected tab of (new window with configuration cfg)
         else
             set bestCount to -1
             repeat with w in windows
@@ -45,7 +45,7 @@ on run argv
                 set lastTab to t
             end repeat
             select tab lastTab
-            new tab in best with configuration cfg
+            set newTab to new tab in best with configuration cfg
         end if
         if keepFocus then
             -- Tab creation grabs focus asynchronously, so selection must settle first.
@@ -68,6 +68,7 @@ on run argv
         else
             activate
         end if
+        return id of terminal 1 of newTab
     end tell
 end run
 '''
@@ -77,6 +78,7 @@ on run argv
     if not (application id "__APP__" is running) then return ""
     set targetDirectory to item 1 of argv
     set targetTTY to item 2 of argv
+    set targetTerminal to item 3 of argv
     set directoryMatches to {}
     delay 0.05
     tell application id "__APP__"
@@ -84,6 +86,7 @@ on run argv
             repeat with t in tabs of w
                 set matchesDirectory to false
                 repeat with s in terminals of t
+                    if (id of s) is targetTerminal then return id of t
                     try
                         if («class Gtty» of s) is targetTTY then return id of t
                     end try
@@ -165,8 +168,8 @@ def open_tab(cwd, command=None, keep_focus=False, restore_app=""):
     if not directory.is_dir():
         raise ValueError(f"Not a directory: {directory}")
     shell_command = "bash -lc " + shlex.quote(command + "; exec bash -l") if command else ""
-    applescript(OPEN_SCRIPT, APPS[current()], str(directory), shell_command,
-                str(keep_focus).lower(), restore_app)
+    return applescript(OPEN_SCRIPT, APPS[current()], str(directory), shell_command,
+                       str(keep_focus).lower(), restore_app)
 
 
 def terminal_context():
@@ -207,7 +210,7 @@ def tab_reference(cwd):
         uri = "file://" + socket.gethostname() + quote(directory, safe="/")
         with open(tty, "w") as device:
             device.write("\033]7;" + uri + "\033\\")
-    tab_id = applescript(FIND_SCRIPT, bundle, directory, tty)
+    tab_id = applescript(FIND_SCRIPT, bundle, directory, tty, os.environ.get("GHOSTTY_AGENTS_TERMINAL_ID", ""))
     return f"{bundle}:{tab_id}" if tab_id else ""
 
 
@@ -224,7 +227,7 @@ def main():
     select = commands.add_parser("use", help="Choose the app for future launches")
     select.add_argument("app", choices=APPS)
     commands.add_parser("current", help="Print the selected app")
-    launch = commands.add_parser("open", help="Open a tab in the selected app")
+    launch = commands.add_parser("open", help="Open a tab in the selected app and print its terminal id")
     launch.add_argument("--cwd", default=".")
     launch.add_argument("--command")
     launch.add_argument("--keep-focus", action="store_true")
@@ -241,7 +244,7 @@ def main():
         elif args.action == "current":
             print(current())
         elif args.action == "open":
-            open_tab(args.cwd, args.command, args.keep_focus, args.restore_app)
+            print(open_tab(args.cwd, args.command, args.keep_focus, args.restore_app))
         elif args.action == "tab-ref":
             reference = tab_reference(args.cwd)
             if reference:
