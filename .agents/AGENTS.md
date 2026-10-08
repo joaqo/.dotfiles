@@ -22,6 +22,7 @@ AI agent with an initial prompt so it starts working on the task I set out for i
 ### Ghostty Agents (~/terminal)
 My personal macOS fork of Ghostty with a tab sidebar, installed as `/Applications/Ghostty Agents.app`. It's the terminal my agents
 run in; task-manager opens tabs in it via the `terminal` launcher. Maintained as a small patch stack on stable Ghostty release tags.
+Agents running in its panes can be listed, read, and driven with `agent sessions|transcript|screen|send|key` (see `agent --help`).
 
 ## My workflow
 - Editor: nvim
