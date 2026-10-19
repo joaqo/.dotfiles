@@ -73,6 +73,19 @@ on run argv
 end run
 '''
 
+BACKGROUND_SCRIPT = '''
+on run argv
+    set targetDirectory to item 1 of argv
+    set shellCommand to item 2 of argv
+    tell application id "__APP__"
+        set cfg to new surface configuration
+        set initial working directory of cfg to targetDirectory
+        if shellCommand is not "" then set command of cfg to shellCommand
+        return id of terminal 1 of (new tab with configuration cfg without focusing)
+    end tell
+end run
+'''
+
 FIND_SCRIPT = '''
 on run argv
     if not (application id "__APP__" is running) then return ""
@@ -168,7 +181,10 @@ def open_tab(cwd, command=None, keep_focus=False, restore_app=""):
     if not directory.is_dir():
         raise ValueError(f"Not a directory: {directory}")
     shell_command = "bash -lc " + shlex.quote(command + "; exec bash -l") if command else ""
-    return applescript(OPEN_SCRIPT, APPS[current()], str(directory), shell_command,
+    bundle = APPS[current()]
+    if keep_focus and bundle == APPS["agents"]:
+        return applescript(BACKGROUND_SCRIPT, bundle, str(directory), shell_command)
+    return applescript(OPEN_SCRIPT, bundle, str(directory), shell_command,
                        str(keep_focus).lower(), restore_app)
 
 
