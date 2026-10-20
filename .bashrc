@@ -158,6 +158,7 @@ eval "$(fzf --bash)"
 export PATH=~/.npm-global/bin:$PATH
 export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
 export ANDROID_HOME=$HOME/Library/Android/sdk && export PATH=$PATH:$ANDROID_HOME/emulator && export PATH=$PATH:$ANDROID_HOME/platform-tools
+export ASC_TELEMETRY_DISABLED=1
 
 # Usage: lo mycommand echo "Hello World"
 # This will create a log file at $TMPDIR/mycommand.log
