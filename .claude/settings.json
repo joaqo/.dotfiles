@@ -17,6 +17,14 @@
   "feedbackDrafts": "off",
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "xhigh"
+    },
+    "claude-fable-5-1": {
+      "effortLevel": "xhigh"
+    }
+  },
   "awaySummaryEnabled": false,
   "showClearContextOnPlanAccept": true,
   "tui": "fullscreen",
@@ -26,14 +34,9 @@
   },
   "skipDangerousModePermissionPrompt": true,
   "editorMode": "normal",
-  "autoCompactEnabled": false,
+  "autoCompactEnabled": true,
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": false,
   "agentPushNotifEnabled": true,
-  "voiceEnabled": true,
-  "modelSettings": {
-    "claude-opus-5-5": {
-      "effortLevel": "xhigh"
-    }
-  }
+  "voiceEnabled": true
 }
