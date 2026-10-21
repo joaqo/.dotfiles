@@ -55,3 +55,6 @@ window-save-state = always
 confirm-close-surface = false
 macos-option-as-alt = left
 keybind = global:ctrl+grave_accent=toggle_quick_terminal
+working-directory = home
+tab-inherit-working-directory = false
+window-inherit-working-directory = false
