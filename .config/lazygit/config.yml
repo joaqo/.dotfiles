@@ -14,3 +14,9 @@ customCommands:
     description: "AI commit message"
     command: "autocommit"
     output: terminal
+  - key: "#"
+    context: "global"
+    description: "Net lines in uncommitted changes"
+    command: "git-netlines"
+    output: popup
+    outputTitle: "Total uncommitted lines for all files"
