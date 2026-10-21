@@ -1,8 +1,9 @@
 My name is Joaquín Alori, I am a developer from Uruguay, working on several projects. My phone number is +59898231030, and my github username is joaqo.
+My brother's name is Tomas Alori, he is also a developer and designer and his phone number is +59891442712.
 
 ## Projects
 ### Mellow (~/mellow)
-An ecommerce and loyalty app/web for restaurants located in ~/mellow. The project I'll be refering to if I don't specify.
+An ecommerce and loyalty app/web for restaurants located in ~/mellow. The project I'll be refering to if I don't specify. Tomas works with my in this project.
 
 ### Dotfiles (~/.dotfiles)
 Where I version most of the config files, agent prompts and little scripts I use. Stuff in ~ like .bashrc, .claude/, .config, etc.
