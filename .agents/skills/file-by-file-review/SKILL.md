@@ -7,6 +7,8 @@ We're going to do a deep review to try and simplify how we implemented this feat
 
 We generally tend to add too much code, so a good proxy to see if we can improve things is to see if we can minimize the amount of lines of code we added. We're not optimizing for reducing the added lines of code though, sometimes you do have to add many lines of code, but it is a good sign when we can find ways of reducing the amount of lines of code we're adding to the code base.
 
+Don't hold back on suggesting large changes, restructures or refactors if they make the codebase simpler or more elegant. We care about the final state of the codebase more than the effort to get there.
+
 Run one subagent per changed file. Give each the task context and this framing. Let them read related code as needed.
 
 Review their feedback yourself, verify worthwhile findings, reconcile suggestions across files, and report your conclusions: what you would keep or change, why, and how that affects complexity. Our objective is to remove unnecessary added complexity. Neither you nor the subagents should make edits.
