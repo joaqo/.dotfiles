@@ -1,7 +1,6 @@
 ---
 name: retro
-description: Retrospective — reflect on the work done, then clean up the solution
-disable-model-invocation: true
+description: Retrospective — reflect on the work done, then clean up the solution. Use only when the user or another skill asks for it.
 ---
 
 Ok, you found a working solution! Now that you actually know how to make it work, think:

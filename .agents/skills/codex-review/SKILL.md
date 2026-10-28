@@ -1,7 +1,6 @@
 ---
 name: codex-review
-description: Get a Codex code review of uncommitted changes, then add your honest assessment of it. Use after finishing a task with uncommitted changes.
-disable-model-invocation: true
+description: Get a Codex code review of uncommitted changes, then add your honest assessment of it. Use only when the user or another skill asks for it.
 ---
 
 You just finished a task with uncommitted changes. Run a Codex code review on those changes, then show the user the review alongside your honest take on it.
