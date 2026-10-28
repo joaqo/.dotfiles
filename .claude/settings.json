@@ -4,7 +4,12 @@
     "pr": ""
   },
   "permissions": {
-    "defaultMode": "bypassPermissions"
+    "defaultMode": "bypassPermissions",
+    "deny": [
+      "Bash(gcloud projects delete *)",
+      "Bash(gcloud * projects delete *)",
+      "Bash(gcloud * liens delete *)"
+    ]
   },
   "model": "opus",
   "statusLine": {
