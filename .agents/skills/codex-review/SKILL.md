@@ -12,7 +12,7 @@ You just finished a task with uncommitted changes. Run a Codex code review on th
    > Run this in bash from the current working directory:
    >
    > ```bash
-   > codex review --uncommitted
+   > codex exec review --ephemeral --uncommitted
    > ```
    >
    > It emits a lot of intermediate tool-call output followed by a final review summary. Reply with ONLY that final summary — verbatim, complete, untruncated, no preamble, no commentary, no markdown wrappers. If the command fails, reply with the raw error output verbatim.
