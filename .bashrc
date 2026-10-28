@@ -365,3 +365,6 @@ esac
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
+
+# rive
+export PATH="/Users/joaqo/.rive/bin:$PATH"
