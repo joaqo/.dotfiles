@@ -20,6 +20,8 @@ google mail search [query...] [-a ACCOUNT] [-n 20] [--json]   # Gmail search syn
 google mail read ID [--thread] [--save-attachments DIR] [--json]
 google mail send -a ACCOUNT --to ADDR --subject S [--body B] [--cc ADDR] [--bcc ADDR] [--attach FILE] [--draft]
 google mail reply ID [--all] [--body B] [--attach FILE] [--draft]
+google mail edit-draft ID [--to ADDR] [--cc ADDR] [--bcc ADDR] [--subject S] [--body B] [--attach FILE]
+google mail delete-draft ID
 google calendar agenda [-a ACCOUNT] [--from WHEN] [-d DAYS] [-q TEXT] [-c CALENDAR] [--json]   # default: from now, 7 days
 google calendar show ID [--json]
 google calendar create -a ACCOUNT --title T --start WHEN [--end WHEN|HH:MM] [--minutes 60] [--location L] [--description D] [--guest EMAIL] [--meet] [--remind MINUTES] [--calendar ID]
@@ -28,8 +30,9 @@ google calendar delete ID
 google calendar respond ID accept|decline|maybe
 ```
 
-- The body is plain text, from `--body` or stdin. `--to`, `--cc`, `--bcc`, `--attach`, `--guest`, `--add-guest` and `--remind` repeat. `--remind` sets popup reminders and replaces the calendar's default ones.
+- The body is plain text, from `--body` or stdin. `reply` adds the quoted original below it, like Gmail. `--to`, `--cc`, `--bcc`, `--attach`, `--guest`, `--add-guest` and `--remind` repeat. `--remind` sets popup reminders and replaces the calendar's default ones.
 - WHEN is `YYYY-MM-DD` or `'YYYY-MM-DD HH:MM'`, local time, no relative words like "tomorrow". A date-only `--start` makes an all-day event, and its `--end` is the last day, inclusive. A new `--start` alone in `update` keeps the event's length.
 - Ids carry their account: mail `account/messageId`, events `account/calendarId/eventId`. Copy them from command output. The agenda lists single occurrences of repeating events, so `update`/`delete` on those ids changes one occurrence only.
-- There are no archive, label, mark-read or delete commands for mail; reading leaves mail unread.
+- `edit-draft` keeps every field you don't pass; `--to`/`--cc`/`--bcc` replace that list and `--attach` adds a file. It prints a new id, because Gmail gives an edited draft a new message id. List drafts with `google mail search in:drafts`.
+- There are no archive, label, mark-read or delete commands for mail; reading leaves mail unread. Only drafts can be deleted.
 - The mllw.app inbox is kept empty, so search `in:anywhere` there.
