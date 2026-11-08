@@ -22,6 +22,8 @@
     "#ebdbb2"
   ],
   "colors": {
-    "accent": "#8a5a36"
+    "accent": "#8a5a36",
+    "chrome": "#141617",
+    "canvas": "#141617"
   }
 }
