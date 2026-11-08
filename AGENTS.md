@@ -27,7 +27,7 @@ Symlinks dotfiles to ~, installs fzf, language servers (pnpm), ripgrep, compiles
 - `.config/lazygit/` - lazygit custom commands (symlinked to ~/Library/Application Support/lazygit/, not ~/.config/)
 - `.config/tmuxinator/` - tmuxinator project configs (mellow)
 - `.config/ghostty/` - ghostty terminal config (gruvbox dark)
-- `.config/herdr-app/` - Herdr app keys and gruvbox-black theme, each file symlinked into `~/.config/herdr-app/` (rest of that dir is app state). Herdr watches the link, not the target: after editing, `touch -h` the link in `~/.config/herdr-app/` to live-reload
+- `.config/herdr-app/` - Herdr app keys, gruvbox-black theme and `close-pane` mod (cmd-w: closes pane, or the whole space without asking if it's the last pane), each symlinked into `~/.config/herdr-app/` (rest of that dir is app state). Herdr watches the link, not the target: after editing, `touch -h` the link in `~/.config/herdr-app/` to live-reload
 - `.agents/AGENTS.md` - shared global instructions for Claude Code and Codex CLI; symlinked to `~/.claude/CLAUDE.md` and `~/.codex/AGENTS.md`. Projects use AGENTS.md only; a project CLAUDE.md would stop Claude reading its AGENTS.md
 - `.agents/skills/` - shared global authored skills
 - `.agents/skills.lock` - external skill sources, selected directories, and pinned git commits

@@ -2,3 +2,5 @@
 .claude/hooks/notify-debug.log
 .config/zed/prompts/
 skills-lock.json
+.config/herdr-app/mods/*/*.d.ts
+.config/herdr-app/mods/*/jsconfig.json
