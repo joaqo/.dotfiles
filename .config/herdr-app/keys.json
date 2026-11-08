@@ -50,7 +50,8 @@
     "cmd-shift-h": "pane.go:left",
     "cmd-shift-j": "pane.go:down",
     "cmd-shift-k": "pane.go:up",
-    "cmd-shift-l": "pane.go:right"
+    "cmd-shift-l": "pane.go:right",
+    "cmd-escape": "overlay.close"
   },
   "terminal": {
     "cmd-f": "terminal.search",
