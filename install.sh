@@ -35,6 +35,10 @@ ln -s -f ~/.dotfiles/.config/lazygit/config.yml "$HOME/Library/Application Suppo
 mkdir -p "$HOME/Library/Application Support/com.mitchellh.ghostty"
 ln -s -f ~/.dotfiles/.config/ghostty/config "$HOME/Library/Application Support/com.mitchellh.ghostty/"
 
+mkdir -p ~/.config/herdr-app/themes
+ln -s -f ~/.dotfiles/.config/herdr-app/keys.json ~/.config/herdr-app/
+ln -s -f ~/.dotfiles/.config/herdr-app/themes/gruvbox-black.json ~/.config/herdr-app/themes/
+
 mkdir -p ~/.claude ~/.claude/skills ~/.codex ~/.codex/skills
 ln -s -f ~/.dotfiles/.agents/AGENTS.md ~/.claude/CLAUDE.md
 ln -s -f ~/.dotfiles/.claude/settings.json ~/.claude/
