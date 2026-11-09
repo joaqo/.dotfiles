@@ -147,11 +147,11 @@ mac-menu-bar-enabled = true
 preventSleepWhileRunning = true
 keepRemoteControlAwakeWhilePluggedIn = true
 avatar-overlay-mascot-width-px = 113
-followUpQueueMode = "queue"
 dock-icon-preference = "app-default"
 realtimeVoiceScreenContextEnabled = true
 conversationDetailMode = "STEPS_PROSE"
 open-link-in-target-preference = "in-app-browser"
+migratedFollowUpQueueToSteer = true
 
 [desktop.open-in-target-preferences]
 global = "iterm2"
@@ -194,8 +194,8 @@ NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = ""
 NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = ""
 NODE_REPL_INSTRUCTIONS_USE_CASE_COMPUTER_USE = ""
 BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "prod"
-BROWSER_USE_CODEX_APP_VERSION = "26.1027.30824"
-NODE_REPL_TRUSTED_SERVICES = '{"browser":"/Users/joaqo/.codex/plugins/cache/openai-bundled/browser/26.1027.30824/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
+BROWSER_USE_CODEX_APP_VERSION = "26.1103.32239"
+NODE_REPL_TRUSTED_SERVICES = '{"browser":"/Users/joaqo/.codex/plugins/cache/openai-bundled/browser/26.1103.32239/scripts/browser-service.mjs","sky":"@oai/sky/service"}'
 SKY_CUA_SERVICE_PATH = "/Users/joaqo/.codex/computer-use/Codex Computer Use.app"
 CODEX_CLI_PATH = "/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS/codex"
 
