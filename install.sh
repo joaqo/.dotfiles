@@ -27,7 +27,7 @@ ln -s -f ~/.dotfiles/.config/nvim .
 ln -s -f ~/.dotfiles/.config/zed .
 ln -s -f ~/.dotfiles/.config/tmuxinator .
 ln -s -f ~/.dotfiles/.config/terminal .
-ln -s -f ~/.dotfiles/bin/terminal ~/.local/bin/terminal
+ln -s -f ~/terminal/agent-control/terminal ~/.local/bin/terminal
 
 mkdir -p "$HOME/Library/Application Support/lazygit"
 ln -s -f ~/.dotfiles/.config/lazygit/config.yml "$HOME/Library/Application Support/lazygit/"
@@ -71,6 +71,7 @@ rmdir ~/.agents/skills ~/.agents 2>/dev/null || true
 ~/.dotfiles/bin/skill sync
 
 ln -s -f ~/agent/agent ~/.local/bin/agent
+ln -s -f ~/terminal/agent-control/agent-control ~/.local/bin/agent-control
 ln -s -f ~/notion/notion ~/.local/bin/notion
 
 cd ~

@@ -16,5 +16,5 @@ echo "Generating commit message..."
 {
   printf '%s\n\nStaged diff:\n' "$PROMPT"
   git diff --staged
-} | "$HOME/agent/agent" exec conversational --ephemeral 2>/dev/null > /tmp/commit_msg
+} | agent exec conversational --ephemeral 2>/dev/null > /tmp/commit_msg
 git commit -e -F /tmp/commit_msg

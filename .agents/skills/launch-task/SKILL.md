@@ -5,17 +5,17 @@ description: Start a new task (a fresh worktree with its own agent working on a 
 
 # Launch a task
 
-A task is a worktree in `~/worktrees` with an agent running in a Ghostty Agents tab. Start one with:
+A task is a worktree in `~/worktrees` with an agent running in its own Herdr space. Start one with:
 
 ```bash
 task-manager launch [--project <name>] [--agent claude|codex] [--no-worktree] "<prompt>"
 ```
 
-- `--project`: `mellow` (default), `dotfiles`, `agent`, `task-manager`, `terminal`.
+- `--project`: run `task-manager launch` with no arguments to list them; `mellow` is the default.
 - `--agent`: `claude` (default) or `codex`.
 - `--no-worktree`: run in the project's main checkout. Refused if an agent is already live there.
 
-It names the branch, creates the worktree (`mellow worktree add` for mellow), opens a background tab and prints `{"cwd": "...", "terminal_id": "..."}`.
+It names the branch, creates the worktree, opens a Herdr space in the background and prints the worktree path.
 
 ## The prompt
 
@@ -23,9 +23,11 @@ The new agent starts with no context, so the prompt must stand alone: the goal, 
 
 ## After launching
 
-Tell the user the worktree path. Drive or check the agent with its `terminal_id`:
+Tell the user the worktree path. To drive or check the agent, find its terminal in `hc ls` (its `cwd` is the worktree):
 
-- `agent screen <id>`: what its pane shows now.
-- `agent send <id> "<message>"`: send it a message.
-- `agent wait <id>`: wait for its reply, or for it to ask something.
-- `agent close <id>`: stop it. Only when the user asks.
+- `hc read <t>`: what its terminal shows now.
+- `hc send <t> "<message>"`: send it a message.
+- `hc wait <t>`: wait until it stops working, or needs someone.
+- `hc kill <t>`: stop it. Only when the user asks.
+
+See `hc --skill` for the rest.

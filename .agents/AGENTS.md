@@ -21,9 +21,13 @@ had an agent running on them. I usually launch new tasks using this tool, which 
 AI agent with an initial prompt so it starts working on the task I set out for it.
 
 ### Ghostty Agents (~/terminal)
-My personal macOS fork of Ghostty with a tab sidebar, installed as `/Applications/Ghostty Agents.app`. It's the terminal my agents
-run in; task-manager opens tabs in it via the `terminal` launcher. Maintained as a small patch stack on stable Ghostty release tags.
-Agents running in its panes can be listed, read, and driven with `agent sessions|transcript|screen|send|wait|key|close` (see `agent --help`).
+My personal macOS fork of Ghostty with a tab sidebar, installed as `/Applications/Ghostty Agents.app`. Not in use right now (see Herdr).
+Maintained as a small patch stack on stable Ghostty release tags. Agents running in its panes can be listed, read, and driven with
+`agent-control sessions|screen|send|wait|key|close` (lives in `~/terminal/agent-control`).
+
+### Herdr
+The terminal my agents run in: the Herdr app (`herdr-app`) on top of herdr-core (`hc`). Each task is a Herdr space, opened in the background by task-manager.
+Drive other agents with `hc` (`hc --skill`) and change the window with `herdr-app` (`herdr-app --skill`). Your own terminal is `$HC_TERMINAL_ID`.
 
 ## My workflow
 - Editor: nvim
