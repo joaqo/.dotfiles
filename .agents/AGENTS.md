@@ -28,6 +28,8 @@ Maintained as a small patch stack on stable Ghostty release tags. Agents running
 ### Herdr
 The terminal my agents run in: the Herdr app (`herdr-app`) on top of herdr-core (`hc`). Each task is a Herdr space, opened in the background by task-manager.
 Drive other agents with `hc` (`hc --skill`) and change the window with `herdr-app` (`herdr-app --skill`). Your own terminal is `$HC_TERMINAL_ID`.
+Keep Herdr as stock as possible: don't clone its shipped layouts or mods unless there's no other way. My own Herdr files (keys, themes, layout, mods)
+live in `~/.dotfiles/.config/herdr-app/`, symlinked into `~/.config/herdr-app/`; Herdr only notices an edit after `touch -h` on the link.
 
 ## My workflow
 - Editor: nvim
