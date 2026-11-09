@@ -98,23 +98,15 @@
                 "pane": {
                   "header": {
                     "content": {
-                      "mod": "pane"
+                      "mod": "pane-strip"
                     },
-                    "reveal": "hover",
-                    "height": 30,
-                    "position": "top"
+                    "height": 3,
+                    "position": "bottom",
+                    "reveal": "always"
                   },
                   "background": "background",
-                  "border": {
-                    "width": 1,
-                    "color": "border"
-                  },
-                  "focus": {
-                    "width": 1,
-                    "color": "accent"
-                  },
                   "radius": 0,
-                  "gap": 0,
+                  "gap": 1,
                   "lone": false
                 }
               }
