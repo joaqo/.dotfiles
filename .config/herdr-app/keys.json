@@ -51,7 +51,8 @@
     "cmd-shift-j": "pane.go:down",
     "cmd-shift-k": "pane.go:up",
     "cmd-shift-l": "pane.go:right",
-    "cmd-escape": "overlay.close"
+    "cmd-escape": "overlay.close",
+    "cmd-j": "mod.open:focus-done"
   },
   "terminal": {
     "cmd-f": "terminal.search",
