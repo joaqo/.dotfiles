@@ -4,12 +4,12 @@
     "pr": ""
   },
   "permissions": {
-    "defaultMode": "bypassPermissions",
     "deny": [
       "Bash(gcloud projects delete *)",
       "Bash(gcloud * projects delete *)",
       "Bash(gcloud * liens delete *)"
-    ]
+    ],
+    "defaultMode": "bypassPermissions"
   },
   "model": "opus",
   "statusLine": {
@@ -38,6 +38,7 @@
     "mode": "hold"
   },
   "skipDangerousModePermissionPrompt": true,
+  "theme": "auto",
   "editorMode": "normal",
   "autoCompactEnabled": true,
   "idleCompaction": false,
