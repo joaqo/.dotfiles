@@ -24,10 +24,10 @@ Constraints: Never squash, cherry-pick, or create merge commits.
    - **iOS simulators / Argent**: if you booted simulators or started Metro / simulator-servers this session, tear them down — `mcp__argent__stop-all-simulator-servers`, `mcp__argent__stop-metro`, then `xcrun simctl shutdown <udid>` for each sim *you* booted. Don't touch sims you didn't boot.
    - **Chrome tabs**: close tabs you opened via the claude-in-chrome tools with `mcp__claude-in-chrome__tabs_close_mcp`. Don't close the user's other tabs.
 7. **Report** how it landed (clean vs resolved conflicts) and the Notion task status, if any. If `$HC_TERMINAL_ID` is unset (not running in Herdr), say the space stays open.
-8. **Finish**: remove the worktree, delete the branch, and end this agent's Herdr terminal, which closes its space, in one final command. It must be one command: the agent's working directory is deleted and ending the terminal kills the agent, so nothing can run after it. Omit `git branch -D` if the source had no branch, and omit `hc kill` if `$HC_TERMINAL_ID` is unset. Use `-D`: main was just fast-forwarded onto the branch, so it holds all of its commits, but `-d` still refuses when the branch tracks a remote copy pushed before the rebase.
+8. **Finish**: remove the worktree, delete the branch, and close this agent's Herdr space, in one final command. It must be one command: the agent's working directory is deleted and closing the space kills the agent, so nothing can run after it. Close the whole space, not just this agent's terminal: any other pane in it (a lazygit split, a shell) would keep it open. `hc kill` is the fallback for when the Herdr window isn't running. Omit `git branch -D` if the source had no branch, and omit the Herdr part if `$HC_TERMINAL_ID` is unset. Use `-D`: main was just fast-forwarded onto the branch, so it holds all of its commits, but `-d` still refuses when the branch tracks a remote copy pushed before the rebase.
 
    ```bash
-   cd <main_worktree> && git worktree remove <source_worktree> && git branch -D <source_branch> && hc kill "$HC_TERMINAL_ID"
+   cd <main_worktree> && git worktree remove <source_worktree> && git branch -D <source_branch> && { herdr-app do space.close --id "$(hc get "$HC_TERMINAL_ID" --json | jq -r '.labels["herdr.space"]')" --confirmed true || hc kill "$HC_TERMINAL_ID"; }
    ```
 
    If it fails, the space stays open: report the error.

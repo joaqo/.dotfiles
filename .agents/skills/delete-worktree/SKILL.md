@@ -19,8 +19,8 @@ The source is the current `HEAD` (may be a branch or a detached Codex worktree).
    - **Chrome tabs**: close tabs you opened via the claude-in-chrome tools with `mcp__claude-in-chrome__tabs_close_mcp`. Don't close the user's other tabs.
 4. **Remove the worktree**: `cd` to the main worktree, `git worktree remove <source_worktree>`, then `git branch -d <source_branch>` if it had one. If `-d` refuses (unmerged work), report and suggest `-D` rather than force-deleting.
 5. Report what was removed.
-6. **End this agent's Herdr terminal**, which closes its space, if `$HC_TERMINAL_ID` is set. Do this last, after reporting — it kills the running agent.
+6. **Close this agent's Herdr space** if `$HC_TERMINAL_ID` is set. Do this last, after reporting — it kills the running agent. Close the whole space, not just this agent's terminal: any other pane in it (a lazygit split, a shell) would keep it open. `hc kill` is the fallback for when the Herdr window isn't running.
 
    ```bash
-   hc kill "$HC_TERMINAL_ID"
+   herdr-app do space.close --id "$(hc get "$HC_TERMINAL_ID" --json | jq -r '.labels["herdr.space"]')" --confirmed true || hc kill "$HC_TERMINAL_ID"
    ```
