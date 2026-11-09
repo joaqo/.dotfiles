@@ -41,6 +41,7 @@ ln -s -f ~/.dotfiles/.config/herdr-app/themes/gruvbox-black.json ~/.config/herdr
 ln -s -f -n ~/.dotfiles/.config/herdr-app/mods/close-pane ~/.config/herdr-app/mods/
 ln -s -f -n ~/.dotfiles/.config/herdr-app/mods/flat-tabs ~/.config/herdr-app/mods/
 ln -s -f -n ~/.dotfiles/.config/herdr-app/mods/focus-done ~/.config/herdr-app/mods/
+ln -s -f -n ~/.dotfiles/.config/herdr-app/mods/pane-strip ~/.config/herdr-app/mods/
 ln -s -f ~/.dotfiles/.config/herdr-app/layouts/flat.json ~/.config/herdr-app/layouts/
 
 mkdir -p ~/.claude ~/.claude/skills ~/.codex ~/.codex/skills
