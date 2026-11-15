@@ -52,7 +52,10 @@
     "cmd-shift-k": "pane.go:up",
     "cmd-shift-l": "pane.go:right",
     "cmd-escape": "overlay.close",
-    "cmd-j": "mod.open:focus-done"
+    "cmd-j": "mod.open:cycle-pinned",
+    "cmd-k": "mod.open:focus-done",
+    "cmd-l": "mod.open:cycle-working",
+    "cmd-;": "mod.open:cycle-idle"
   },
   "terminal": {
     "cmd-f": "terminal.search",
