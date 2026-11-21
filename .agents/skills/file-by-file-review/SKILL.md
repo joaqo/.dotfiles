@@ -9,6 +9,6 @@ We generally tend to add too much code, so a good proxy to see if we can improve
 
 Don't hold back on suggesting large changes, restructures or refactors if they make the codebase simpler or more elegant. We care about the final state of the codebase more than the effort to get there.
 
-Run one subagent per changed file. Give each the task context and this framing. Let them read related code as needed.
+Run one subagent per changed file (including untracked ones). Give each the task context and this framing. Let them read related code as needed.
 
 Review their feedback yourself, verify worthwhile findings, reconcile suggestions across files, and report your conclusions: what you would keep or change, why, and how that affects complexity. Our objective is to remove unnecessary added complexity. Neither you nor the subagents should make edits.
