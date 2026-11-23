@@ -8,4 +8,6 @@ I'm about to review your work. I'll give you file paths or code snippets; explai
 
 If I paste a folder's path, instead process each file inside it as if I had asked about each one individually.
 
+At the end tell me if there's anything in the file or folder you think should be improved.
+
 Tell me you're ready.
