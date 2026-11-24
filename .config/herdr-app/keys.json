@@ -59,7 +59,8 @@
     "cmd-shift-k": "pane.go:up",
     "cmd-shift-l": "pane.go:right",
     "cmd-escape": "overlay.close",
-    "cmd-g": "flat-spaces.tag"
+    "cmd-g": "flat-spaces.tag",
+    "cmd-;": "flat-spaces.last-space"
   },
   "terminal": {
     "cmd-f": "terminal.search",

@@ -136,7 +136,9 @@ export default class Spaces extends View {
     cx.timer.every(30000, (cx) => cx.notify());
     cx.spawn(async (cx) => {
       for (;;) {
-        if (await nextCommand() === "tag") await this.cycleTag(cx);
+        const command = await nextCommand();
+        if (command === "tag") await this.cycleTag(cx);
+        if (command === "last-space" && spaces().some((s) => s.id === this.previous)) run("space.select", { id: this.previous });
         cx.notify();
       }
     });
@@ -647,6 +649,11 @@ export default class Spaces extends View {
     const list = this.grouped(t, collapsed);
     // Bring the active space into view when it, or its place in the list, changes; a row already in view stays put.
     const active = sp.find(p => p.active)?.id;
+    // For cmd-; (last-space): the space shown before this one.
+    if (active !== this.current) {
+      if (this.current) this.previous = this.current;
+      this.current = active;
+    }
     if (active !== this.revealed || this.activeAt !== this.revealedAt) {
       this.revealed = active;
       this.revealedAt = this.activeAt;
