@@ -2,8 +2,9 @@
 // grouped by machine when more than one is known. After a space's name, the repo
 // its first terminal is in now, only where unusual: branch, ahead/behind. The first
 // eighteen show their shortcut's digit in place of the avatar's letter (a worktree
-// has no avatar, just the digit); each row ends with its most urgent agent's state
-// and how long it has been in it. Click to switch, right-click for its menu, drag to reorder.
+// has no avatar, just the digit); each row ends with its most urgent agent's state,
+// and its tooltip says how long it has been in it. Click to switch, right-click for
+// its menu, drag to reorder.
 
 import { View, div, svg } from "gpui-kit";
 import { v_flex, h_flex, ScrollHandle } from "gpui-base";
@@ -50,8 +51,9 @@ function mark(t, status) {
 }
 function markCell(t, status) {
   const m = mark(t, status);
-  return h_flex().w(14).flex_none().items_center().justify_center().when(Boolean(m), (el) => el.child(m));
+  return m && h_flex().w(14).flex_none().items_center().justify_center().child(m);
 }
+const STATE = { working: "Working", blocked: "Needs you", done: "Done", idle: "Idle" };
 
 // Where a space is now: its first terminal's live folder, else where it was made.
 // `ps`: panes(), read once by the caller (each read copies every pane).
@@ -551,9 +553,11 @@ export default class Spaces extends View {
     const since = w.status ? this.since(w, this.agents) : null;
     const digit = keyDigit(w);
     const tag = this.tags[w.id]?.tag;
+    const cell = markCell(t, w.status);
     return v_flex()
       .relative()
       .id(`space-${w.id}`)
+      .when(Boolean(since), (el) => el.tooltip(`${STATE[w.status]} · ${duration(this.now - since)}`))
       .px(8)
       .h(rowHeight({ tree }))
       .flex_none()
@@ -601,9 +605,7 @@ export default class Spaces extends View {
           .when(Boolean(tag), el => el.child(div().id(`tag-${w.id}`).flex_none().tooltip(tag)
             .child(svg(`mods/flat-spaces/${TAGS[tag].icon}.svg`).size(12).text_color(TAGS[tag].color))))
           .child(g ? this.gitTail(g, tree, w.name, t) : div().flex_1())
-          .when(Boolean(w.status), el => el.child(h_flex().flex_none().gap(6).items_center()
-            .when(Boolean(since), el => el.child(div().text_size(11).text_color(t.dim).child(duration(this.now - since))))
-            .child(markCell(t, w.status)))),
+          .when(Boolean(cell), el => el.child(cell)),
       );
   }
 
@@ -620,7 +622,7 @@ export default class Spaces extends View {
       .when(!w.active, (el) => el.hover((s) => s.bg(t.hover)))
       .on_click(() => run("space.select", { id: w.id }))
       .child(div().text_color(w.active ? t.foreground : t.muted).child(keyDigit(w) ?? "·"))
-      .child(markCell(t, w.status)));
+      .child(markCell(t, w.status) ?? div().w(14)));
   }
 
   render() {
