@@ -40,10 +40,7 @@ ln -s -f ~/.dotfiles/.config/herdr-app/keys.json ~/.config/herdr-app/
 ln -s -f ~/.dotfiles/.config/herdr-app/themes/gruvbox-black.json ~/.config/herdr-app/themes/
 ln -s -f -n ~/.dotfiles/.config/herdr-app/mods/close-pane ~/.config/herdr-app/mods/
 ln -s -f -n ~/.dotfiles/.config/herdr-app/mods/flat-tabs ~/.config/herdr-app/mods/
-ln -s -f -n ~/.dotfiles/.config/herdr-app/mods/focus-done ~/.config/herdr-app/mods/
-ln -s -f -n ~/.dotfiles/.config/herdr-app/mods/cycle-pinned ~/.config/herdr-app/mods/
-ln -s -f -n ~/.dotfiles/.config/herdr-app/mods/cycle-idle ~/.config/herdr-app/mods/
-ln -s -f -n ~/.dotfiles/.config/herdr-app/mods/cycle-working ~/.config/herdr-app/mods/
+ln -s -f -n ~/.dotfiles/.config/herdr-app/mods/flat-spaces ~/.config/herdr-app/mods/
 ln -s -f -n ~/.dotfiles/.config/herdr-app/mods/pane-strip ~/.config/herdr-app/mods/
 ln -s -f ~/.dotfiles/.config/herdr-app/layouts/flat.json ~/.config/herdr-app/layouts/
 
