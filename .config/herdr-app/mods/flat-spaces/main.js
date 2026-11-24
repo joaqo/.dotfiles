@@ -2,8 +2,9 @@
 // grouped by machine when more than one is known. After a space's name, the repo
 // its first terminal is in now, only where unusual: branch, ahead/behind. The first
 // eighteen show their shortcut's digit in place of the avatar's letter (a worktree
-// has no avatar, just the digit); each row ends with its most urgent agent's state,
-// and its tooltip says how long it has been in it. Click to switch, right-click for
+// has no avatar, just the digit); each row ends with its most urgent agent's state.
+// Its tooltip says how long it has been in it, the branch against local main, and
+// the dev servers the space's terminals started. Click to switch, right-click for
 // its menu, drag to reorder.
 
 import { View, div, svg } from "gpui-kit";
@@ -54,6 +55,77 @@ function markCell(t, status) {
   return m && h_flex().w(14).flex_none().items_center().justify_center().child(m);
 }
 const STATE = { working: "Working", blocked: "Needs you", done: "Done", idle: "Idle" };
+
+// "main ↑3 ↓21": commits on `branch` and not on local main, and the other way round.
+// Null on main itself, when even with it, or without a main.
+async function againstMain(cwd, on, branch) {
+  const run = (...args) => exec("git", args, { cwd, on });
+  const trunks = await run("for-each-ref", "--format=%(refname:short)", "refs/heads/main", "refs/heads/master");
+  // The patterns also match branches under main/ or master/.
+  const trunk = trunks.code === 0 && trunks.stdout.split("\n").find((b) => b === "main" || b === "master");
+  if (!trunk || branch === trunk) return null;
+  const counts = await run("rev-list", "--left-right", "--count", `HEAD...${trunk}`);
+  if (counts.code !== 0) return null;
+  const [ahead, behind] = counts.stdout.trim().split(/\s+/).map(Number);
+  return ahead || behind ? [trunk, ahead && `↑${ahead}`, behind && `↓${behind}`].filter(Boolean).join(" ") : null;
+}
+
+// Space id -> "site :3019 · sellerWeb :3020": each listening process descended from one of
+// the space's terminals on machine `on`, by its lowest port (a dev server also listens for
+// reloads, an inspector...), named after its folder within the space terminal's (the app
+// in a monorepo), else its program ("vite"). Agents listen too, for themselves: they're left
+// out, the servers they start aren't.
+async function servers(on) {
+  const live = terminals().filter((t) => t.state === "live" && t.pid && (t.address.includes("/") ? t.address.split("/")[0] : null) === on);
+  if (!live.length) return {};
+  // A terminal an agent started with `hc run` has no space label: it's in its parent's,
+  // and its folder is told from the parent's.
+  const byAddress = new Map(live.map((t) => [t.address, t]));
+  const owner = (t, hops = 0) => (t.labels?.["herdr.space"] ? t : hops < 16 && byAddress.has(t.parent) ? owner(byAddress.get(t.parent), hops + 1) : null);
+  const shells = new Map(live.flatMap((t) => {
+    const o = owner(t);
+    return o ? [[t.pid, { space: (on ? `${on}/` : "") + o.labels["herdr.space"], cwd: o.cwd }]] : [];
+  }));
+  const agents = new Set(live.filter((t) => t.program?.agent).map((t) => t.foreground?.pid));
+  const [ps, lsof] = await Promise.all([
+    exec("ps", ["-A", "-o", "pid=,ppid=,args="], { on }),
+    exec("lsof", ["-nP", "-iTCP", "-sTCP:LISTEN", "-Fpn"], { on }),
+  ]);
+  const procs = new Map(ps.stdout.trim().split("\n").map((l) => {
+    const [, pid, ppid, args] = l.match(/^\s*(\d+)\s+(\d+)\s+(.*)$/) ?? [];
+    return [Number(pid), { ppid: Number(ppid), args: args ?? "" }];
+  }));
+  const shellOf = (pid) => {
+    for (let p = pid, hops = 0; p > 1 && hops < 64; p = procs.get(p)?.ppid, hops++) if (shells.has(p)) return shells.get(p);
+    return null;
+  };
+  const found = new Map(); // pid -> { shell, port }
+  let pid;
+  for (const line of lsof.stdout.split("\n")) {
+    if (line[0] === "p") pid = Number(line.slice(1));
+    else if (line[0] === "n" && !agents.has(pid)) {
+      const shell = shellOf(pid), port = Number(line.split(":").pop());
+      if (shell && !(found.get(pid)?.port <= port)) found.set(pid, { shell, port });
+    }
+  }
+  if (!found.size) return {};
+  const cwds = await exec("lsof", ["-a", "-p", [...found.keys()].join(","), "-d", "cwd", "-Fn"], { on });
+  for (const line of cwds.stdout.split("\n")) {
+    if (line[0] === "p") pid = Number(line.slice(1));
+    else if (line[0] === "n" && found.has(pid)) found.get(pid).cwd = line.slice(1);
+  }
+  const name = (pid, { shell, cwd }) => {
+    if (cwd && shell.cwd && cwd.startsWith(`${shell.cwd}/`)) return cwd.slice(shell.cwd.length + 1);
+    if (cwd && cwd !== shell.cwd) return base(cwd);
+    const [exe, script] = (procs.get(pid)?.args ?? "").split(/\s+/).map(base);
+    return /^(node|bun|deno|python[\d.]*|ruby)$/.test(exe) && script ? script : exe;
+  };
+  const out = {};
+  for (const [pid, s] of [...found].sort((a, b) => a[1].port - b[1].port)) {
+    out[s.shell.space] = (out[s.shell.space] ? `${out[s.shell.space]} · ` : "") + `${name(pid, s)} :${s.port}`;
+  }
+  return out;
+}
 
 // Where a space is now: its first terminal's live folder, else where it was made.
 // `ps`: panes(), read once by the caller (each read copies every pane).
@@ -126,6 +198,7 @@ export default class Spaces extends View {
       for (const state of Object.values(this.reconnecting)) state.busy = false;
     } catch { this.reconnecting = {}; }
     try { this.folded = new Set(JSON.parse(localStorage.getItem("machines.folded") ?? "[]")); } catch { this.folded = new Set(); }
+    this.servers = {}; // space -> the servers its terminals started, for its tooltip
     // Each agent's last state and when it changed (ms), kept across restarts.
     try { this.changed = JSON.parse(localStorage.getItem("changed") ?? "{}"); } catch { this.changed = {}; }
     if (!this.changed || typeof this.changed !== "object" || Array.isArray(this.changed)) this.changed = {};
@@ -134,6 +207,8 @@ export default class Spaces extends View {
     // Refresh only when the refs could have changed (see `due`).
     cx.timer.every(250, (cx) => this.checkNew(cx));
     cx.timer.every(30000, (cx) => cx.notify());
+    this.refreshServers(cx);
+    cx.timer.every(5000, (cx) => { if (window().active) this.refreshServers(cx); });
     cx.spawn(async (cx) => {
       for (;;) {
         const command = await nextCommand();
@@ -358,7 +433,8 @@ export default class Spaces extends View {
       );
       const name = repo.endsWith("/.git") ? base(repo.slice(0, -5)) : base(repo).replace(/\.git$/, "");
       const [ahead, behind] = counts.code === 0 ? counts.stdout.trim().split(/\s+/).map(Number) : [0, 0];
-      const info = { name, branch: branch.code === 0 ? branch.stdout.trim().replace(/^refs\/heads\//, "") : "(detached)", ahead, behind, repo: JSON.stringify([on, repo]), linked: repo !== `${top}/.git` };
+      const head = branch.code === 0 ? branch.stdout.trim().replace(/^refs\/heads\//, "") : "(detached)";
+      const info = { name, branch: head, ahead, behind, repo: JSON.stringify([on, repo]), linked: repo !== `${top}/.git`, main: await againstMain(cwd, on, head) };
       this.git[key] = info;
       if (!on) this.watch(repo, cx);
     } catch {
@@ -387,6 +463,23 @@ export default class Spaces extends View {
         }
       } catch {}
       if (this.watching.get(repo) === current) this.watching.delete(repo);
+    });
+  }
+
+  // Herdr builds a tooltip from the row as the hover starts: these must be ready by then.
+  refreshServers(cx) {
+    if (this.scanning) return;
+    this.scanning = true;
+    cx.spawn(async (cx) => {
+      const all = {};
+      for (const on of [null, ...new Set(spaces().map((s) => s.machine).filter(Boolean))]) {
+        try { Object.assign(all, await servers(on)); } catch {}
+      }
+      this.scanning = false;
+      if (JSON.stringify(all) !== JSON.stringify(this.servers)) {
+        this.servers = all;
+        cx.notify();
+      }
     });
   }
 
@@ -556,10 +649,11 @@ export default class Spaces extends View {
     const digit = keyDigit(w);
     const tag = this.tags[w.id]?.tag;
     const cell = markCell(t, w.status);
+    const tip = [since && `${STATE[w.status]} · ${duration(this.now - since)}`, g?.main, this.servers[w.id]].filter(Boolean).join("\n");
     return v_flex()
       .relative()
       .id(`space-${w.id}`)
-      .when(Boolean(since), (el) => el.tooltip(`${STATE[w.status]} · ${duration(this.now - since)}`))
+      .when(Boolean(tip), (el) => el.tooltip(tip))
       .px(8)
       .h(rowHeight({ tree }))
       .flex_none()
