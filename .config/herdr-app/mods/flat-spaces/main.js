@@ -7,7 +7,7 @@
 
 import { View, div, svg } from "gpui-kit";
 import { v_flex, h_flex, ScrollHandle } from "gpui-base";
-import { spaces, agents, machines, panes, run, openOverlay, exec, hc, theme, shared, setShared, watchFolder, window, layout } from "herdr";
+import { spaces, agents, terminals, focused, nextCommand, machines, panes, run, openOverlay, exec, hc, theme, shared, setShared, watchFolder, window, layout } from "herdr";
 
 function find(node, id) {
   if (node?.id === id) return node;
@@ -90,6 +90,16 @@ async function both(a, b) {
 // that draws space avatars): one strong color per hue, light and dark alike.
 const MARK = { ansi6: "#22a99a", ansi3: "#e3814f", ansi4: "#5b8def", ansi5: "#8b7cf6", ansi2: "#3fae6a", ansi1: "#d9649a" };
 
+// A space's tag is a `tag` label on any terminal in it: agents set theirs with
+// `hc label $HC_TERMINAL_ID tag=reviewing` (`tag=` clears), cmd-g cycles it.
+// In cycle order, which is also the pick when two terminals carry different ones.
+const TAGS = {
+  reviewing: { icon: "eye", color: MARK.ansi4 },
+  "ready-to-deploy": { icon: "rocket", color: MARK.ansi2 },
+  blocked: { icon: "hand", color: MARK.ansi3 },
+};
+const CYCLE = Object.keys(TAGS);
+
 export default class Spaces extends View {
   init(_props, cx) {
     this.git = {}; // where() -> { name, branch, ahead, behind, repo, linked }, null: not a repo
@@ -123,6 +133,45 @@ export default class Spaces extends View {
     // Refresh only when the refs could have changed (see `due`).
     cx.timer.every(250, (cx) => this.checkNew(cx));
     cx.timer.every(30000, (cx) => cx.notify());
+    cx.spawn(async (cx) => {
+      for (;;) {
+        if (await nextCommand() === "tag") await this.cycleTag(cx);
+        cx.notify();
+      }
+    });
+  }
+
+  // Space id -> the terminal carrying its tag, and the tag.
+  tagged() {
+    const out = {};
+    for (const t of terminals()) {
+      const tag = t.labels?.tag, space = t.labels?.["herdr.space"];
+      if (!TAGS[tag] || !space || t.state !== "live") continue;
+      // Labels hold ids local to their machine; spaces() prefixes remote ones.
+      const id = t.address.includes("/") ? `${t.address.split("/")[0]}/${space}` : space;
+      if (!out[id] || CYCLE.indexOf(tag) < CYCLE.indexOf(out[id].tag)) out[id] = { address: t.address, tag };
+    }
+    // terminals() picks up a label change ~300ms late: show the one just set until it does.
+    const p = this.justTagged;
+    if (p && (out[p.space]?.tag ?? "") !== p.tag && Date.now() - p.at < 2000) {
+      if (p.tag) out[p.space] = { address: p.address, tag: p.tag };
+      else delete out[p.space];
+    } else this.justTagged = null;
+    return out;
+  }
+
+  // The focused space's next tag, on the terminal already carrying one, else the focused one.
+  async cycleTag(cx) {
+    const f = focused();
+    const current = f && this.tagged()[f.space];
+    const address = current?.address ?? f?.terminal;
+    if (!address) return;
+    const tag = CYCLE[CYCLE.indexOf(current?.tag) + 1] ?? "";
+    this.justTagged = { space: f.space, address, tag, at: Date.now() };
+    cx.notify();
+    let ok = false;
+    try { ok = (await hc(["label", address, `tag=${tag}`])).code === 0; } catch {}
+    if (!ok) this.justTagged = null;
   }
 
   track(list, now) {
@@ -502,6 +551,7 @@ export default class Spaces extends View {
     const fill = color.startsWith("#") ? color : (MARK[color] ?? t[color]);
     const since = w.status ? this.since(w, this.agents) : null;
     const digit = keyDigit(w);
+    const tag = this.tags[w.id]?.tag;
     return v_flex()
       .relative()
       .id(`space-${w.id}`)
@@ -549,6 +599,8 @@ export default class Spaces extends View {
           .when(Boolean(tree), el => el.child(div().w(18).flex_none().text_center().text_size(11).text_color(on ? t.foreground : t.dim).child(digit ?? "")))
           .when(!tree, el => el.child(h_flex().size(18).flex_none().rounded(5).bg(fill).items_center().justify_center().text_size(10.5).font_bold().text_color("#ffffff").child(digit ?? [...w.name][0]?.toUpperCase() ?? "?")))
           .child(div().flex_initial().min_w(SIDE_MIN).truncate().text_color(t.foreground).child(w.name))
+          .when(Boolean(tag), el => el.child(div().id(`tag-${w.id}`).flex_none().tooltip(tag)
+            .child(svg(`mods/flat-spaces/${TAGS[tag].icon}.svg`).size(12).text_color(TAGS[tag].color))))
           .child(g ? this.gitTail(g, tree, w.name, t) : div().flex_1())
           .when(Boolean(w.status), el => el.child(h_flex().flex_none().gap(6).items_center()
             .when(Boolean(since), el => el.child(div().text_size(11).text_color(t.dim).child(duration(this.now - since))))
@@ -590,6 +642,7 @@ export default class Spaces extends View {
     this.now = Date.now();
     this.agents = agents();
     this.track(this.agents, this.now);
+    this.tags = this.tagged();
     const list = this.grouped(t, collapsed);
     // Bring the active space into view when it, or its place in the list, changes; a row already in view stays put.
     const active = sp.find(p => p.active)?.id;

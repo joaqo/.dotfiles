@@ -10,4 +10,6 @@ If I paste a folder's path, instead process each file inside it as if I had aske
 
 At the end tell me if there's anything in the file or folder you think should be improved.
 
+Tag this Herdr space while I review: run `hc label $HC_TERMINAL_ID tag=reviewing` now, and `hc label $HC_TERMINAL_ID tag=ready-to-deploy` once I say I approve the changes. Skip both if `$HC_TERMINAL_ID` is unset.
+
 Tell me you're ready.
