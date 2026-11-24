@@ -1,5 +1,5 @@
 ---
-name: ship
+name: deploy
 description: Commit, rebase on local main, deploy, and test thoroughly in prod
 disable-model-invocation: true
 ---
