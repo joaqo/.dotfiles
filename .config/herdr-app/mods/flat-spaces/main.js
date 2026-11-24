@@ -41,11 +41,10 @@ function duration(ms) {
   return h < 24 ? `${h}h` : `${Math.floor(h / 24)}d`;
 }
 
-// Idle: a ring; done: a dot.
+// Done: a dot. Idle gets none: it's what most spaces are.
 function mark(t, status) {
   if (status === "working") return svg("mods/workspace-chrome/spinner.svg").size(12).flex_none().text_color(t.working).spin(900);
   if (status === "blocked") return div().size(14).flex_none().rounded(4).bg(t.blocked + "26").text_size(10.5).font_bold().text_color(t.blocked).flex().items_center().justify_center().child("!");
-  if (status === "idle") return div().size(7).flex_none().rounded(4).border(1.5).border_color(t.idle ?? t.dim);
   if (status === "done") return div().size(7).flex_none().rounded(4).bg(t.done ?? t.dim);
   return null;
 }
