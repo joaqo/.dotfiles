@@ -187,6 +187,9 @@ export default class Spaces extends View {
     // worktree appears under its repo instead of jumping there.
     this.shown = new Set(spaces().map((s) => s.id));
     this.born = {};
+    this.known = new Set(); // spaces seen so far
+    this.loaded = new Set(); // machines whose saved spaces have been listed
+    this.placing = new Map(); // new space -> { since, tried }: waiting to go under its checkout
     this.pressed = null;
     this.over = null;
     this.scroll = ScrollHandle.new(); // the list's position: the active space is brought into view through it
@@ -277,9 +280,45 @@ export default class Spaces extends View {
     const now = Date.now();
     const sp = spaces();
     for (const s of sp) if (!this.shown.has(s.id)) this.born[s.id] ??= now;
-    const due = this.due(now, sp, panes());
+    const ps = panes();
+    this.place(sp, ps, now);
+    const due = this.due(now, sp, ps);
     if (due.size) this.refreshGit(due, cx);
-    if (sp.some((s) => !this.shown.has(s.id)) || this.orderingDue(now)) cx.notify();
+    if (sp.some((s) => !this.shown.has(s.id))) cx.notify();
+  }
+
+  // Herdr adds a new space last. A worktree's goes under its checkout's space once,
+  // when the repos are known; spaces listed as their machine loads keep their saved order.
+  place(sp, ps, now) {
+    for (const s of sp) {
+      if (this.known.has(s.id)) continue;
+      this.known.add(s.id);
+      if (this.loaded.has(s.machine ?? null)) this.placing.set(s.id, { since: now, tried: 0 });
+    }
+    // A machine with no spaces yet may still be listing them; with none, there is nothing to go under.
+    for (const m of machines()) if (m.layout === "ready" && sp.some((s) => (s.machine ?? null) === m.name)) this.loaded.add(m.name);
+    if (!this.placing.size) return;
+    const g = (s) => this.git[where(s, ps)];
+    if (sp.some((s) => JSON.parse(where(s, ps))[1] && g(s) === undefined)) {
+      for (const [id, p] of this.placing) if (now - p.since > 10000) this.placing.delete(id);
+      return;
+    }
+    const ids = sp.map((s) => s.id);
+    const kid = (s, repo) => g(s)?.linked && g(s).repo === repo;
+    for (const [id, p] of this.placing) {
+      const s = sp.find((x) => x.id === id);
+      const repo = s && g(s)?.linked ? g(s).repo : null;
+      const rest = sp.filter((x) => x.id !== id);
+      let at = rest.findIndex((x) => g(x) && !g(x).linked && g(x).repo === repo);
+      if (!repo || at === -1 || now - p.since > 10000) { this.placing.delete(id); continue; }
+      while (rest[at + 1] && kid(rest[at + 1], repo)) at++;
+      if (ids.indexOf(id) === at + 1) { this.placing.delete(id); continue; }
+      // A write can lose a sync conflict: try again once its echo has had time to land.
+      if (now - p.tried < 1000) continue;
+      p.tried = now;
+      run("space.move", { id, index: at + 2 });
+      return;
+    }
   }
 
   // Places whose git could have changed: new ones (a new space, a cd), where a
@@ -488,54 +527,25 @@ export default class Spaces extends View {
     openOverlay({ mod: "menu", kind: "popup", width: 200, height: 260, props: { tab: "space", target: { id: w.id } } });
   }
 
-  orderingDue(now) {
-    return this.ordering && now - this.ordering.at >= 1000
-      && this.ordering.machines.every(name => machines().some(m => m.name === name && m.layout === "ready"));
-  }
-
-  // Spaces in order, each worktree space moved under its main checkout's.
-  ordered() {
+  // Spaces in their order. A worktree's right under its checkout's (or under
+  // another worktree's there) is drawn as its branch.
+  rows() {
     const sp = spaces(), ps = panes();
-    const ready = (w) => this.shown.has(w.id) || where(w, ps) in this.git || Date.now() - (this.born[w.id] ??= Date.now()) > 1500;
+    const ready = (w) => this.shown.has(w.id) || (!this.placing.has(w.id) && where(w, ps) in this.git) || Date.now() - (this.born[w.id] ??= Date.now()) > 1500;
     for (const w of sp) if (!this.shown.has(w.id) && ready(w)) this.shown.add(w.id);
-    const list = sp.map((w, i) => ({ w, i, g: this.git[where(w, ps)] ?? null }));
-    const mains = new Set(list.filter((r) => r.g && !r.g.linked).map((r) => r.g.repo));
-    const nested = (r) => r.g?.linked && mains.has(r.g.repo);
-    const out = [];
-    const placed = new Set(); // repos whose worktrees are listed (under the first of its spaces)
-    for (const r of list) {
-      if (nested(r)) continue;
-      out.push({ ...r, tree: null });
-      if (!r.g || r.g.linked || placed.has(r.g.repo)) continue;
-      placed.add(r.g.repo);
-      const kids = list.filter((k) => nested(k) && k.g.repo === r.g.repo);
-      kids.forEach((k, n) => out.push({ ...k, tree: n === kids.length - 1 ? "└─" : "├─" }));
-    }
-    // Simulate the batch so later indexes include earlier moves. An attempted
-    // write can lose a sync conflict: allow the echo to settle before retrying.
-    const order = sp.map(w => w.id);
-    const target = out.map(r => r.w.id);
-    const key = JSON.stringify([order, target, machines()]);
-    if (order.every((id, i) => id === target[i])) {
-      this.ordering = null;
-    } else if (this.ordering?.key !== key || this.orderingDue(Date.now())) {
-      const moved = new Set();
-      this.ordering = { key, at: Date.now(), machines: [] };
-      for (let i = 0; i < out.length; i++) {
-        const from = order.indexOf(out[i].w.id);
-        if (from === i) continue;
-        run("space.move", { id: out[i].w.id, index: i + 1 });
-        moved.add(out[i].w.machine ?? null);
-        order.splice(i, 0, order.splice(from, 1)[0]);
-      }
-      this.ordering.machines = [...moved];
-    }
-    return out.filter(r => this.shown.has(r.w.id));
+    const list = sp.map((w, i) => ({ w, i, g: this.git[where(w, ps)] ?? null, tree: null })).filter((r) => this.shown.has(r.w.id));
+    const kid = (r, repo) => r?.g?.linked && r.g.repo === repo;
+    let repo = null;
+    list.forEach((r, n) => {
+      if (kid(r, repo)) r.tree = kid(list[n + 1], repo) ? "├─" : "└─";
+      else repo = r.g && !r.g.linked ? r.g.repo : null;
+    });
+    return list;
   }
 
   // The rows, under a header per machine once one isn't this computer.
   grouped(t, collapsed) {
-    const rows = this.ordered();
+    const rows = this.rows();
     const draw = (r) => (collapsed ? this.compact(r, t) : this.row(r, t));
     // Where the active space's row lands among the children this returns: the list scrolls by its direct
     // children, and machine headers, login notes and loading rows count too.
